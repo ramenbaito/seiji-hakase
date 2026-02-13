@@ -914,6 +914,9 @@ function render() {
 
   els.app.innerHTML = createQuizCard(q, state.currentIndex, TOTAL_QUESTIONS, value, currentLevel, taxGauge)
 
+  // ページトップへスクロール
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
   // StarField初期化（夜のみcanvasが存在する）
   if (starFieldAnimation) {
     starFieldAnimation.destroy()
@@ -931,6 +934,9 @@ function renderEnd() {
   if (isTransitioning) return
 
   els.app.innerHTML = createResultScreen(state.answers)
+
+  // ページトップへスクロール
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 
   if (starFieldAnimation) {
     starFieldAnimation.destroy()
