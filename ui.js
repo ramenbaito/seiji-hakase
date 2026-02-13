@@ -1223,6 +1223,11 @@ function updateSliderUI(value) {
   var sliderEl = document.getElementById("slider")
   if (sliderEl) sliderEl.setAttribute("aria-valuenow", value)
 
+  // 中央(0)通過時の触覚フィードバック
+  if (value === 0 && navigator.vibrate) {
+    navigator.vibrate(10)
+  }
+
   // 説明テキスト更新
   var descEl = document.querySelector(".slider-desc")
   if (descEl) {
