@@ -1018,11 +1018,18 @@ function renderEnd() {
   var axisScores = calcAxisScores(state.answers)
   drawRadarChart("radarChart", axisScores)
 
+  // EXPバーのカウントアップアニメーション
+  var expFill = document.querySelector(".exp-fill")
+  if (expFill) {
+    expFill.style.width = "0%"
+    setTimeout(function () { expFill.style.width = "100%" }, 150)
+  }
+
   // 政党バーのカウントアップアニメーション
   document.querySelectorAll(".party-row-fill").forEach(function (fill) {
     var targetWidth = fill.style.width
     fill.style.width = "0%"
-    setTimeout(function () { fill.style.width = targetWidth }, 100)
+    setTimeout(function () { fill.style.width = targetWidth }, 300)
   })
 
   // キーボードリスナー解除
