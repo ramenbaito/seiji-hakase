@@ -668,7 +668,7 @@ function drawRadarChart(canvasId, scores) {
   var r = Math.min(cx, cy) - 30
 
   var axes = ["merit_equity", "small_big", "free_norm", "open_protect", "now_future"]
-  var labels = ["分配", "政府", "自由", "開放", "時間"]
+  var labels = ["実力↔平等", "小さい↔大きい政府", "自由↔規範", "開放↔保護", "現在↔未来"]
   var n = axes.length
   var angleStep = (Math.PI * 2) / n
   var startAngle = -Math.PI / 2
@@ -1490,6 +1490,15 @@ function initSplash() {
       dismissSplash()
     })
   }
+
+  // Enterキーでもスタート
+  document.addEventListener("keydown", function splashKey(e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      document.removeEventListener("keydown", splashKey)
+      dismissSplash()
+    }
+  })
 }
 
 function dismissSplash() {
