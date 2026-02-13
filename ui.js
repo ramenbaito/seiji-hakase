@@ -719,7 +719,7 @@ function drawRadarChart(canvasId, scores) {
   ctx.lineWidth = 2
   ctx.stroke()
 
-  // データ点
+  // データ点 + 値ラベル
   for (var m = 0; m < n; m++) {
     var val = (scores[axes[m]] || 50) / 100
     var angle = startAngle + m * angleStep
@@ -729,6 +729,12 @@ function drawRadarChart(canvasId, scores) {
     ctx.arc(x, y, 4, 0, Math.PI * 2)
     ctx.fillStyle = "#4ECDC4"
     ctx.fill()
+    // 値ラベル
+    ctx.font = "bold 9px sans-serif"
+    ctx.fillStyle = "rgba(78, 205, 196, 0.9)"
+    ctx.textAlign = "center"
+    var labelY = y + (angle > 0 && angle < Math.PI ? 12 : -10)
+    ctx.fillText(Math.round(scores[axes[m]] || 50), x, labelY)
   }
 
   // ラベル
