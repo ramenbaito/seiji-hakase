@@ -783,7 +783,7 @@ function createResultScreen(answers) {
   var topParty = partyResults[0]
 
   return `
-    <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px;animation:fadeScale 0.6s ease-out">
+    <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px">
       <div class="result-header">
         <div class="result-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -800,7 +800,7 @@ function createResultScreen(answers) {
       </div>
       
       <!-- EXP MAX -->
-      <div class="status-bar">
+      <div class="status-bar" style="animation:slideInRight 0.4s ease-out 0.1s both">
         <span class="status-label" style="color:#FFE66D">EXP</span>
         <div class="status-track">
           <div class="status-fill exp-fill" style="width:100%"></div>
@@ -808,7 +808,7 @@ function createResultScreen(answers) {
         <span class="status-value" style="color:#FFE66D;font-weight:700">MAX</span>
       </div>
       
-      <div class="result-card">
+      <div class="result-card" style="animation:slideInRight 0.5s ease-out 0.2s both">
         <div class="result-corner tl"></div>
         <div class="result-corner tr"></div>
         <div class="result-corner bl"></div>
