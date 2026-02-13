@@ -86,55 +86,50 @@ function createRPGScene(value) {
         ${Array(5).fill(0).map(() => '<div class="road-line"></div>').join('')}
       </div>
       
-      <div class="scene-label">政治の街</div>
-      <div class="hp-bar">
-        <span class="hp-label">HP</span>
-        <div class="hp-track">
-          <div class="hp-fill"></div>
-        </div>
-      </div>
-      
       <div class="characters-left" style="opacity:${leftOpacity}">
         <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <circle cx="20" cy="12" r="6" fill="#ff9a6e"/>
-          <rect x="14" y="20" width="12" height="16" fill="#ff9a6e" rx="2"/>
-          <rect x="12" y="36" width="4" height="12" fill="#4a5568" rx="1"/>
-          <rect x="24" y="36" width="4" height="12" fill="#4a5568" rx="1"/>
-          <rect x="11" y="22" width="3" height="10" fill="#ff9a6e" rx="1" transform="rotate(-20 12.5 27)"/>
-          <rect x="26" y="22" width="3" height="10" fill="#ff9a6e" rx="1" transform="rotate(20 27.5 27)"/>
-          <circle cx="17" cy="11" r="1" fill="#333"/>
-          <circle cx="23" cy="11" r="1" fill="#333"/>
+          <circle cx="20" cy="12" r="6" fill="#FF6B6B"/>
+          <rect x="14" y="20" width="12" height="16" fill="#FF6B6B" rx="2"/>
+          <rect x="12" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
+          <rect x="24" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
+          <rect x="11" y="22" width="3" height="10" fill="#FF6B6B" rx="1" transform="rotate(-20 12.5 27)"/>
+          <rect x="26" y="22" width="3" height="10" fill="#FF6B6B" rx="1" transform="rotate(20 27.5 27)"/>
+          <circle cx="17" cy="11" r="1" fill="#2D3748"/>
+          <circle cx="23" cy="11" r="1" fill="#2D3748"/>
+          <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
       
       <div class="characters-right" style="opacity:${rightOpacity}">
         <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <circle cx="20" cy="12" r="6" fill="#6ea8ff"/>
-          <rect x="14" y="20" width="12" height="16" fill="#6ea8ff" rx="2"/>
-          <rect x="12" y="36" width="4" height="12" fill="#4a5568" rx="1"/>
-          <rect x="24" y="36" width="4" height="12" fill="#4a5568" rx="1"/>
-          <rect x="11" y="22" width="3" height="10" fill="#6ea8ff" rx="1" transform="rotate(-20 12.5 27)"/>
-          <rect x="26" y="22" width="3" height="10" fill="#6ea8ff" rx="1" transform="rotate(20 27.5 27)"/>
-          <circle cx="17" cy="11" r="1" fill="#333"/>
-          <circle cx="23" cy="11" r="1" fill="#333"/>
+          <circle cx="20" cy="12" r="6" fill="#4ECDC4"/>
+          <rect x="14" y="20" width="12" height="16" fill="#4ECDC4" rx="2"/>
+          <rect x="12" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
+          <rect x="24" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
+          <rect x="11" y="22" width="3" height="10" fill="#4ECDC4" rx="1" transform="rotate(-20 12.5 27)"/>
+          <rect x="26" y="22" width="3" height="10" fill="#4ECDC4" rx="1" transform="rotate(20 27.5 27)"/>
+          <circle cx="17" cy="11" r="1" fill="#2D3748"/>
+          <circle cx="23" cy="11" r="1" fill="#2D3748"/>
+          <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
       
       <div class="character main" style="left:${mainX}%">
         <svg width="50" height="70" viewBox="0 0 50 70">
-          <circle cx="25" cy="15" r="8" fill="#f0c040"/>
-          <rect x="17" y="25" width="16" height="20" fill="#f0c040" rx="3"/>
-          <rect x="15" y="45" width="5" height="15" fill="#2d3748" rx="1"/>
-          <rect x="30" y="45" width="5" height="15" fill="#2d3748" rx="1"/>
-          <rect x="13" y="28" width="4" height="12" fill="#f0c040" rx="1" transform="rotate(-25 15 34)"/>
-          <rect x="33" y="28" width="4" height="12" fill="#f0c040" rx="1" transform="rotate(25 35 34)"/>
-          <rect x="20" y="7" width="10" height="2" fill="#2d3748"/>
-          <rect x="24" y="5" width="2" height="4" fill="#2d3748"/>
-          <circle cx="21" cy="13" r="1.5" fill="#333"/>
-          <circle cx="29" cy="13" r="1.5" fill="#333"/>
-          <circle cx="21" cy="13" r="3" stroke="#333" stroke-width="0.5" fill="none"/>
-          <circle cx="29" cy="13" r="3" stroke="#333" stroke-width="0.5" fill="none"/>
-          <line x1="24" y1="13" x2="26" y2="13" stroke="#333" stroke-width="0.5"/>
+          <circle cx="25" cy="15" r="8" fill="#FFE66D"/>
+          <rect x="17" y="25" width="16" height="20" fill="#FFE66D" rx="3"/>
+          <rect x="15" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
+          <rect x="30" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
+          <rect x="13" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(-25 15 34)"/>
+          <rect x="33" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(25 35 34)"/>
+          <rect x="20" y="7" width="10" height="2" fill="#2D3748"/>
+          <rect x="24" y="5" width="2" height="4" fill="#2D3748"/>
+          <circle cx="21" cy="13" r="1.5" fill="#2D3748"/>
+          <circle cx="29" cy="13" r="1.5" fill="#2D3748"/>
+          <circle cx="21" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
+          <circle cx="29" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
+          <line x1="24" y1="13" x2="26" y2="13" stroke="#2D3748" stroke-width="0.5"/>
+          <path d="M 23 17 Q 25 18 27 17" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
       
@@ -436,19 +431,20 @@ function renderEnd() {
     <div class="result-card">
       <div class="result-character">
         <svg width="60" height="80" viewBox="0 0 50 70">
-          <circle cx="25" cy="15" r="8" fill="#f0c040"/>
-          <rect x="17" y="25" width="16" height="20" fill="#f0c040" rx="3"/>
-          <rect x="15" y="45" width="5" height="15" fill="#2d3748" rx="1"/>
-          <rect x="30" y="45" width="5" height="15" fill="#2d3748" rx="1"/>
-          <rect x="13" y="28" width="4" height="12" fill="#f0c040" rx="1" transform="rotate(-25 15 34)"/>
-          <rect x="33" y="28" width="4" height="12" fill="#f0c040" rx="1" transform="rotate(25 35 34)"/>
-          <rect x="20" y="7" width="10" height="2" fill="#2d3748"/>
-          <rect x="24" y="5" width="2" height="4" fill="#2d3748"/>
-          <circle cx="21" cy="13" r="1.5" fill="#333"/>
-          <circle cx="29" cy="13" r="1.5" fill="#333"/>
-          <circle cx="21" cy="13" r="3" stroke="#333" stroke-width="0.5" fill="none"/>
-          <circle cx="29" cy="13" r="3" stroke="#333" stroke-width="0.5" fill="none"/>
-          <line x1="24" y1="13" x2="26" y2="13" stroke="#333" stroke-width="0.5"/>
+          <circle cx="25" cy="15" r="8" fill="#FFE66D"/>
+          <rect x="17" y="25" width="16" height="20" fill="#FFE66D" rx="3"/>
+          <rect x="15" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
+          <rect x="30" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
+          <rect x="13" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(-25 15 34)"/>
+          <rect x="33" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(25 35 34)"/>
+          <rect x="20" y="7" width="10" height="2" fill="#2D3748"/>
+          <rect x="24" y="5" width="2" height="4" fill="#2D3748"/>
+          <circle cx="21" cy="13" r="1.5" fill="#2D3748"/>
+          <circle cx="29" cy="13" r="1.5" fill="#2D3748"/>
+          <circle cx="21" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
+          <circle cx="29" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
+          <line x1="24" y1="13" x2="26" y2="13" stroke="#2D3748" stroke-width="0.5"/>
+          <path d="M 23 17 Q 25 18 27 17" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
       
