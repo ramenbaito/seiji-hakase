@@ -1,12 +1,9 @@
 /**
- * ui.js — 描画・イベント・起動
+ * ui.js — RPG風政治博士クイズ UI
  */
 
 var els = {
-  screen: document.getElementById("screen"),
-  progressPill: document.getElementById("progressPill"),
-  taxFill: document.getElementById("taxFill"),
-  taxValue: document.getElementById("taxValue"),
+  app: document.getElementById("app")
 }
 
 var state = loadState()
@@ -20,28 +17,33 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;")
 }
 
-function computeApproachShift(value) {
-  var t = value / 2
-  var px = 22
-  return {
-    leftX: Math.round(px * Math.max(0, -t)),
-    rightX: Math.round(-px * Math.max(0, t)),
-  }
+function clampValue(value) {
+  var v = Number(value)
+  if (isNaN(v)) return 0
+  return Math.max(-2, Math.min(2, v))
+}
+
+function valueToInternal(value) {
+  return Math.round(((value + 2) / 4) * 100)
 }
 
 function updateTaxGauge(tax) {
-  els.taxValue.textContent = String(tax)
+  var taxFill = document.getElementById("taxFill")
+  var taxValue = document.getElementById("taxValue")
+  if (!taxFill || !taxValue) return
+
+  taxValue.textContent = String(tax)
   var maxAbs = 40
   var clamped = Math.max(-maxAbs, Math.min(maxAbs, tax))
   var ratio = clamped / maxAbs
   var widthPct = Math.abs(ratio) * 50
-  els.taxFill.style.width = widthPct + "%"
+  taxFill.style.width = widthPct + "%"
   if (ratio >= 0) {
-    els.taxFill.style.left = "50%"
-    els.taxFill.style.transform = "translateX(0)"
+    taxFill.style.left = "50%"
+    taxFill.style.transform = "translateX(0)"
   } else {
-    els.taxFill.style.left = (50 - widthPct) + "%"
-    els.taxFill.style.transform = "translateX(0)"
+    taxFill.style.left = (50 - widthPct) + "%"
+    taxFill.style.transform = "translateX(0)"
   }
 }
 
@@ -60,70 +62,159 @@ function updateTaxDeltaHint(delta) {
   }
 }
 
+function createRPGScene(value) {
+  var leftOpacity = value < 0 ? Math.abs(value / 2) : 0.2
+  var rightOpacity = value > 0 ? Math.abs(value / 2) : 0.2
+  var mainX = 50 + (value * 15)
+
+  return `
+    <div class="rpg-scene">
+      <div class="stars">
+        ${Array(20).fill(0).map((_, i) =>
+    `<div class="star" style="left:${Math.random() * 100}%;top:${Math.random() * 60}%;animation-delay:${Math.random() * 2}s"></div>`
+  ).join('')}
+      </div>
+      
+      <div class="buildings">
+        ${[60, 80, 45, 90, 55, 70, 40].map(h =>
+    `<div class="building" style="height:${h}px;width:${20 + Math.random() * 15}px"></div>`
+  ).join('')}
+      </div>
+      
+      <div class="ground"></div>
+      <div class="road">
+        ${Array(5).fill(0).map(() => '<div class="road-line"></div>').join('')}
+      </div>
+      
+      <div class="scene-label">政治の街</div>
+      <div class="hp-bar">
+        <span class="hp-label">HP</span>
+        <div class="hp-track">
+          <div class="hp-fill"></div>
+        </div>
+      </div>
+      
+      <div class="characters-left" style="opacity:${leftOpacity}">
+        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
+          <rect x="15" y="10" width="10" height="15" fill="#ff9a6e" rx="2"/>
+          <rect x="12" y="25" width="16" height="20" fill="#ff9a6e" rx="2"/>
+          <rect x="14" y="45" width="6" height="12" fill="#333" rx="1"/>
+          <rect x="20" y="45" width="6" height="12" fill="#333" rx="1"/>
+        </svg>
+      </div>
+      
+      <div class="characters-right" style="opacity:${rightOpacity}">
+        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
+          <rect x="15" y="10" width="10" height="15" fill="#6ea8ff" rx="2"/>
+          <rect x="12" y="25" width="16" height="20" fill="#6ea8ff" rx="2"/>
+          <rect x="14" y="45" width="6" height="12" fill="#333" rx="1"/>
+          <rect x="20" y="45" width="6" height="12" fill="#333" rx="1"/>
+        </svg>
+      </div>
+      
+      <div class="character main" style="left:${mainX}%">
+        <svg width="50" height="70" viewBox="0 0 50 70">
+          <rect x="18" y="12" width="14" height="18" fill="#f0c040" rx="2"/>
+          <rect x="15" y="30" width="20" height="25" fill="#f0c040" rx="2"/>
+          <rect x="17" y="55" width="8" height="15" fill="#333" rx="1"/>
+          <rect x="25" y="55" width="8" height="15" fill="#333" rx="1"/>
+        </svg>
+      </div>
+      
+      <div class="arrow left">←</div>
+      <div class="arrow right">→</div>
+    </div>
+  `
+}
+
 function render() {
   var q = QUESTIONS[state.currentIndex]
   var stage = state.currentIndex + 1
   var saved = state.answers[q.id]
   var value = saved && typeof saved.value === "number" ? clampValue(saved.value) : 0
 
-  var shift = computeApproachShift(value)
   var leftActive = value < 0
   var rightActive = value > 0
   var progressPct = Math.round((stage / TOTAL_QUESTIONS) * 100)
 
-  els.progressPill.textContent = "Q" + stage + "/" + TOTAL_QUESTIONS
-
   var taxPreview = state.tax + getTaxDelta(q, value)
 
-  els.screen.innerHTML =
-    '<div class="fade">' +
-    '<div class="progressRow">' +
-    '<div class="bar" aria-hidden="true"><div style="width:' + progressPct + '%"></div></div>' +
-    '<div class="progressText">' + progressPct + '%</div>' +
-    '</div>' +
-
-    '<h2 class="qTitle">' + escapeHtml(q.title) + '</h2>' +
-    '<p class="qSub">' + escapeHtml(q.subtitle) + '</p>' +
-
-    '<div class="choices" style="--lx:' + shift.leftX + 'px; --rx:' + shift.rightX + 'px;">' +
-    '<div class="choice" data-side="left" data-active="' + leftActive + '">' +
-    '<div class="icon" aria-hidden="true">' + q.left.icon + '</div>' +
-    '<div class="meta">' +
-    '<div class="label">' + escapeHtml(q.left.label) + '</div>' +
-    '<div class="desc">' + escapeHtml(q.left.desc) + '</div>' +
-    '</div>' +
-    '</div>' +
-    '<div class="choice" data-side="right" data-active="' + rightActive + '">' +
-    '<div class="icon" aria-hidden="true">' + q.right.icon + '</div>' +
-    '<div class="meta">' +
-    '<div class="label">' + escapeHtml(q.right.label) + '</div>' +
-    '<div class="desc">' + escapeHtml(q.right.desc) + '</div>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-
-    '<div class="sliderBlock">' +
-    '<div class="sliderHead">' +
-    '<div class="hint">どちらに近づける？</div>' +
-    '</div>' +
-    '<div class="rangeRow">' +
-    '<div class="rangeWrap">' +
-    '<div class="policyDotLabel">現状の政策</div>' +
-    '<div class="policyDot"></div>' +
-    '<input id="slider" type="range" min="-2" max="2" step="1" value="' + value + '" aria-label="距離感スライダー" />' +
-    '</div>' +
-    '<div class="ends">' +
-    '<div class="end left ' + (leftActive ? "active" : "") + '">' + escapeHtml(q.left.label) + '</div>' +
-    '<div class="end right ' + (rightActive ? "active" : "") + '">' + escapeHtml(q.right.label) + '</div>' +
-    '</div>' +
-    '</div>' +
-    '</div>' +
-
-    '<div class="buttons">' +
-    '<button class="btn" id="back" type="button"' + (state.currentIndex === 0 ? " disabled" : "") + '>戻る</button>' +
-    '<button class="btn primary" id="next" type="button">この選択で進む</button>' +
-    '</div>' +
-    '</div>'
+  els.app.innerHTML = `
+    <div class="rpg-header">
+      <div class="rpg-title">🧓 政治博士 RPG</div>
+      <div class="rpg-stage">STAGE ${stage}/${TOTAL_QUESTIONS}</div>
+    </div>
+    
+    <div class="exp-bar">
+      <span class="exp-label">EXP</span>
+      <div class="exp-track">
+        <div class="exp-fill" style="width:${progressPct}%"></div>
+      </div>
+      <span class="exp-pct">${progressPct}%</span>
+    </div>
+    
+    ${createRPGScene(value)}
+    
+    <div class="question-card">
+      <h2 class="question-title">${escapeHtml(q.title)}</h2>
+      <p class="question-desc">${escapeHtml(q.subtitle)}</p>
+    </div>
+    
+    <div class="action-section">
+      <div class="action-header">
+        <svg class="action-icon" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
+        </svg>
+        <span class="action-title">行動を選択</span>
+      </div>
+      
+      <div class="action-buttons">
+        <div class="action-btn left ${leftActive ? 'active' : ''}" data-side="left">
+          <div class="action-letter">A</div>
+          <div class="action-content">
+            <div class="action-label">${escapeHtml(q.left.label)}</div>
+            <div class="action-hint">${escapeHtml(q.left.desc)}</div>
+          </div>
+        </div>
+        
+        <div class="action-btn right ${rightActive ? 'active' : ''}" data-side="right">
+          <div class="action-letter">B</div>
+          <div class="action-content">
+            <div class="action-label">${escapeHtml(q.right.label)}</div>
+            <div class="action-hint">${escapeHtml(q.right.desc)}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="slider-section">
+        <div class="slider-label">どちらに近づける？</div>
+        <div class="slider-row">
+          <div class="slider-end left ${leftActive ? 'active' : ''}">${escapeHtml(q.left.label)}</div>
+          <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}" />
+          <div class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(q.right.label)}</div>
+        </div>
+        <div class="slider-desc">${value === 0 ? '中央' : value < 0 ? q.left.label : q.right.label}</div>
+      </div>
+    </div>
+    
+    <div class="tax-section">
+      <div class="tax-label">税金ゲージ</div>
+      <div class="tax-bar">
+        <div class="center"></div>
+        <div class="fill" id="taxFill"></div>
+      </div>
+      <div class="tax-value" id="taxValue">${taxPreview}</div>
+    </div>
+    <div class="tax-delta" id="taxDeltaText"></div>
+    
+    <div class="controls">
+      <div class="note">※ 正解や善悪を示すものではありません。距離感として選んでください。</div>
+      <div class="control-buttons">
+        <button class="control-btn" id="back" ${state.currentIndex === 0 ? 'disabled' : ''}>戻る</button>
+        <button class="control-btn primary" id="next">この選択で進む</button>
+      </div>
+    </div>
+  `
 
   updateTaxGauge(taxPreview)
   updateTaxDeltaHint(getTaxDelta(q, value))
@@ -134,7 +225,9 @@ function bindQuestionEvents() {
   var slider = document.getElementById("slider")
   var backBtn = document.getElementById("back")
   var nextBtn = document.getElementById("next")
+  var actionBtns = document.querySelectorAll(".action-btn")
 
+  // スライダーイベント
   slider.addEventListener("input", function (e) {
     var v = clampValue(e.target.value)
     var q = QUESTIONS[state.currentIndex]
@@ -145,6 +238,22 @@ function bindQuestionEvents() {
     }
     saveState(state)
     render()
+  })
+
+  // アクションボタンイベント
+  actionBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var side = btn.dataset.side
+      var v = side === "left" ? -2 : 2
+      var q = QUESTIONS[state.currentIndex]
+
+      state.answers[q.id] = {
+        value: v,
+        internal: valueToInternal(v),
+      }
+      saveState(state)
+      render()
+    })
   })
 
   backBtn.addEventListener("click", function () {
@@ -251,79 +360,100 @@ function buildRadarSVG(scores) {
 }
 
 function renderEnd() {
-  var stage = QUESTIONS.length
-  els.progressPill.textContent = "完了"
-  updateTaxGauge(state.tax)
-  updateTaxDeltaHint(0)
-
   var userScores = calcAxisScores(state.answers)
   var partyResults = calcPartyDistances(userScores)
   var axes = ["merit_equity", "small_big", "free_norm", "open_protect", "now_future"]
 
-  var radarSVG = buildRadarSVG(userScores)
+  // キャラクター成長アニメーション
+  var characterLevel = Math.floor(state.answers.filter(a => a && a.confirmed).length / 3) + 1
 
-  // 5軸バー
-  var axisHtml = ''
-  for (var i = 0; i < axes.length; i++) {
-    var ax = axes[i]
-    var score = userScores[ax]
-    axisHtml +=
-      '<div class="axisRow">' +
-      '<div class="axisLabel">' + escapeHtml(AXIS_NAMES[ax]) + '</div>' +
-      '<div class="axisEnds"><span>' + escapeHtml(AXIS_LEFT_LABELS[ax]) + '</span><span>' + escapeHtml(AXIS_RIGHT_LABELS[ax]) + '</span></div>' +
-      '<div class="axisBar"><div class="axisFill" style="width:' + score + '%"></div><div class="axisDot" style="left:' + score + '%"></div></div>' +
-      '<div class="axisScore">' + score + '</div>' +
-      '</div>'
+  // 回答サマリー
+  var answerRows = ''
+  for (var i = 0; i < QUESTIONS.length; i++) {
+    var q = QUESTIONS[i]
+    var answer = state.answers[q.id]
+    if (answer && typeof answer.value === "number") {
+      var value = answer.value
+      var leftPct = (value + 2) / 4 * 100
+      answerRows += `
+        <div class="answer-row">
+          <div class="answer-id">Q${i + 1}</div>
+          <div class="answer-bar">
+            <div class="center"></div>
+            <div class="answer-dot" style="left:${leftPct}%"></div>
+          </div>
+          <div class="answer-value ${value < 0 ? 'negative' : value > 0 ? 'positive' : ''}">
+            ${value === 0 ? '0' : value < 0 ? value : '+' + value}
+          </div>
+        </div>
+      `
+    }
   }
 
   // 政党マッチング
   var partyHtml = ''
-  for (var i = 0; i < partyResults.length; i++) {
+  for (var i = 0; i < Math.min(3, partyResults.length); i++) {
     var p = partyResults[i]
-    partyHtml +=
-      '<div class="partyRow">' +
-      '<div class="partyName">' + escapeHtml(p.name) + '</div>' +
-      '<div class="partyBar"><div class="partyFill" style="width:' + p.match + '%;background:' + p.color + '"></div></div>' +
-      '<div class="partyPct">' + p.match + '%</div>' +
-      '</div>'
+    partyHtml += `
+      <div class="result-summary">
+        <span class="result-summary-label">${escapeHtml(p.name)}</span>
+        <span class="result-summary-value">${p.match}%</span>
+      </div>
+    `
   }
 
-  els.screen.innerHTML =
-    '<div class="fade">' +
-    '<div class="progressRow">' +
-    '<div class="bar" aria-hidden="true"><div style="width:100%"></div></div>' +
-    '<div class="progressText">100%</div>' +
-    '</div>' +
-
-    '<h2 class="qTitle">あなたの政治スタンス</h2>' +
-    '<p class="qSub">15問の回答から、5つの軸であなたの立ち位置を分析しました。</p>' +
-
-    '<div class="radarWrap">' + radarSVG + '</div>' +
-
-    '<div class="resultSection">' +
-    '<div class="resultHeading">5軸スコア</div>' +
-    axisHtml +
-    '</div>' +
-
-    '<div class="resultSection">' +
-    '<div class="resultHeading">政党との近さ</div>' +
-    '<p class="resultNote">※ 概算値です。投票の推奨ではありません。</p>' +
-    partyHtml +
-    '</div>' +
-
-    '<div class="buttons">' +
-    '<button class="btn" id="back" type="button">戻る</button>' +
-    '<button class="btn primary" id="resetAll" type="button">もう一度やる</button>' +
-    '</div>' +
-
-    '<div class="footnote" style="margin-top:8px">※ この結果は診断目的のものではありません。政党データは概算であり、特定の政党を推奨するものではありません。</div>' +
-    '</div>'
-
-  document.getElementById("back").addEventListener("click", function () {
-    state.currentIndex = QUESTIONS.length - 1
-    saveState(state)
-    render()
-  })
+  els.app.innerHTML = `
+    <div class="result-header">
+      <div class="result-title">🧓 政治博士 RPG</div>
+      <div class="result-stage">COMPLETE</div>
+    </div>
+    
+    <div class="exp-bar">
+      <span class="exp-label">EXP</span>
+      <div class="exp-track">
+        <div class="exp-fill" style="width:100%"></div>
+      </div>
+      <span class="exp-pct">100%</span>
+    </div>
+    
+    <div class="result-card">
+      <div class="result-character">
+        <svg width="80" height="100" viewBox="0 0 50 70">
+          <rect x="18" y="12" width="14" height="18" fill="#f0c040" rx="2"/>
+          <rect x="15" y="30" width="20" height="25" fill="#f0c040" rx="2"/>
+          <rect x="17" y="55" width="8" height="15" fill="#333" rx="1"/>
+          <rect x="25" y="55" width="8" height="15" fill="#333" rx="1"/>
+        </svg>
+      </div>
+      
+      <div class="result-title-section">
+        <span class="result-name">レベル ${characterLevel} 政治博士</span>
+      </div>
+      
+      <div class="result-desc">15問の回答から、あなたの政治的立場が明らかになりました！</div>
+      
+      <div class="result-answers">
+        ${answerRows}
+      </div>
+      
+      <div class="result-divider"></div>
+      
+      <div class="result-summary">
+        <span class="result-summary-label">最終税金</span>
+        <span class="result-summary-value">${state.tax > 0 ? '+' : ''}${state.tax}%</span>
+      </div>
+      
+      ${partyHtml}
+    </div>
+    
+    <div class="result-controls">
+      <div class="result-note">※ この結果は診断目的のものではありません</div>
+      <button class="result-reset" id="resetAll">
+        <span>↻</span>
+        <span>もう一度冒険する</span>
+      </button>
+    </div>
+  `
 
   document.getElementById("resetAll").addEventListener("click", function () {
     localStorage.removeItem(STORAGE_KEY)
