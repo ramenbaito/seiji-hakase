@@ -158,30 +158,35 @@ function createHeroSVG(size) {
   `
 }
 
-function createNPCSVGS(side, active) {
+function createNPCSVGS(side, active, intensity) {
   var baseColor = side === "left" ? "#4ECDC4" : "#FF6B6B"
   var hairColors = side === "left" ? ["#5A3A20", "#2A2A2A", "#8B6914"] : ["#CCCCCC", "#888888", "#AAAAAA"]
+  // intensity: 0=中立, 1=やや, 2=強く → スケール: 0%, 10%, 30%
+  var absInt = intensity || 0
+  var scalePct = absInt === 2 ? 30 : absInt === 1 ? 10 : 0
+  var scale = 1 + scalePct / 100
   // active = ユーザーが寄っている → 笑顔、そうでなければ普通/困り顔
   var mouthY = function (main) {
-    if (active) return main ? 'M27 28 Q30 34 33 28' : 'M27 27 Q30 31 33 27' // 笑顔（上向きカーブ）
-    return main ? 'M27 31 Q30 28 33 31' : 'M27 30 Q30 28 33 30' // 困り顔（下向きカーブ）
+    if (active) return main ? 'M27 28 Q30 34 33 28' : 'M27 27 Q30 31 33 27'
+    return main ? 'M27 31 Q30 28 33 31' : 'M27 30 Q30 28 33 30'
   }
   var eyeShape = function () {
     if (active) return '<circle cx="25" cy="23" r="2" fill="#1A1A1A"/><circle cx="35" cy="23" r="2" fill="#1A1A1A"/><circle cx="26" cy="22" r="0.8" fill="#FFF"/><circle cx="36" cy="22" r="0.8" fill="#FFF"/>'
     return '<ellipse cx="25" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/><ellipse cx="35" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/>'
   }
-  // 笑顔の時はほっぺも追加
   var cheeks = active ? '<ellipse cx="21" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/><ellipse cx="39" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/>' : ''
 
   var npcs = ""
   for (var i = 0; i < 3; i++) {
     var isMain = i === 1
-    var width = isMain ? 44 : 32
-    var height = isMain ? 80 : 60
+    var baseW = isMain ? 44 : 32
+    var baseH = isMain ? 80 : 60
+    var width = Math.round(baseW * (active ? scale : 1))
+    var height = Math.round(baseH * (active ? scale : 1))
     var opacity = isMain ? (active ? 1 : 0.7) : (active ? 0.7 : 0.4)
 
     npcs += `
-      <svg viewBox="0 0 60 100" style="width:${width}px;height:${height}px;opacity:${opacity};transition:all 0.5s" aria-hidden="true">
+      <svg viewBox="0 0 60 100" style="width:${width}px;height:${height}px;opacity:${opacity};transition:all 0.3s ease-out" aria-hidden="true">
         <circle cx="30" cy="${isMain ? 22 : 14}" r="${isMain ? 16 : 13}" fill="#FFDBB4"/>
         <ellipse cx="30" cy="${isMain ? 12 : 14}" rx="${isMain ? 17 : 14}" ry="${isMain ? 10 : 8}" fill="${hairColors[i]}"/>
         ${eyeShape()}
@@ -264,12 +269,12 @@ function createRPGScene(value, question, idx) {
       
       <!-- 左キャラクター -->
       <div class="characters-left ${leftActive ? 'active' : ''}">
-        ${createNPCSVGS("left", leftActive)}
+        ${createNPCSVGS("left", leftActive, leftActive ? Math.abs(value) : 0)}
       </div>
       
       <!-- 右キャラクター -->
       <div class="characters-right ${rightActive ? 'active' : ''}">
-        ${createNPCSVGS("right", rightActive)}
+        ${createNPCSVGS("right", rightActive, rightActive ? Math.abs(value) : 0)}
       </div>
       
       <!-- 主人公 -->
@@ -713,14 +718,15 @@ function updateRPGScene(value) {
   var leftArrow = document.querySelector(".arrow-left")
   var rightArrow = document.querySelector(".arrow-right")
 
-  // NPC表情をSVGごと再生成（笑顔/困り顔を切り替え）
+  // NPC表情をSVGごと再生成（笑顔/困り顔＋サイズ変化）
+  var absValue = Math.abs(value)
   if (leftChars) {
     leftChars.className = "characters-left" + (leftActive ? " active" : "")
-    leftChars.innerHTML = createNPCSVGS("left", leftActive)
+    leftChars.innerHTML = createNPCSVGS("left", leftActive, leftActive ? absValue : 0)
   }
   if (rightChars) {
     rightChars.className = "characters-right" + (rightActive ? " active" : "")
-    rightChars.innerHTML = createNPCSVGS("right", rightActive)
+    rightChars.innerHTML = createNPCSVGS("right", rightActive, rightActive ? absValue : 0)
   }
   if (hero) {
     hero.style.left = heroX + "%"
