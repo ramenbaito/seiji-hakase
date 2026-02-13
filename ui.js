@@ -222,6 +222,27 @@ function getTimeOfDay(idx) {
   return { label: "深夜", timeStr: timeStr, sky: "linear-gradient(180deg, #050a14 0%, #0F1923 40%, #1a2744 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.8 }
 }
 
+function getSceneEmoji(sceneName) {
+  var emojis = {
+    "朝の公園": "🌳",
+    "朝の商店街": "🏪",
+    "学校の正門前": "🏫",
+    "港の見える橋の上": "🌉",
+    "工場のそばの河川敷": "🏭",
+    "オフィスビルの前": "🏢",
+    "駅前のロータリー": "🚉",
+    "ショッピングモール": "🛒",
+    "家のリビング": "🏠",
+    "病院の待合室": "🏥",
+    "鉄塔の見える丘": "⚡",
+    "体育館の前": "🏟️",
+    "夜の交差点": "🚦",
+    "夜のスーパー": "🌙",
+    "深夜の展望台": "🔭"
+  }
+  return emojis[sceneName] || "📍"
+}
+
 function getGroundStyle(sceneName) {
   var grounds = {
     "朝の公園": "linear-gradient(180deg, #2a5a2a 0%, #1a4a1a 100%)",
@@ -560,7 +581,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
         <div class="dialogue-corner tr"></div>
         <div class="dialogue-corner bl"></div>
         <div class="dialogue-corner br"></div>
-        <h2 class="question-title">${escapeHtml(question.title)}</h2>
+        <h2 class="question-title">${getSceneEmoji(question.scene)} ${escapeHtml(question.title)}</h2>
         <p class="question-desc">${escapeHtml(narrative)}</p>
       </div>
       
