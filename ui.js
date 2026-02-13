@@ -1330,7 +1330,7 @@ function confirmAnswer() {
     } else {
       renderEnd()
     }
-  }, 500)
+  }, 250)
 }
 
 function goBack() {
