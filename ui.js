@@ -773,7 +773,7 @@ function generateTendencyText(scores) {
   else if (scores.now_future > 65) parts.push("将来の世代や環境を考える傾向")
   else parts.push("現在と未来のバランスを考える")
 
-  return "あなたは、" + parts[0] + "タイプです。" + parts[1] + "傾向があり、" + parts[2] + "考え方を持っています。また、" + parts[3] + "一方で、" + parts[4] + "があります。"
+  return "あなたは「" + parts[0] + "」タイプ。" + parts[1] + "傾向があり、" + parts[2] + "考え方です。" + parts[3] + "し、" + parts[4] + "でしょう。"
 }
 
 function createResultScreen(answers) {
