@@ -633,7 +633,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
       
       <!-- コントロール -->
       <div class="controls">
-        <span class="note">正解はありません。迷ったら「どちらとも言えない」でOK！</span>
+        <span class="note">💡 正解はありません。迷ったら「どちらとも言えない」でOK！</span>
         <div class="control-buttons">
           ${idx > 0 ? '<button type="button" class="control-btn" id="backBtn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>戻る</button>' : ''}
           <button type="button" class="control-btn primary" id="nextBtn">
