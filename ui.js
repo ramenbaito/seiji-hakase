@@ -1155,6 +1155,8 @@ function shareResult() {
       if (btn) {
         var original = btn.innerHTML
         btn.innerHTML = "✅ コピーしました！"
+        btn.style.transform = "scale(1.05)"
+        setTimeout(function () { btn.style.transform = "" }, 200)
         setTimeout(function () { btn.innerHTML = original }, 2000)
       }
     })
