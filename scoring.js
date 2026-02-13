@@ -53,6 +53,10 @@ function saveState(state) {
   )
 }
 
+function createNewState() {
+  return { currentIndex: 0, tax: 0, answers: {} }
+}
+
 function recalcTax(answers) {
   var total = 0
   for (var i = 0; i < QUESTIONS.length; i++) {

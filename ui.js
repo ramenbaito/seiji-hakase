@@ -1,13 +1,29 @@
 /**
- * ui.js — RPG風政治博士クイズ UI
+ * ui.js — v0完全移植版 政治博士 RPG UI
  */
 
+// ═══════════════════════════════════════════════════════════
+// Global State & Elements
+// ═══════════════════════════════════════════════════════════
 var els = {
-  app: document.getElementById("app")
+  app: document.getElementById("app"),
+  splash: document.getElementById("splash"),
+  fbOpen: document.getElementById("fbOpen"),
+  fbOverlay: document.getElementById("fbOverlay"),
+  fbText: document.getElementById("fbText"),
+  fbStatus: document.getElementById("fbStatus"),
+  fbSend: document.getElementById("fbSend"),
+  fbCancel: document.getElementById("fbCancel")
 }
 
 var state = loadState()
+var currentLevel = 1
+var isTransitioning = false
+var starFieldAnimation = null
 
+// ═══════════════════════════════════════════════════════════
+// Utility Functions
+// ═══════════════════════════════════════════════════════════
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -17,594 +33,937 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;")
 }
 
-function clampValue(value) {
-  var v = Number(value)
-  if (isNaN(v)) return 0
-  return Math.max(-2, Math.min(2, v))
-}
+// clampValue, valueToInternal は scoring.js で定義済み
 
-function valueToInternal(value) {
-  return Math.round(((value + 2) / 4) * 100)
-}
+// ═══════════════════════════════════════════════════════════
+// v0風のStarField Canvas
+// ═══════════════════════════════════════════════════════════
+function createStarField(canvas) {
+  if (!canvas) return null
 
-function updateTaxGauge(tax) {
-  var taxFill = document.getElementById("taxFill")
-  var taxValue = document.getElementById("taxValue")
-  if (!taxFill || !taxValue) return
+  var ctx = canvas.getContext("2d")
+  if (!ctx) return null
 
-  taxValue.textContent = String(tax)
-  var maxAbs = 40
-  var clamped = Math.max(-maxAbs, Math.min(maxAbs, tax))
-  var ratio = clamped / maxAbs
-  var widthPct = Math.abs(ratio) * 50
-  taxFill.style.width = widthPct + "%"
-  if (ratio >= 0) {
-    taxFill.style.left = "50%"
-    taxFill.style.transform = "translateX(0)"
-  } else {
-    taxFill.style.left = (50 - widthPct) + "%"
-    taxFill.style.transform = "translateX(0)"
+  var stars = []
+  var animationId = null
+
+  function resize() {
+    canvas.width = canvas.offsetWidth * 2
+    canvas.height = canvas.offsetHeight * 2
+    initStars()
+  }
+
+  function initStars() {
+    stars = []
+    for (var i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.6,
+        r: Math.random() * 2 + 0.5,
+        s: Math.random() * 0.02 + 0.005,
+        o: Math.random() * Math.PI * 2
+      })
+    }
+  }
+
+  function draw(timestamp) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    for (var i = 0; i < stars.length; i++) {
+      var star = stars[i]
+      var alpha = (Math.sin(timestamp * star.s + star.o) + 1) / 2 * 0.8 + 0.2
+
+      // 星本体
+      ctx.beginPath()
+      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2)
+      ctx.fillStyle = "rgba(255,255,240," + alpha + ")"
+      ctx.fill()
+
+      // 光晕
+      if (star.r > 1.5) {
+        ctx.beginPath()
+        ctx.arc(star.x, star.y, star.r * 3, 0, Math.PI * 2)
+        ctx.fillStyle = "rgba(255,230,109," + (alpha * 0.15) + ")"
+        ctx.fill()
+      }
+    }
+
+    animationId = requestAnimationFrame(draw)
+  }
+
+  resize()
+  window.addEventListener("resize", resize)
+  animationId = requestAnimationFrame(draw)
+
+  return {
+    destroy: function () {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+      }
+      window.removeEventListener("resize", resize)
+    }
   }
 }
 
-function updateTaxDeltaHint(delta) {
-  var el = document.getElementById("taxDeltaText")
-  if (!el) return
-  if (delta === 0) {
-    el.textContent = "この選択での税変動：なし"
-    el.style.color = "rgba(255,255,255,0.4)"
-  } else if (delta > 0) {
-    el.textContent = "この選択での税変動：+" + delta
-    el.style.color = "#ff9a6e"
-  } else {
-    el.textContent = "この選択での税変動：" + delta
-    el.style.color = "#6ea8ff"
-  }
+// ═══════════════════════════════════════════════════════════
+// v0風のSVGキャラクター
+// ═══════════════════════════════════════════════════════════
+function createHeroSVG(size) {
+  size = size || 80
+  return `
+    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 192" aria-hidden="true">
+      <!-- 博士帽 -->
+      <path d="M30 36 L60 8 L90 36 Z" fill="#2D3748" stroke="#4A5568" stroke-width="1.5"/>
+      <rect x="25" y="34" width="70" height="8" rx="2" fill="#2D3748" stroke="#4A5568" stroke-width="1"/>
+      <circle cx="60" cy="20" r="4" fill="#FFE66D"/>
+      
+      <!-- 頭 -->
+      <circle cx="60" cy="60" r="28" fill="#FFDBB4"/>
+      
+      <!-- メガネ -->
+      <rect x="40" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
+      <rect x="64" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
+      <line x1="56" y1="58" x2="64" y2="58" stroke="#4A5568" stroke-width="2"/>
+      
+      <!-- 目 -->
+      <ellipse cx="48" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+      <ellipse cx="72" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+      <circle cx="50" cy="57" r="1.5" fill="#FFF"/>
+      <circle cx="74" cy="57" r="1.5" fill="#FFF"/>
+      
+      <!-- 口 -->
+      <path d="M52 70 Q60 78 68 70" fill="none" stroke="#E87040" stroke-width="2.5" stroke-linecap="round"/>
+      
+      <!-- ほっぺ -->
+      <ellipse cx="38" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
+      <ellipse cx="82" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
+      
+      <!-- 体 -->
+      <rect x="36" y="90" width="48" height="52" rx="8" fill="#4ECDC4"/>
+      <path d="M56 90 L64 90 L62 120 L60 123 L58 120 Z" fill="#45B7A8"/>
+      <circle cx="60" cy="98" r="4" fill="#FFE66D"/>
+      
+      <!-- 腕 -->
+      <rect x="20" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
+      <rect x="82" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
+      <circle cx="29" cy="132" r="7" fill="#FFDBB4"/>
+      <circle cx="91" cy="132" r="7" fill="#FFDBB4"/>
+      
+      <!-- 足 -->
+      <rect x="40" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
+      <rect x="64" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
+      <ellipse cx="48" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
+      <ellipse cx="72" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
+    </svg>
+  `
 }
 
-function createRPGScene(value, question) {
-  var leftOpacity = value < 0 ? Math.abs(value / 2) : 0.2
-  var rightOpacity = value > 0 ? Math.abs(value / 2) : 0.2
-  var mainX = 50 + (value * 15)
-  var sceneName = question.sceneName || "政治の街"
+function createNPCSVGS(side, active) {
+  var baseColor = side === "left" ? "#4ECDC4" : "#FF6B6B"
+  var hairColors = side === "left" ? ["#5A3A20", "#2A2A2A", "#8B6914"] : ["#CCCCCC", "#888888", "#AAAAAA"]
+  // active = ユーザーが寄っている → 笑顔、そうでなければ普通/困り顔
+  var mouthY = function (main) {
+    if (active) return main ? 'M27 28 Q30 34 33 28' : 'M27 27 Q30 31 33 27' // 笑顔（上向きカーブ）
+    return main ? 'M27 31 Q30 28 33 31' : 'M27 30 Q30 28 33 30' // 困り顔（下向きカーブ）
+  }
+  var eyeShape = function () {
+    if (active) return '<circle cx="25" cy="23" r="2" fill="#1A1A1A"/><circle cx="35" cy="23" r="2" fill="#1A1A1A"/><circle cx="26" cy="22" r="0.8" fill="#FFF"/><circle cx="36" cy="22" r="0.8" fill="#FFF"/>'
+    return '<ellipse cx="25" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/><ellipse cx="35" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/>'
+  }
+  // 笑顔の時はほっぺも追加
+  var cheeks = active ? '<ellipse cx="21" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/><ellipse cx="39" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/>' : ''
+
+  var npcs = ""
+  for (var i = 0; i < 3; i++) {
+    var isMain = i === 1
+    var width = isMain ? 44 : 32
+    var height = isMain ? 80 : 60
+    var opacity = isMain ? (active ? 1 : 0.7) : (active ? 0.7 : 0.4)
+
+    npcs += `
+      <svg viewBox="0 0 60 100" style="width:${width}px;height:${height}px;opacity:${opacity};transition:all 0.5s" aria-hidden="true">
+        <circle cx="30" cy="${isMain ? 22 : 14}" r="${isMain ? 16 : 13}" fill="#FFDBB4"/>
+        <ellipse cx="30" cy="${isMain ? 12 : 14}" rx="${isMain ? 17 : 14}" ry="${isMain ? 10 : 8}" fill="${hairColors[i]}"/>
+        ${eyeShape()}
+        <path d="${mouthY(isMain)}" fill="none" stroke="#E87040" stroke-width="1.5" stroke-linecap="round"/>
+        ${cheeks}
+        <rect x="16" y="40" width="28" height="28" rx="5" fill="${isMain ? baseColor : baseColor + '99'}"/>
+        <rect x="19" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
+        <rect x="32" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
+        <ellipse cx="23" cy="85" rx="6" ry="3" fill="#2D3748"/>
+        <ellipse cx="37" cy="85" rx="6" ry="3" fill="#2D3748"/>
+      </svg>
+    `
+  }
+
+  return npcs
+}
+
+// ═══════════════════════════════════════════════════════════
+// v0風のRPGシーン
+// ═══════════════════════════════════════════════════════════
+function getTimeOfDay(idx) {
+  // Q1(0)=早朝5時 → Q15(14)=深夜23時 として時間を計算
+  var hour = 5 + Math.round(idx * (18 / 14))
+  if (hour <= 6) return { label: "早朝", sky: "linear-gradient(180deg, #1a1a3e 0%, #4a3a6a 30%, #e8a060 70%, #f0c888 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.15 }
+  if (hour <= 8) return { label: "朝", sky: "linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #FFE4B5 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
+  if (hour <= 11) return { label: "午前", sky: "linear-gradient(180deg, #5BA3D9 0%, #87CEEB 50%, #A8D8FF 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
+  if (hour <= 14) return { label: "昼", sky: "linear-gradient(180deg, #4A90D9 0%, #6BB5FF 50%, #87CEEB 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
+  if (hour <= 16) return { label: "午後", sky: "linear-gradient(180deg, #5A8FCE 0%, #87BBDE 50%, #C8A86E 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
+  if (hour <= 18) return { label: "夕方", sky: "linear-gradient(180deg, #2a1a4a 0%, #c44a20 30%, #f0a040 60%, #ffe880 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.3 }
+  if (hour <= 20) return { label: "夜", sky: "linear-gradient(180deg, #0a1628 0%, #1a2a4a 50%, #2a3a5a 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.6 }
+  return { label: "深夜", sky: "linear-gradient(180deg, #050a14 0%, #0F1923 40%, #1a2744 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.8 }
+}
+
+function createRPGScene(value, question, idx) {
+  var leftActive = value < 0
+  var rightActive = value > 0
+  var heroX = 50 + value * 12
+  var sceneName = question.scene || "政治の街"
+  var time = getTimeOfDay(idx || 0)
 
   return `
-    <div class="rpg-scene">
-      <div class="stars">
-        ${Array(20).fill(0).map((_, i) =>
-    `<div class="star" style="left:${Math.random() * 100}%;top:${Math.random() * 60}%;animation-delay:${Math.random() * 2}s"></div>`
-  ).join('')}
-      </div>
-
+    <div class="rpg-scene" style="background:${time.sky}">
+      ${time.stars ? '<canvas class="star-canvas" id="starCanvas"></canvas>' : ''}
+      
+      <!-- 月/太陽 -->
+      ${time.showMoon ? '<div class="moon"></div>' : ''}
+      ${time.showSun ? '<div class="sun' + (time.sunLow ? ' low' : '') + '"></div>' : ''}
+      
+      <!-- 建物 -->
       <div class="buildings">
-        ${[60, 80, 45, 90, 55, 70, 40].map(h =>
-    `<div class="building" style="height:${h}px;width:${20 + Math.random() * 15}px"></div>`
-  ).join('')}
+        ${[18, 26, 14, 30, 22, 0, 22, 18, 28, 16].map(function (h, i) {
+    if (h === 0) return '<div style="width:40px"></div>'
+    var windows = ""
+    for (var j = 0; j < Math.floor(h / 8); j++) {
+      var lit = Math.random() > 0.4
+      var glowAlpha = lit ? time.windowGlow : time.windowGlow * 0.2
+      windows += `<div class="building-window" style="left:${20 + (j * 37) % 60}%;top:${15 + j * 22}%;background:rgba(255,230,109,${glowAlpha})"></div>`
+    }
+    return `<div class="building" style="height:${h * 2}px;width:${10 + (i % 3) * 4}px">${windows}</div>`
+  }).join('')}
       </div>
-
-      <div class="ground"></div>
+      
+      <!-- 道 -->
       <div class="road">
-        ${Array(5).fill(0).map(() => '<div class="road-line"></div>').join('')}
+        <div class="road-line" style="left:5%"></div>
+        <div class="road-line" style="left:15%"></div>
+        <div class="road-line" style="left:25%"></div>
+        <div class="road-line" style="left:35%"></div>
+        <div class="road-line" style="left:45%"></div>
+        <div class="road-line" style="left:55%"></div>
+        <div class="road-line" style="left:65%"></div>
+        <div class="road-line" style="left:75%"></div>
+        <div class="road-line" style="left:85%"></div>
+        <div class="road-line" style="left:95%"></div>
       </div>
-
+      
+      <!-- シーンラベル -->
       <div class="scene-label">${escapeHtml(sceneName)}</div>
-      <div class="hp-bar">
-        <span class="hp-label">HP</span>
-        <div class="hp-track">
-          <div class="hp-fill"></div>
-        </div>
+      
+      
+      <!-- 左キャラクター -->
+      <div class="characters-left ${leftActive ? 'active' : ''}">
+        ${createNPCSVGS("left", leftActive)}
       </div>
-
-      <div class="characters-left" style="opacity:${leftOpacity}">
-        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <circle cx="20" cy="12" r="6" fill="#FF6B6B"/>
-          <rect x="14" y="20" width="12" height="16" fill="#FF6B6B" rx="2"/>
-          <rect x="12" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
-          <rect x="24" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
-          <rect x="11" y="22" width="3" height="10" fill="#FF6B6B" rx="1" transform="rotate(-20 12.5 27)"/>
-          <rect x="26" y="22" width="3" height="10" fill="#FF6B6B" rx="1" transform="rotate(20 27.5 27)"/>
-          <circle cx="17" cy="11" r="1" fill="#2D3748"/>
-          <circle cx="23" cy="11" r="1" fill="#2D3748"/>
-          <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-        </svg>
+      
+      <!-- 右キャラクター -->
+      <div class="characters-right ${rightActive ? 'active' : ''}">
+        ${createNPCSVGS("right", rightActive)}
       </div>
-
-      <div class="characters-right" style="opacity:${rightOpacity}">
-        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <circle cx="20" cy="12" r="6" fill="#4ECDC4"/>
-          <rect x="14" y="20" width="12" height="16" fill="#4ECDC4" rx="2"/>
-          <rect x="12" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
-          <rect x="24" y="36" width="4" height="12" fill="#4A5568" rx="1"/>
-          <rect x="11" y="22" width="3" height="10" fill="#4ECDC4" rx="1" transform="rotate(-20 12.5 27)"/>
-          <rect x="26" y="22" width="3" height="10" fill="#4ECDC4" rx="1" transform="rotate(20 27.5 27)"/>
-          <circle cx="17" cy="11" r="1" fill="#2D3748"/>
-          <circle cx="23" cy="11" r="1" fill="#2D3748"/>
-          <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-        </svg>
+      
+      <!-- 主人公 -->
+      <div class="character-main" style="left:${heroX}%">
+        ${createHeroSVG(window.innerWidth > 768 ? 80 : 55)}
       </div>
-
-      <div class="character main" style="left:${mainX}%">
-        <svg width="50" height="70" viewBox="0 0 50 70">
-          <circle cx="25" cy="15" r="8" fill="#FFE66D"/>
-          <rect x="17" y="25" width="16" height="20" fill="#FFE66D" rx="3"/>
-          <rect x="15" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
-          <rect x="30" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
-          <rect x="13" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(-25 15 34)"/>
-          <rect x="33" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(25 35 34)"/>
-          <rect x="20" y="7" width="10" height="2" fill="#2D3748"/>
-          <rect x="24" y="5" width="2" height="4" fill="#2D3748"/>
-          <circle cx="21" cy="13" r="1.5" fill="#2D3748"/>
-          <circle cx="29" cy="13" r="1.5" fill="#2D3748"/>
-          <circle cx="21" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-          <circle cx="29" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-          <line x1="24" y1="13" x2="26" y2="13" stroke="#2D3748" stroke-width="0.5"/>
-          <path d="M 23 17 Q 25 18 27 17" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-        </svg>
-      </div>
-
-      <div class="arrow left">←</div>
-      <div class="arrow right">→</div>
+      
+      <!-- 矢印 -->
+      ${leftActive ? '<div class="arrow-left"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#4ECDC4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6L13 12L19 18" stroke="#4ECDC4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg></div>' : ''}
+      ${rightActive ? '<div class="arrow-right"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 6L11 12L5 18" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg></div>' : ''}
     </div>
   `
 }
 
+// ═══════════════════════════════════════════════════════════
+// v0風のクイズカード
+// ═══════════════════════════════════════════════════════════
+function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
+  var value = initialValue
+  var leftActive = value < 0
+  var rightActive = value > 0
+  var progressPct = Math.round(((idx + 1) / total) * 100)
+  var narrative = question.narrative || "同じ街に、同時に起きている2つの現実があります。あなたは「どちらに近づくか」だけ決めてください。"
+
+  var labels = {
+    "-2": "← かなりA寄り",
+    "-1": "← ややA寄り",
+    "0": "どちらとも言えない",
+    "1": "ややB寄り →",
+    "2": "かなりB寄り →"
+  }
+
+  return `
+    <div class="quiz-card" style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:680px;animation:fadeScale 0.5s ease-out">
+      <!-- ヘッダー -->
+      <div class="rpg-header">
+        <div class="rpg-title">
+          <span>政治博士</span>
+        </div>
+        <div class="rpg-stage">${idx + 1} / ${total}</div>
+      </div>
+      
+      <!-- ステータスバー -->
+      <div class="status-bars">
+        <div class="status-bar">
+          <span class="status-label" style="color:#FFE66D">EXP</span>
+          <div class="status-track">
+            <div class="status-fill exp-fill" style="width:${progressPct}%"></div>
+          </div>
+          <span class="status-value">${progressPct}%</span>
+        </div>
+        <div class="status-bar">
+          <span class="status-label" style="color:#FF6B6B">TAX</span>
+          <div class="status-track">
+            <div class="status-fill tax-fill" style="width:${Math.min(100, Math.max(10, 50 + taxGauge * 10))}%"></div>
+          </div>
+        </div>
+      </div>
+      
+      ${createRPGScene(value, question, idx)}
+      
+      <!-- ダイアログボックス -->
+      <div class="dialogue-box">
+        <div class="dialogue-corner tl"></div>
+        <div class="dialogue-corner tr"></div>
+        <div class="dialogue-corner bl"></div>
+        <div class="dialogue-corner br"></div>
+        <h2 class="question-title">${escapeHtml(question.title)}</h2>
+        <p class="question-desc">${escapeHtml(narrative)}</p>
+      </div>
+      
+      <!-- アクションセクション -->
+      <div class="action-section">
+        <div class="action-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+          </svg>
+          <span class="action-title">行動を選択</span>
+        </div>
+        
+        <div class="action-buttons">
+          <button type="button" class="action-btn left ${leftActive ? 'active' : ''}" data-action="select-left">
+            <div class="action-letter">A</div>
+            <div class="action-content">
+              <div class="action-label">${escapeHtml(question.left.label)}</div>
+              <div class="action-hint">${escapeHtml(question.left.desc || question.left.hint || '')}</div>
+            </div>
+          </button>
+          
+          <button type="button" class="action-btn right ${rightActive ? 'active' : ''}" data-action="select-right">
+            <div class="action-letter">B</div>
+            <div class="action-content">
+              <div class="action-label">${escapeHtml(question.right.label)}</div>
+              <div class="action-hint">${escapeHtml(question.right.desc || question.right.hint || '')}</div>
+            </div>
+          </button>
+        </div>
+        
+        <!-- スライダー -->
+        <div class="slider-section">
+          <div class="slider-label">微調整</div>
+          <div class="slider-row">
+            <span class="slider-end left ${leftActive ? 'active' : ''}">${escapeHtml(question.left.label)}</span>
+            <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}"/>
+            <span class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(question.right.label)}</span>
+          </div>
+          <div class="slider-desc ${value === 0 ? 'neutral' : value < 0 ? 'left' : 'right'}">${labels[value]}</div>
+        </div>
+      </div>
+      
+      <!-- コントロール -->
+      <div class="controls">
+        <span class="note">正解はありません。迷ったら「どちらとも言えない」でOK！</span>
+        <div class="control-buttons">
+          ${idx > 0 ? '<button type="button" class="control-btn" id="backBtn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>戻る</button>' : ''}
+          <button type="button" class="control-btn primary" id="nextBtn">
+            決定
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════════
+// v0風の結果画面
+// ═══════════════════════════════════════════════════════════
+function createResultScreen(answers) {
+  // answers = { Q1: {value:1, tax:...}, Q2: {value:-1, tax:...}, ... }
+  var entries = Object.entries(answers)
+  var values = entries.map(function (e) { return e[1].value || 0 })
+  var avg = values.length > 0 ? values.reduce(function (s, v) { return s + v }, 0) / values.length : 0
+  var level = Math.min(99, 10 + entries.length * 5 + Math.round(Math.abs(avg) * 3))
+
+  // scoring.js の5軸スコア＋政党マッチングを使用
+  var axisScores = calcAxisScores(answers)
+  var partyResults = calcPartyDistances(axisScores)
+  var topParty = partyResults[0]
+
+  return `
+    <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px;animation:fadeScale 0.6s ease-out">
+      <div class="result-header">
+        <div class="result-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+          <span>QUEST COMPLETE</span>
+        </div>
+        <div class="result-stage">結果</div>
+      </div>
+      
+      <!-- EXP MAX -->
+      <div class="status-bar">
+        <span class="status-label" style="color:#FFE66D">EXP</span>
+        <div class="status-track">
+          <div class="status-fill exp-fill" style="width:100%"></div>
+        </div>
+        <span class="status-value" style="color:#FFE66D;font-weight:700">MAX</span>
+      </div>
+      
+      <div class="result-card">
+        <div class="result-corner tl"></div>
+        <div class="result-corner tr"></div>
+        <div class="result-corner bl"></div>
+        <div class="result-corner br"></div>
+        
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+          <div class="result-character">
+            ${createHeroSVG(90)}
+          </div>
+        </div>
+        
+        <!-- 政党マッチ -->
+        <div class="party-match" style="border:2px solid ${topParty.color}40;background:${topParty.color}08">
+          <div class="party-match-label">あなたに最も近い政党</div>
+          <div class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</div>
+          <div class="party-desc">マッチ度 ${topParty.match}%</div>
+        </div>
+        
+        <!-- 5軸スコア -->
+        <div class="answer-summary">
+          <div class="summary-label">5軸スコア</div>
+          ${["merit_equity", "small_big", "free_norm", "open_protect", "now_future"].map(function (ax) {
+    var score = axisScores[ax]
+    var posClass = score < 40 ? 'left' : score > 60 ? 'right' : 'neutral'
+    return '<div class="answer-row">' +
+      '<span class="answer-id" style="min-width:72px">' + AXIS_NAMES[ax] + '</span>' +
+      '<div class="answer-bar">' +
+      '<div class="answer-center"></div>' +
+      '<div class="answer-dot ' + posClass + '" style="left:' + score + '%"></div>' +
+      '</div>' +
+      '<span class="answer-value ' + posClass + '">' + score + '</span>' +
+      '</div>'
+  }).join('')}
+        </div>
+        
+        <!-- 回答サマリー -->
+        <div class="answer-summary">
+          <div class="summary-label">回答サマリー</div>
+          ${entries.map(function (entry) {
+    var id = entry[0], v = entry[1].value || 0
+    var posClass = v === 0 ? 'neutral' : v < 0 ? 'left' : 'right'
+    return '<div class="answer-row">' +
+      '<span class="answer-id">' + id + '</span>' +
+      '<div class="answer-bar">' +
+      '<div class="answer-center"></div>' +
+      '<div class="answer-dot ' + posClass + '" style="left:' + (((v + 2) / 4) * 100) + '%"></div>' +
+      '</div>' +
+      '<span class="answer-value ' + posClass + '">' + (v > 0 ? '+' + v : v) + '</span>' +
+      '</div>'
+  }).join('')}
+        </div>
+        
+        <div class="result-divider"></div>
+        
+        <!-- 全政党比較 -->
+        <div class="party-list">
+          <div class="summary-label">政党マッチング</div>
+          ${partyResults.map(function (p) {
+    var isTop = p.name === topParty.name
+    return '<div class="party-row">' +
+      '<span class="party-row-name ' + (isTop ? 'match' : '') + '" style="' + (isTop ? 'color:' + p.color : '') + '">' + p.name + '</span>' +
+      '<div class="party-row-bar">' +
+      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + (isTop ? 1 : 0.4) + '"></div>' +
+      '</div>' +
+      '<span class="party-row-pct" style="' + (isTop ? 'color:' + p.color : '') + '">' + p.match + '%</span>' +
+      '</div>'
+  }).join('')}
+        </div>
+      </div>
+      
+      <div class="result-controls">
+        <span class="result-note">あくまで参考です。実際の投票は自分でよく考えて決めてね！</span>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="result-reset" id="shareBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            結果をシェア
+          </button>
+          <button type="button" class="result-reset" id="resetBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            もう一度やる
+          </button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// ═══════════════════════════════════════════════════════════
+// メインレンダリング関数
+// ═══════════════════════════════════════════════════════════
 function render() {
+  if (isTransitioning) return
+
   var q = QUESTIONS[state.currentIndex]
   var stage = state.currentIndex + 1
   var saved = state.answers[q.id]
   var value = saved && typeof saved.value === "number" ? clampValue(saved.value) : 0
+  var taxGauge = Object.values(state.answers).reduce(function (s, a) { return s + a.value }, 0) / Math.max(1, Object.keys(state.answers).length)
 
-  var leftActive = value < 0
-  var rightActive = value > 0
-  var progressPct = Math.round((stage / TOTAL_QUESTIONS) * 100)
+  currentLevel = Math.min(99, 1 + Object.keys(state.answers).length * 5)
 
-  var taxPreview = state.tax + getTaxDelta(q, value)
-  var narrative = q.narrative || "同じ街に、同時に起きている2つの現実があります。あなたは「どちらに近づくか」だけ決めてください。"
-  var sliderDesc = q.descriptions && q.descriptions[value.toString()] ? q.descriptions[value.toString()] : (value === 0 ? '中央' : value < 0 ? q.left.label : q.right.label)
+  els.app.innerHTML = createQuizCard(q, state.currentIndex, TOTAL_QUESTIONS, value, currentLevel, taxGauge)
 
-  els.app.innerHTML = `
-    <div class="rpg-header">
-      <div class="rpg-title">🧓 政治博士 RPG</div>
-      <div class="rpg-stage">STAGE ${stage}/${TOTAL_QUESTIONS}</div>
-    </div>
+  // StarField初期化（夜のみcanvasが存在する）
+  if (starFieldAnimation) {
+    starFieldAnimation.destroy()
+    starFieldAnimation = null
+  }
+  var canvas = document.getElementById("starCanvas")
+  if (canvas) {
+    starFieldAnimation = createStarField(canvas)
+  }
 
-    <div class="exp-bar">
-      <span class="exp-label">EXP</span>
-      <div class="exp-track">
-        <div class="exp-fill" style="width:${progressPct}%"></div>
-      </div>
-      <span class="exp-pct">${progressPct}%</span>
-    </div>
-
-    ${createRPGScene(value, q)}
-
-    <div class="question-card">
-      <h2 class="question-title">${escapeHtml(q.title)}</h2>
-      <p class="question-desc">${escapeHtml(narrative)}</p>
-    </div>
-
-    <div class="action-section">
-      <div class="action-header">
-        <svg class="action-icon" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
-        </svg>
-        <span class="action-title">行動を選択</span>
-      </div>
-
-      <div class="action-buttons">
-        <div class="action-btn left ${leftActive ? 'active' : ''}" data-side="left">
-          <div class="action-letter">A</div>
-          <div class="action-content">
-            <div class="action-label">${escapeHtml(q.left.label)}</div>
-            <div class="action-hint">${escapeHtml(q.left.hint || q.left.desc || '')}</div>
-          </div>
-        </div>
-
-        <div class="action-btn right ${rightActive ? 'active' : ''}" data-side="right">
-          <div class="action-letter">B</div>
-          <div class="action-content">
-            <div class="action-label">${escapeHtml(q.right.label)}</div>
-            <div class="action-hint">${escapeHtml(q.right.hint || q.right.desc || '')}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slider-section">
-        <div class="slider-label">どちらに近づける？</div>
-        <div class="slider-row">
-          <div class="slider-end left ${leftActive ? 'active' : ''}">${escapeHtml(q.left.label)}</div>
-          <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}" />
-          <div class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(q.right.label)}</div>
-        </div>
-        <div class="slider-desc">${escapeHtml(sliderDesc)}</div>
-      </div>
-    </div>
-
-    <div class="tax-section">
-      <div class="tax-label">税金ゲージ</div>
-      <div class="tax-bar">
-        <div class="center"></div>
-        <div class="fill" id="taxFill"></div>
-      </div>
-      <div class="tax-value" id="taxValue">${taxPreview}</div>
-    </div>
-    <div class="tax-delta" id="taxDeltaText"></div>
-
-    <div class="controls">
-      <div class="note">※ 正解や善悪を示すものではありません。距離感として選んでください。</div>
-      <div class="control-buttons">
-        <button class="control-btn" id="back" ${state.currentIndex === 0 ? 'disabled' : ''}>戻る</button>
-        <button class="control-btn primary" id="next">この選択で進む</button>
-      </div>
-    </div>
-  `
-
-  updateTaxGauge(taxPreview)
-  updateTaxDeltaHint(getTaxDelta(q, value))
   bindQuestionEvents()
 }
 
+function renderEnd() {
+  if (isTransitioning) return
+
+  els.app.innerHTML = createResultScreen(state.answers)
+
+  if (starFieldAnimation) {
+    starFieldAnimation.destroy()
+    starFieldAnimation = null
+  }
+
+  bindResultEvents()
+}
+
+// ═══════════════════════════════════════════════════════════
+// イベントバインディング
+// ═══════════════════════════════════════════════════════════
 function bindQuestionEvents() {
   var slider = document.getElementById("slider")
-  var backBtn = document.getElementById("back")
-  var nextBtn = document.getElementById("next")
-  var actionBtns = document.querySelectorAll(".action-btn")
+  var backBtn = document.getElementById("backBtn")
+  var nextBtn = document.getElementById("nextBtn")
+
+  if (!slider) return
 
   // スライダーイベント
-  slider.addEventListener("input", function (e) {
-    var v = clampValue(e.target.value)
-    var q = QUESTIONS[state.currentIndex]
-    var entry = state.answers[q.id] || {}
-    state.answers[q.id] = {
-      value: v,
-      internal: valueToInternal(v),
-    }
-    saveState(state)
-    render()
+  slider.addEventListener("input", function () {
+    var value = clampValue(this.value)
+    updateSliderUI(value)
   })
 
-  // アクションボタンイベント
-  actionBtns.forEach(function (btn) {
+  // アクションボタン
+  document.querySelectorAll('[data-action]').forEach(function (btn) {
     btn.addEventListener("click", function () {
-      var side = btn.dataset.side
-      var v = side === "left" ? -2 : 2
-      var q = QUESTIONS[state.currentIndex]
-
-      state.answers[q.id] = {
-        value: v,
-        internal: valueToInternal(v),
+      var action = this.getAttribute("data-action")
+      if (action === "select-left") {
+        slider.value = "-2"
+        updateSliderUI(-2)
+      } else if (action === "select-right") {
+        slider.value = "2"
+        updateSliderUI(2)
       }
-      saveState(state)
-      render()
     })
   })
 
-  backBtn.addEventListener("click", function () {
-    if (state.currentIndex <= 0) return
-    var q = QUESTIONS[state.currentIndex]
-    var saved = state.answers[q.id]
-    var currentValue = saved && typeof saved.value === "number" ? clampValue(saved.value) : 0
-    var delta = getTaxDelta(q, currentValue)
-    if (saved && typeof saved.confirmed === "boolean" && saved.confirmed) {
-      state.tax -= delta
-      state.answers[q.id].confirmed = false
-    }
-    state.currentIndex -= 1
-    saveState(state)
-    render()
+  // 次へボタン
+  if (nextBtn) {
+    nextBtn.addEventListener("click", function () {
+      confirmAnswer()
+    })
+  }
+
+  // 戻るボタン
+  if (backBtn) {
+    backBtn.addEventListener("click", function () {
+      goBack()
+    })
+  }
+}
+
+function bindResultEvents() {
+  var resetBtn = document.getElementById("resetBtn")
+  var shareBtn = document.getElementById("shareBtn")
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      resetQuiz()
+    })
+  }
+
+  if (shareBtn) {
+    shareBtn.addEventListener("click", function () {
+      shareResult()
+    })
+  }
+}
+
+function shareResult() {
+  var axisScores = calcAxisScores(state.answers)
+  var partyResults = calcPartyDistances(axisScores)
+  var topParty = partyResults[0]
+  var text = "政治博士で診断したら「" + topParty.name + "」に最も近かった！（マッチ度" + topParty.match + "%）\nあなたも試してみて👉 " + window.location.href
+
+  if (navigator.share) {
+    navigator.share({ title: "政治博士", text: text }).catch(function () { })
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function () {
+      var btn = document.getElementById("shareBtn")
+      if (btn) {
+        var original = btn.innerHTML
+        btn.innerHTML = "✅ コピーしました！"
+        setTimeout(function () { btn.innerHTML = original }, 2000)
+      }
+    })
+  }
+}
+
+function updateSliderUI(value) {
+  var leftActive = value < 0
+  var rightActive = value > 0
+  var q = QUESTIONS[state.currentIndex]
+
+  var labels = {
+    "-2": "← かなりA寄り",
+    "-1": "← ややA寄り",
+    "0": "どちらとも言えない",
+    "1": "ややB寄り →",
+    "2": "かなりB寄り →"
+  }
+
+  // アクションボタン更新
+  document.querySelectorAll(".action-btn").forEach(function (btn) {
+    btn.classList.remove("active")
   })
 
-  nextBtn.addEventListener("click", function () {
-    var q = QUESTIONS[state.currentIndex]
-    var saved = state.answers[q.id]
-    var currentValue = saved && typeof saved.value === "number" ? clampValue(saved.value) : 0
-    var delta = getTaxDelta(q, currentValue)
+  if (leftActive) {
+    document.querySelector(".action-btn.left").classList.add("active")
+  } else if (rightActive) {
+    document.querySelector(".action-btn.right").classList.add("active")
+  }
 
-    if (!saved || !saved.confirmed) {
-      state.tax += delta
+  // スライダー端更新
+  document.querySelectorAll(".slider-end").forEach(function (end) {
+    end.classList.remove("active")
+  })
+
+  if (leftActive) {
+    document.querySelector(".slider-end.left").classList.add("active")
+  } else if (rightActive) {
+    document.querySelector(".slider-end.right").classList.add("active")
+  }
+
+  // 説明テキスト更新
+  var descEl = document.querySelector(".slider-desc")
+  if (descEl) {
+    descEl.textContent = labels[value]
+    descEl.className = "slider-desc " + (value === 0 ? 'neutral' : value < 0 ? 'left' : 'right')
+  }
+
+  // RPGシーン更新
+  updateRPGScene(value)
+}
+
+function updateRPGScene(value) {
+  var leftActive = value < 0
+  var rightActive = value > 0
+  var heroX = 50 + value * 12
+
+  var leftChars = document.querySelector(".characters-left")
+  var rightChars = document.querySelector(".characters-right")
+  var hero = document.querySelector(".character-main")
+  var leftArrow = document.querySelector(".arrow-left")
+  var rightArrow = document.querySelector(".arrow-right")
+
+  // NPC表情をSVGごと再生成（笑顔/困り顔を切り替え）
+  if (leftChars) {
+    leftChars.className = "characters-left" + (leftActive ? " active" : "")
+    leftChars.innerHTML = createNPCSVGS("left", leftActive)
+  }
+  if (rightChars) {
+    rightChars.className = "characters-right" + (rightActive ? " active" : "")
+    rightChars.innerHTML = createNPCSVGS("right", rightActive)
+  }
+  if (hero) {
+    hero.style.left = heroX + "%"
+  }
+
+  // 矢印の表示/非表示
+  if (leftArrow) {
+    leftArrow.style.display = leftActive ? "block" : "none"
+  }
+  if (rightArrow) {
+    rightArrow.style.display = rightActive ? "block" : "none"
+  }
+
+  // 既存の矢印を削除して再生成
+  if (leftActive && !leftArrow) {
+    var scene = document.querySelector(".rpg-scene")
+    if (scene) {
+      var arrow = document.createElement("div")
+      arrow.className = "arrow-left"
+      arrow.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="#4ECDC4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 6L13 12L19 18" stroke="#4ECDC4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg>'
+      scene.appendChild(arrow)
     }
+  }
 
-    state.answers[q.id] = {
-      value: currentValue,
-      internal: valueToInternal(currentValue),
-      confirmed: true,
+  if (rightActive && !rightArrow) {
+    var scene = document.querySelector(".rpg-scene")
+    if (scene) {
+      var arrow = document.createElement("div")
+      arrow.className = "arrow-right"
+      arrow.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M9 6L15 12L9 18" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 6L11 12L5 18" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg>'
+      scene.appendChild(arrow)
     }
+  }
+}
 
-    if (state.currentIndex < QUESTIONS.length - 1) {
-      state.currentIndex += 1
+function confirmAnswer() {
+  if (isTransitioning) return
+
+  var slider = document.getElementById("slider")
+  if (!slider) return
+
+  var value = clampValue(slider.value)
+  var q = QUESTIONS[state.currentIndex]
+
+  // 回答保存
+  state.answers[q.id] = {
+    value: value,
+    tax: getTaxDelta(q, value)
+  }
+  state.tax += getTaxDelta(q, value)
+  saveState(state)
+
+  // 次の質問へ
+  isTransitioning = true
+  setTimeout(function () {
+    isTransitioning = false
+    if (state.currentIndex < TOTAL_QUESTIONS - 1) {
+      state.currentIndex++
       saveState(state)
       render()
-      return
+    } else {
+      renderEnd()
     }
+  }, 500)
+}
 
+function goBack() {
+  if (isTransitioning || state.currentIndex === 0) return
+
+  isTransitioning = true
+  setTimeout(function () {
+    isTransitioning = false
+    state.currentIndex--
     saveState(state)
-    renderEnd()
-  })
-}
-
-function buildRadarSVG(scores) {
-  var axes = ["merit_equity", "small_big", "free_norm", "open_protect", "now_future"]
-  var labels = [AXIS_NAMES.merit_equity, AXIS_NAMES.small_big, AXIS_NAMES.free_norm, AXIS_NAMES.open_protect, AXIS_NAMES.now_future]
-  var cx = 150, cy = 150, r = 110
-  var n = axes.length
-  var angleStep = (2 * Math.PI) / n
-  var startAngle = -Math.PI / 2
-
-  function polar(angle, radius) {
-    return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) }
-  }
-
-  var svg = '<svg viewBox="0 0 300 300" width="280" height="280" xmlns="http://www.w3.org/2000/svg">'
-
-  // グリッド線（20%, 40%, 60%, 80%, 100%）
-  for (var g = 1; g <= 5; g++) {
-    var gr = r * (g / 5)
-    var pts = []
-    for (var i = 0; i < n; i++) {
-      var p = polar(startAngle + i * angleStep, gr)
-      pts.push(p.x.toFixed(1) + "," + p.y.toFixed(1))
-    }
-    svg += '<polygon points="' + pts.join(" ") + '" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>'
-  }
-
-  // 軸線
-  for (var i = 0; i < n; i++) {
-    var p = polar(startAngle + i * angleStep, r)
-    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x.toFixed(1) + '" y2="' + p.y.toFixed(1) + '" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>'
-  }
-
-  // ユーザーのスコア
-  var userPts = []
-  for (var i = 0; i < n; i++) {
-    var val = scores[axes[i]] / 100
-    var p = polar(startAngle + i * angleStep, r * val)
-    userPts.push(p.x.toFixed(1) + "," + p.y.toFixed(1))
-  }
-  svg += '<polygon points="' + userPts.join(" ") + '" fill="rgba(240,192,64,0.2)" stroke="#f0c040" stroke-width="2"/>'
-
-  // 頂点の点
-  for (var i = 0; i < n; i++) {
-    var val = scores[axes[i]] / 100
-    var p = polar(startAngle + i * angleStep, r * val)
-    svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="#f0c040"/>'
-  }
-
-  // ラベル
-  for (var i = 0; i < n; i++) {
-    var p = polar(startAngle + i * angleStep, r + 24)
-    var anchor = "middle"
-    if (p.x < cx - 10) anchor = "end"
-    else if (p.x > cx + 10) anchor = "start"
-    svg += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y + 4).toFixed(1) + '" text-anchor="' + anchor + '" fill="rgba(255,255,255,0.7)" font-size="11" font-weight="700">' + labels[i] + '</text>'
-  }
-
-  svg += '</svg>'
-  return svg
-}
-
-function renderEnd() {
-  var userScores = calcAxisScores(state.answers)
-  var partyResults = calcPartyDistances(userScores)
-  var axes = ["merit_equity", "small_big", "free_norm", "open_protect", "now_future"]
-
-  // キャラクター成長アニメーション
-  var characterLevel = Math.floor(state.answers.filter(a => a && a.confirmed).length / 3) + 1
-
-  // 回答サマリー
-  var answerRows = ''
-  for (var i = 0; i < QUESTIONS.length; i++) {
-    var q = QUESTIONS[i]
-    var answer = state.answers[q.id]
-    if (answer && typeof answer.value === "number") {
-      var value = answer.value
-      var leftPct = (value + 2) / 4 * 100
-      answerRows += `
-        <div class="answer-row">
-          <div class="answer-id">Q${i + 1}</div>
-          <div class="answer-bar">
-            <div class="center"></div>
-            <div class="answer-dot" style="left:${leftPct}%"></div>
-          </div>
-          <div class="answer-value ${value < 0 ? 'negative' : value > 0 ? 'positive' : ''}">
-            ${value === 0 ? '0' : value < 0 ? value : '+' + value}
-          </div>
-        </div>
-      `
-    }
-  }
-
-  // 政党マッチング
-  var partyHtml = ''
-  for (var i = 0; i < Math.min(3, partyResults.length); i++) {
-    var p = partyResults[i]
-    partyHtml += `
-      <div class="result-summary">
-        <span class="result-summary-label">${escapeHtml(p.name)}</span>
-        <span class="result-summary-value">${p.match}%</span>
-      </div>
-    `
-  }
-
-  els.app.innerHTML = `
-    <div class="result-header">
-      <div class="result-title">🧓 政治博士 RPG</div>
-      <div class="result-stage">COMPLETE</div>
-    </div>
-    
-    <div class="exp-bar">
-      <span class="exp-label">EXP</span>
-      <div class="exp-track">
-        <div class="exp-fill" style="width:100%"></div>
-      </div>
-      <span class="exp-pct">100%</span>
-    </div>
-    
-    <div class="result-card">
-      <div class="result-character">
-        <svg width="60" height="80" viewBox="0 0 50 70">
-          <circle cx="25" cy="15" r="8" fill="#FFE66D"/>
-          <rect x="17" y="25" width="16" height="20" fill="#FFE66D" rx="3"/>
-          <rect x="15" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
-          <rect x="30" y="45" width="5" height="15" fill="#4A5568" rx="1"/>
-          <rect x="13" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(-25 15 34)"/>
-          <rect x="33" y="28" width="4" height="12" fill="#FFE66D" rx="1" transform="rotate(25 35 34)"/>
-          <rect x="20" y="7" width="10" height="2" fill="#2D3748"/>
-          <rect x="24" y="5" width="2" height="4" fill="#2D3748"/>
-          <circle cx="21" cy="13" r="1.5" fill="#2D3748"/>
-          <circle cx="29" cy="13" r="1.5" fill="#2D3748"/>
-          <circle cx="21" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-          <circle cx="29" cy="13" r="3" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-          <line x1="24" y1="13" x2="26" y2="13" stroke="#2D3748" stroke-width="0.5"/>
-          <path d="M 23 17 Q 25 18 27 17" stroke="#2D3748" stroke-width="0.5" fill="none"/>
-        </svg>
-      </div>
-      
-      <div class="result-title-section">
-        <span class="result-name">レベル ${characterLevel} 政治博士</span>
-      </div>
-      
-      <div class="result-desc">15問の回答から、あなたの政治的立場が明らかになりました！</div>
-      
-      <div class="result-answers">
-        ${answerRows}
-      </div>
-      
-      <div class="result-divider"></div>
-      
-      <div class="result-summary">
-        <span class="result-summary-label">最終税金</span>
-        <span class="result-summary-value">${state.tax > 0 ? '+' : ''}${state.tax}%</span>
-      </div>
-      
-      ${partyHtml}
-    </div>
-    
-    <div class="result-controls">
-      <div class="result-note">※ この結果は診断目的のものではありません</div>
-      <button class="result-reset" id="resetAll">
-        <span>↻</span>
-        <span>もう一度冒険する</span>
-      </button>
-    </div>
-  `
-
-  document.getElementById("resetAll").addEventListener("click", function () {
-    localStorage.removeItem(STORAGE_KEY)
-    state = loadState()
     render()
-  })
+  }, 300)
 }
 
+function resetQuiz() {
+  if (isTransitioning) return
+
+  isTransitioning = true
+  setTimeout(function () {
+    isTransitioning = false
+    state = createNewState()
+    saveState(state)
+    render()
+  }, 400)
+}
+
+function showLevelUp() {
+  var toast = document.createElement("div")
+  toast.className = "level-up-toast"
+  toast.textContent = "LEVEL UP! Lv." + currentLevel
+  document.body.appendChild(toast)
+
+  setTimeout(function () {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast)
+    }
+  }, 1200)
+}
+
+// ═══════════════════════════════════════════════════════════
 // フィードバック機能
-var FEEDBACK_URL = "https://script.google.com/macros/s/AKfycbxtEHNqu4ZK-vD34TgVE-btkB04mTXi0P8IOdk9LSOJfnF8XNjK8WPOqaoQhYJUcN02rg/exec"
+// ═══════════════════════════════════════════════════════════
+function bindFeedbackEvents() {
+  if (els.fbOpen) els.fbOpen.addEventListener("click", openFeedback)
+  if (els.fbCancel) els.fbCancel.addEventListener("click", closeFeedback)
+  if (els.fbSend) els.fbSend.addEventListener("click", sendFeedback)
+  if (els.fbOverlay) els.fbOverlay.addEventListener("click", function (e) {
+    if (e.target === els.fbOverlay) closeFeedback()
+  })
+}
 
-  ; (function initFeedback() {
-    var openBtn = document.getElementById("fbOpen")
-    var overlay = document.getElementById("fbOverlay")
-    var cancelBtn = document.getElementById("fbCancel")
-    var sendBtn = document.getElementById("fbSend")
-    var textArea = document.getElementById("fbText")
-    var statusEl = document.getElementById("fbStatus")
+function openFeedback() {
+  if (els.fbOverlay) els.fbOverlay.classList.add("open")
+  if (els.fbText) els.fbText.focus()
+}
 
-    openBtn.addEventListener("click", function () {
-      overlay.classList.add("open")
-      textArea.focus()
+function closeFeedback() {
+  if (els.fbOverlay) els.fbOverlay.classList.remove("open")
+  if (els.fbText) els.fbText.value = ""
+  if (els.fbStatus) els.fbStatus.textContent = ""
+}
+
+function sendFeedback() {
+  var text = els.fbText ? els.fbText.value.trim() : ""
+  if (!text) return
+
+  if (els.fbStatus) els.fbStatus.textContent = "送信中..."
+
+  // Google Apps Scriptに送信
+  fetch("https://script.google.com/macros/s/AKfycbzbVZfVY-OcHlFPqC3Mf4f3b5t9lNQhQfXZf6dGhQk/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      feedback: text,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
     })
-
-    cancelBtn.addEventListener("click", function () {
-      overlay.classList.remove("open")
-      statusEl.textContent = ""
+  })
+    .then(function (res) { return res.json() })
+    .then(function (data) {
+      if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了"
+      setTimeout(closeFeedback, 1500)
     })
-
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) {
-        overlay.classList.remove("open")
-        statusEl.textContent = ""
-      }
+    .catch(function (err) {
+      console.error("Feedback error:", err)
+      if (els.fbStatus) els.fbStatus.textContent = "❌ 送信失敗"
     })
+}
 
-    var FB_LIMIT_KEY = "seiji_fb_count"
-    var FB_MAX_PER_DAY = 3
-    var FB_MIN_LENGTH = 5
-
-    function getFbCount() {
-      var raw = localStorage.getItem(FB_LIMIT_KEY)
-      var parsed = raw ? safeParse(raw) : null
-      if (!parsed || parsed.date !== new Date().toISOString().slice(0, 10)) {
-        return 0
-      }
-      return parsed.count || 0
+// ═══════════════════════════════════════════════════════════
+// スプラッシュ画面の動的要素生成
+// ═══════════════════════════════════════════════════════════
+function initSplash() {
+  // 星を生成
+  var starsContainer = document.getElementById("splashStars")
+  if (starsContainer) {
+    for (var i = 0; i < 60; i++) {
+      var star = document.createElement("div")
+      star.className = "splash-star"
+      var size = Math.random() * 3 + 1
+      star.style.cssText = "width:" + size + "px;height:" + size + "px;" +
+        "left:" + (Math.random() * 100) + "%;" +
+        "top:" + (Math.random() * 60) + "%;" +
+        "animation-delay:" + (Math.random() * 3) + "s;" +
+        "animation-duration:" + (1.5 + Math.random() * 2) + "s"
+      starsContainer.appendChild(star)
     }
+  }
 
-    function incrementFbCount() {
-      var today = new Date().toISOString().slice(0, 10)
-      var current = getFbCount()
-      localStorage.setItem(FB_LIMIT_KEY, JSON.stringify({ date: today, count: current + 1 }))
+  // 建物を生成
+  var buildingsContainer = document.getElementById("splashBuildings")
+  if (buildingsContainer) {
+    var heights = [24, 36, 18, 42, 28, 0, 30, 20, 38, 22, 32, 16]
+    for (var i = 0; i < heights.length; i++) {
+      var h = heights[i]
+      if (h === 0) {
+        var spacer = document.createElement("div")
+        spacer.style.width = "30px"
+        buildingsContainer.appendChild(spacer)
+        continue
+      }
+      var bld = document.createElement("div")
+      bld.className = "splash-building"
+      bld.style.cssText = "width:" + (8 + (i % 3) * 4) + "px;height:" + h + "px"
+      // 窓
+      var numWindows = Math.floor(h / 10)
+      for (var j = 0; j < numWindows; j++) {
+        var win = document.createElement("div")
+        win.className = "splash-building-window"
+        win.style.cssText = "left:" + (20 + (j * 40) % 60) + "%;top:" + (12 + j * 24) + "%;" +
+          "opacity:" + (Math.random() > 0.4 ? 0.8 : 0.2)
+        bld.appendChild(win)
+      }
+      buildingsContainer.appendChild(bld)
     }
+  }
 
-    sendBtn.addEventListener("click", function () {
-      var msg = textArea.value.trim()
-      if (!msg) return
-
-      if (msg.length < FB_MIN_LENGTH) {
-        statusEl.textContent = "5文字以上で入力してください。"
-        statusEl.style.color = "#ff9a6e"
-        return
-      }
-
-      if (getFbCount() >= FB_MAX_PER_DAY) {
-        statusEl.textContent = "本日の送信上限（" + FB_MAX_PER_DAY + "回）に達しました。"
-        statusEl.style.color = "#ff9a6e"
-        return
-      }
-
-      sendBtn.disabled = true
-      statusEl.textContent = "送信中..."
-      statusEl.style.color = "rgba(255,255,255,0.5)"
-
-      fetch(FEEDBACK_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          feedback: msg,
-          timestamp: new Date().toISOString(),
-        }),
-      })
-        .then(function () {
-          incrementFbCount()
-          statusEl.textContent = "送信しました！ありがとうございます。"
-          statusEl.style.color = "#6ea8ff"
-          textArea.value = ""
-          setTimeout(function () {
-            overlay.classList.remove("open")
-            statusEl.textContent = ""
-            sendBtn.disabled = false
-          }, 1500)
-        })
-        .catch(function () {
-          statusEl.textContent = "送信に失敗しました。もう一度お試しください。"
-          statusEl.style.color = "#ff9a6e"
-          sendBtn.disabled = false
-        })
+  // スタートボタン
+  var startBtn = document.getElementById("splashStart")
+  if (startBtn) {
+    startBtn.addEventListener("click", function () {
+      dismissSplash()
     })
-  })()
+  }
+}
 
-  // 起動
-  ; (function () {
-    var q = QUESTIONS[state.currentIndex]
-    if (q && !state.answers[q.id]) {
-      state.answers[q.id] = { value: 0, internal: 50 }
-      saveState(state)
-    }
+function dismissSplash() {
+  if (els.splash) {
+    els.splash.classList.add("hide")
+    setTimeout(function () {
+      if (els.splash && els.splash.parentNode) {
+        els.splash.parentNode.removeChild(els.splash)
+      }
+    }, 600)
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 初期化
+// ═══════════════════════════════════════════════════════════
+function init() {
+  // v0風スプラッシュ初期化
+  initSplash()
+
+  // 最初のレンダリング
+  if (state.currentIndex >= TOTAL_QUESTIONS) {
+    renderEnd()
+  } else {
     render()
+  }
 
-    // スプラッシュ画面を1.5秒後に消す
-    var splash = document.getElementById("splash")
-    if (splash) {
-      setTimeout(function () {
-        splash.classList.add("hide")
-        setTimeout(function () { splash.remove() }, 500)
-      }, 1500)
-    }
-  })()
+  // フィードバックイベント
+  bindFeedbackEvents()
+}
+
+// ページ読み込み完了時に初期化
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init)
+} else {
+  init()
+}
