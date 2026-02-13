@@ -3,8 +3,19 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>政治博士</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <title>政治博士 — すべての人にわかりやすい政治を</title>
+  <meta name="description" content="15の質問に答えるだけで、あなたの政治的傾向と最も近い政党がわかる無料診断アプリ。中学生からお年寄りまで誰でも使えます。" />
+  <meta name="theme-color" content="#0F1923" />
+  <!-- OGP -->
+  <meta property="og:title" content="政治博士 — 政党診断MBTI" />
+  <meta property="og:description" content="15の質問に答えるだけで、あなたに最も近い政党がわかる。すべての人にわかりやすい政治を。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ja_JP" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="政治博士 — 政党診断MBTI" />
+  <meta name="twitter:description" content="15問で分かる、あなたの政治傾向。無料で誰でも使える政党マッチング診断。" />
   <style>
     /* v0から完全移植したCSS keyframes */
     @keyframes starTwinkle {
@@ -284,8 +295,9 @@
     .status-fill {
       height: 100%;
       border-radius: 99px;
-      transition: width 0.7s ease-out;
-      background-size: 200% 100%
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden
     }
 
     .exp-fill {
@@ -391,8 +403,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      height: 32%;
-      background: linear-gradient(180deg, #3A3D42 0%, #2D3032 100%)
+      height: 32%
     }
 
     .road-line {
@@ -1156,6 +1167,20 @@
 
     .axis-side.right {
       color: var(--accent-orange)
+    }
+
+    .tendency-box {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary)
+    }
+
+    .tendency-text {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin: 8px 0 0 0
     }
 
     .result-divider {

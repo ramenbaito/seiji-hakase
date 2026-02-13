@@ -222,6 +222,156 @@ function getTimeOfDay(idx) {
   return { label: "深夜", timeStr: timeStr, sky: "linear-gradient(180deg, #050a14 0%, #0F1923 40%, #1a2744 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.8 }
 }
 
+function getGroundStyle(sceneName) {
+  var grounds = {
+    "朝の公園": "linear-gradient(180deg, #2a5a2a 0%, #1a4a1a 100%)",
+    "朝の商店街": "linear-gradient(180deg, #3A3D42 0%, #2D3032 100%)",
+    "学校の正門前": "linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%)",
+    "港の見える橋の上": "linear-gradient(180deg, #2a4a6a 0%, #1a3a5a 100%)",
+    "工場のそばの河川敷": "linear-gradient(180deg, #3a5a3a 0%, #2a4a2a 100%)",
+    "オフィスビルの前": "linear-gradient(180deg, #4a4a50 0%, #3a3a40 100%)",
+    "駅前のロータリー": "linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%)",
+    "ショッピングモール": "linear-gradient(180deg, #5a5050 0%, #4a4040 100%)",
+    "家のリビング": "linear-gradient(180deg, #5a4a3a 0%, #4a3a2a 100%)",
+    "病院の待合室": "linear-gradient(180deg, #4a4a50 0%, #3a3a40 100%)",
+    "鉄塔の見える丘": "linear-gradient(180deg, #2a5a2a 0%, #1a4a1a 100%)",
+    "体育館の前": "linear-gradient(180deg, #5a4a3a 0%, #4a3a2a 100%)",
+    "夜の交差点": "linear-gradient(180deg, #2a2a30 0%, #1a1a20 100%)",
+    "夜のスーパー": "linear-gradient(180deg, #2a2a30 0%, #1a1a20 100%)",
+    "深夜の展望台": "linear-gradient(180deg, #1a2a1a 0%, #0a1a0a 100%)"
+  }
+  return grounds[sceneName] || "linear-gradient(180deg, #3A3D42 0%, #2D3032 100%)"
+}
+
+function getGroundLines(sceneName) {
+  // 公園・丘・河川敷は草のドット、それ以外は道路の白線
+  var grassScenes = ["朝の公園", "工場のそばの河川敷", "鉄塔の見える丘", "深夜の展望台"]
+  if (grassScenes.indexOf(sceneName) >= 0) {
+    var dots = ""
+    for (var i = 0; i < 12; i++) {
+      dots += '<div style="position:absolute;left:' + (5 + i * 8) + '%;top:' + (20 + (i * 37) % 60) + '%;width:3px;height:6px;background:rgba(100,180,80,0.3);border-radius:50%"></div>'
+    }
+    return dots
+  }
+  // 橋は手すり風
+  if (sceneName === "港の見える橋の上") {
+    var rails = ""
+    for (var j = 0; j < 8; j++) {
+      rails += '<div style="position:absolute;left:' + (5 + j * 12) + '%;top:10%;width:2px;height:40%;background:rgba(150,150,160,0.4);border-radius:1px"></div>'
+    }
+    return '<div style="position:absolute;left:0;right:0;top:8%;height:2px;background:rgba(150,150,160,0.3)"></div>' + rails
+  }
+  // デフォルト: 道路の白線
+  var lines = ""
+  for (var k = 0; k < 10; k++) {
+    lines += '<div class="road-line" style="left:' + (5 + k * 10) + '%"></div>'
+  }
+  return lines
+}
+
+function getBuildingsForScene(sceneName, time) {
+  // 場所ごとの建物パターン定義
+  var sceneBuildings = {
+    "朝の公園": [
+      { h: 8, w: 18, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" }, // 木
+      { h: 5, w: 10, color: "#2a5a2a" }, // 低木
+      { h: 14, w: 22, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" }, // 大木
+      { h: 0 },
+      { h: 6, w: 24, color: "#3a3a4a", roof: "flat" }, // ベンチ/東屋
+      { h: 0 },
+      { h: 10, w: 18, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+      { h: 4, w: 8, color: "#2a5a2a" },
+      { h: 12, w: 20, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+    ],
+    "学校の正門前": [
+      { h: 10, w: 10, color: "#3a4a5a" },
+      { h: 30, w: 16, color: "#4a5a6a", windows: 3 }, // 校舎
+      { h: 35, w: 18, color: "#4a5a6a", windows: 4, roof: "flat" },
+      { h: 30, w: 16, color: "#4a5a6a", windows: 3 },
+      { h: 0 },
+      { h: 12, w: 8, color: "#5a5a5a" }, // 門柱
+      { h: 12, w: 8, color: "#5a5a5a" },
+      { h: 0 },
+      { h: 20, w: 14, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+    ],
+    "病院の待合室": [
+      { h: 14, w: 12, color: "#3a4a5a" },
+      { h: 22, w: 14, color: "#5a6a7a", windows: 2 },
+      { h: 38, w: 20, color: "#e8e8e8", windows: 4, roof: "flat" }, // 病院（白い建物）
+      { h: 32, w: 16, color: "#d8d8d8", windows: 3 },
+      { h: 0 },
+      { h: 18, w: 12, color: "#4a5a6a", windows: 2 },
+      { h: 10, w: 10, color: "#3a4a5a" },
+    ],
+    "ショッピングモール": [
+      { h: 12, w: 10, color: "#3a4a5a" },
+      { h: 18, w: 14, color: "#5a5a6a", windows: 2 },
+      { h: 24, w: 28, color: "#6a5a4a", windows: 3, roof: "flat" }, // モール
+      { h: 24, w: 28, color: "#6a5a4a", windows: 3, roof: "flat" },
+      { h: 0 },
+      { h: 16, w: 12, color: "#4a5a5a", windows: 1 },
+      { h: 20, w: 14, color: "#5a4a4a", windows: 2 },
+    ],
+    "鉄塔の見える丘": [
+      { h: 6, w: 14, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+      { h: 8, w: 10, color: "#2a5a2a" },
+      { h: 0 },
+      { h: 40, w: 6, color: "#7a7a7a" }, // 鉄塔
+      { h: 0 },
+      { h: 8, w: 10, color: "#2a5a2a" },
+      { h: 6, w: 14, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+      { h: 10, w: 18, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
+    ],
+    "夜の交差点": [
+      { h: 20, w: 14, color: "#2a3a4a", windows: 2 },
+      { h: 28, w: 16, color: "#3a4a5a", windows: 3 },
+      { h: 0 },
+      { h: 32, w: 4, color: "#5a5a5a" }, // 信号機
+      { h: 0 },
+      { h: 24, w: 14, color: "#3a3a4a", windows: 2 },
+      { h: 30, w: 16, color: "#2a3a4a", windows: 3 },
+      { h: 18, w: 12, color: "#2a2a3a", windows: 1 },
+    ],
+    "深夜の展望台": [
+      { h: 6, w: 12, color: "#1a3a1a" },
+      { h: 8, w: 10, color: "#1a3a1a" },
+      { h: 0 },
+      { h: 20, w: 10, color: "#3a3a4a", roof: "flat" }, // 展望台
+      { h: 16, w: 14, color: "#3a3a4a", roof: "flat" },
+      { h: 0 },
+      { h: 6, w: 10, color: "#1a3a1a" },
+      { h: 4, w: 8, color: "#1a3a1a" },
+    ]
+  }
+
+  // デフォルトの街並み
+  var defaultBuildings = [
+    { h: 18, w: 10 }, { h: 26, w: 14 }, { h: 14, w: 10 }, { h: 30, w: 14 },
+    { h: 22, w: 12 }, { h: 0 }, { h: 22, w: 12 }, { h: 18, w: 10 },
+    { h: 28, w: 14 }, { h: 16, w: 10 }
+  ]
+
+  var buildings = sceneBuildings[sceneName] || defaultBuildings
+
+  return buildings.map(function (b) {
+    if (!b.h || b.h === 0) return '<div style="width:40px"></div>'
+    var w = b.w || (10 + Math.floor(Math.random() * 8))
+    var color = b.color || "#1a2a3a"
+    var windows = ""
+    var winCount = b.windows || Math.floor(b.h / 8)
+    for (var j = 0; j < winCount; j++) {
+      var lit = Math.random() > 0.4
+      var glowAlpha = lit ? time.windowGlow : time.windowGlow * 0.2
+      windows += '<div class="building-window" style="left:' + (20 + (j * 37) % 60) + '%;top:' + (15 + j * 22) + '%;background:rgba(255,230,109,' + glowAlpha + ')"></div>'
+    }
+    var roofHtml = ""
+    if (b.roof === "triangle") {
+      roofHtml = '<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:' + (w / 2 + 2) + 'px solid transparent;border-right:' + (w / 2 + 2) + 'px solid transparent;border-bottom:10px solid ' + (b.roofColor || color) + '"></div>'
+    }
+    return '<div class="building" style="height:' + (b.h * 2) + 'px;width:' + w + 'px;background:' + color + '">' + roofHtml + windows + '</div>'
+  })
+}
+
 function createRPGScene(value, question, idx) {
   var leftActive = value < 0
   var rightActive = value > 0
@@ -239,30 +389,12 @@ function createRPGScene(value, question, idx) {
       
       <!-- 建物 -->
       <div class="buildings">
-        ${[18, 26, 14, 30, 22, 0, 22, 18, 28, 16].map(function (h, i) {
-    if (h === 0) return '<div style="width:40px"></div>'
-    var windows = ""
-    for (var j = 0; j < Math.floor(h / 8); j++) {
-      var lit = Math.random() > 0.4
-      var glowAlpha = lit ? time.windowGlow : time.windowGlow * 0.2
-      windows += `<div class="building-window" style="left:${20 + (j * 37) % 60}%;top:${15 + j * 22}%;background:rgba(255,230,109,${glowAlpha})"></div>`
-    }
-    return `<div class="building" style="height:${h * 2}px;width:${10 + (i % 3) * 4}px">${windows}</div>`
-  }).join('')}
+        ${getBuildingsForScene(sceneName, time).join('')}
       </div>
       
-      <!-- 道 -->
-      <div class="road">
-        <div class="road-line" style="left:5%"></div>
-        <div class="road-line" style="left:15%"></div>
-        <div class="road-line" style="left:25%"></div>
-        <div class="road-line" style="left:35%"></div>
-        <div class="road-line" style="left:45%"></div>
-        <div class="road-line" style="left:55%"></div>
-        <div class="road-line" style="left:65%"></div>
-        <div class="road-line" style="left:75%"></div>
-        <div class="road-line" style="left:85%"></div>
-        <div class="road-line" style="left:95%"></div>
+      <!-- 地面 -->
+      <div class="road" style="background:${getGroundStyle(sceneName)}">
+        ${getGroundLines(sceneName)}
       </div>
       
       <!-- シーンラベル -->
@@ -383,7 +515,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
           <div class="slider-label">微調整</div>
           <div class="slider-row">
             <span class="slider-end left ${leftActive ? 'active' : ''}">${escapeHtml(question.left.label)}</span>
-            <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}"/>
+            <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}" aria-label="回答スライダー" aria-valuemin="-2" aria-valuemax="2" aria-valuenow="${value}"/>
             <span class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(question.right.label)}</span>
           </div>
           <div class="slider-steps">
@@ -417,6 +549,32 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
 // ═══════════════════════════════════════════════════════════
 // v0風の結果画面
 // ═══════════════════════════════════════════════════════════
+function generateTendencyText(scores) {
+  var parts = []
+  // merit_equity
+  if (scores.merit_equity < 35) parts.push("努力や能力が報われる実力主義を重視")
+  else if (scores.merit_equity > 65) parts.push("格差をなくし平等な社会を重視")
+  else parts.push("実力と平等のバランスを大切にする")
+  // small_big
+  if (scores.small_big < 35) parts.push("政府の介入は少なく自由な経済を好む")
+  else if (scores.small_big > 65) parts.push("手厚い社会保障や公共サービスを求める")
+  else parts.push("政府の役割については中立的")
+  // free_norm
+  if (scores.free_norm < 35) parts.push("個人の自由を最大限に尊重したい")
+  else if (scores.free_norm > 65) parts.push("社会のルールや秩序も大切にしたい")
+  else parts.push("自由とルールのバランスを意識している")
+  // open_protect
+  if (scores.open_protect < 35) parts.push("国際交流や開放的な政策に前向き")
+  else if (scores.open_protect > 65) parts.push("日本の文化や産業を守ることを重視")
+  else parts.push("開放と保護のどちらも考慮する")
+  // now_future
+  if (scores.now_future < 35) parts.push("今の暮らしや経済を優先する傾向")
+  else if (scores.now_future > 65) parts.push("将来の世代や環境を考える傾向")
+  else parts.push("現在と未来のバランスを考える")
+
+  return "あなたは、" + parts[0] + "タイプです。" + parts[1] + "傾向があり、" + parts[2] + "考え方を持っています。また、" + parts[3] + "一方で、" + parts[4] + "があります。"
+}
+
 function createResultScreen(answers) {
   // answers = { Q1: {value:1, tax:...}, Q2: {value:-1, tax:...}, ... }
   var entries = Object.entries(answers)
@@ -472,6 +630,12 @@ function createResultScreen(answers) {
           <div class="party-match-label">あなたに最も近い政党</div>
           <div class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</div>
           <div class="party-desc">マッチ度 ${topParty.match}%</div>
+        </div>
+        
+        <!-- あなたの傾向 -->
+        <div class="tendency-box">
+          <div class="summary-label">あなたの傾向まとめ</div>
+          <p class="tendency-text">${generateTendencyText(axisScores)}</p>
         </div>
         
         <!-- 5軸スコア -->
@@ -646,6 +810,49 @@ function bindQuestionEvents() {
     backBtn.addEventListener("click", function () {
       goBack()
     })
+  }
+
+  // キーボードナビゲーション（重複防止）
+  document.removeEventListener("keydown", handleKeyNav)
+  document.addEventListener("keydown", handleKeyNav)
+
+  // スワイプジェスチャー
+  var touchStartX = 0
+  var quizCard = document.querySelector(".quiz-card")
+  if (quizCard) {
+    quizCard.addEventListener("touchstart", function (e) {
+      touchStartX = e.changedTouches[0].screenX
+    }, { passive: true })
+    quizCard.addEventListener("touchend", function (e) {
+      var touchEndX = e.changedTouches[0].screenX
+      var diff = touchEndX - touchStartX
+      if (Math.abs(diff) > 60) {
+        if (diff < 0) {
+          // 左スワイプ → 次へ
+          confirmAnswer()
+        } else {
+          // 右スワイプ → 戻る
+          goBack()
+        }
+      }
+    }, { passive: true })
+  }
+}
+
+function handleKeyNav(e) {
+  var slider = document.getElementById("slider")
+  if (!slider) return
+  if (e.key === "ArrowLeft") {
+    slider.value = Math.max(-2, parseInt(slider.value) - 1)
+    updateSliderUI(clampValue(slider.value))
+    e.preventDefault()
+  } else if (e.key === "ArrowRight") {
+    slider.value = Math.min(2, parseInt(slider.value) + 1)
+    updateSliderUI(clampValue(slider.value))
+    e.preventDefault()
+  } else if (e.key === "Enter") {
+    confirmAnswer()
+    e.preventDefault()
   }
 }
 
