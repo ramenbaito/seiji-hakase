@@ -27,30 +27,39 @@ function safeParse(json) {
 }
 
 function loadState() {
-  var raw = localStorage.getItem(STORAGE_KEY)
-  var parsed = raw ? safeParse(raw) : null
-  if (!parsed || typeof parsed !== "object") {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY)
+    var parsed = raw ? safeParse(raw) : null
+    if (!parsed || typeof parsed !== "object") {
+      return { currentIndex: 0, tax: 0, answers: {} }
+    }
+    var currentIndex = typeof parsed.currentIndex === "number" ? parsed.currentIndex : 0
+    var tax = typeof parsed.tax === "number" ? parsed.tax : 0
+    var answers = parsed.answers && typeof parsed.answers === "object" ? parsed.answers : {}
+    return {
+      currentIndex: Math.max(0, Math.min(QUESTIONS.length - 1, currentIndex)),
+      tax: tax,
+      answers: answers,
+    }
+  } catch (e) {
+    console.warn("loadState error:", e)
     return { currentIndex: 0, tax: 0, answers: {} }
-  }
-  var currentIndex = typeof parsed.currentIndex === "number" ? parsed.currentIndex : 0
-  var tax = typeof parsed.tax === "number" ? parsed.tax : 0
-  var answers = parsed.answers && typeof parsed.answers === "object" ? parsed.answers : {}
-  return {
-    currentIndex: Math.max(0, Math.min(QUESTIONS.length - 1, currentIndex)),
-    tax: tax,
-    answers: answers,
   }
 }
 
 function saveState(state) {
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      currentIndex: state.currentIndex,
-      tax: state.tax,
-      answers: state.answers,
-    })
-  )
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        currentIndex: state.currentIndex,
+        tax: state.tax,
+        answers: state.answers,
+      })
+    )
+  } catch (e) {
+    console.warn("saveState error:", e)
+  }
 }
 
 function createNewState() {

@@ -1495,9 +1495,15 @@
     }
 
     .splash-start:hover {
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.02);
       border-color: rgba(255, 230, 109, 0.7);
-      box-shadow: 0 4px 20px rgba(255, 230, 109, 0.2)
+      box-shadow: 0 4px 24px rgba(255, 230, 109, 0.25);
+      background: rgba(255, 230, 109, 0.12)
+    }
+
+    .splash-start:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 1px 8px rgba(255, 230, 109, 0.15)
     }
 
     .splash-start svg {
@@ -1579,8 +1585,8 @@
     /* フィードバックモーダル */
     .fbBtn {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 16px;
+      right: 16px;
       z-index: 100;
       padding: 10px 16px;
       border-radius: 20px;
