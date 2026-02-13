@@ -1051,7 +1051,14 @@ function shareResult() {
   var axisScores = calcAxisScores(state.answers)
   var partyResults = calcPartyDistances(axisScores)
   var topParty = partyResults[0]
-  var text = "政治博士で診断したら「" + topParty.name + "」に最も近かった！（マッチ度" + topParty.match + "%）\nあなたも試してみて👉 " + window.location.href
+  var axes = {
+    merit_equity: axisScores.merit_equity < 40 ? "実力主義" : axisScores.merit_equity > 60 ? "平等重視" : "バランス型",
+    small_big: axisScores.small_big < 40 ? "小さな政府" : axisScores.small_big > 60 ? "大きな政府" : "中立",
+  }
+  var text = "【政治博士】政党診断の結果\n\n" +
+    "🏛️ 最も近い政党: " + topParty.name + "（" + topParty.match + "%）\n" +
+    "📊 " + axes.merit_equity + " / " + axes.small_big + "\n\n" +
+    "15問で分かる、あなたの政治傾向 👉\n" + window.location.href
 
   if (navigator.share) {
     navigator.share({ title: "政治博士", text: text }).catch(function () { })
@@ -1105,8 +1112,21 @@ function updateSliderUI(value) {
   // 説明テキスト更新
   var descEl = document.querySelector(".slider-desc")
   if (descEl) {
-    descEl.textContent = labels[value]
+    var hintText = ""
+    if (value < 0 && q.left.hint) hintText = q.left.hint
+    else if (value > 0 && q.right.hint) hintText = q.right.hint
+    descEl.innerHTML = labels[value] + (hintText ? '<span class="slider-hint">' + escapeHtml(hintText) + '</span>' : '')
     descEl.className = "slider-desc " + (value === 0 ? 'neutral' : value < 0 ? 'left' : 'right')
+  }
+
+  // ステップマーク更新
+  var steps = document.querySelectorAll(".slider-steps .step")
+  if (steps.length === 5) {
+    var stepValues = [-2, -1, 0, 1, 2]
+    for (var i = 0; i < 5; i++) {
+      steps[i].className = "step" + (i === 2 ? " center" : "") +
+        (stepValues[i] === value ? (" active" + (value < 0 ? " left" : value > 0 ? " right" : "")) : "")
+    }
   }
 
   // RPGシーン更新
