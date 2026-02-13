@@ -920,7 +920,17 @@
     }
 
     .control-btn:hover {
-      transform: translateY(-1px)
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)
+    }
+
+    .control-btn.primary:hover {
+      background: rgba(255, 230, 109, 0.18);
+      border-color: rgba(255, 230, 109, 0.6)
+    }
+
+    .control-btn:active {
+      transform: translateY(0) scale(0.97)
     }
 
     .control-btn:disabled {
@@ -1595,7 +1605,17 @@
       color: white;
       font-size: 12px;
       cursor: pointer;
-      backdrop-filter: blur(8px)
+      backdrop-filter: blur(8px);
+      transition: all 0.2s
+    }
+
+    .fbBtn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px)
+    }
+
+    .fbBtn:active {
+      transform: translateY(0) scale(0.96)
     }
 
     .fbOverlay {
