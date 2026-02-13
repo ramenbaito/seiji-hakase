@@ -633,9 +633,15 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
 function drawRadarChart(canvasId, scores) {
   var canvas = document.getElementById(canvasId)
   if (!canvas) return
+  var dpr = window.devicePixelRatio || 1
+  var displayW = canvas.clientWidth || 240
+  var displayH = canvas.clientHeight || 240
+  canvas.width = displayW * dpr
+  canvas.height = displayH * dpr
   var ctx = canvas.getContext("2d")
-  var w = canvas.width
-  var h = canvas.height
+  ctx.scale(dpr, dpr)
+  var w = displayW
+  var h = displayH
   var cx = w / 2
   var cy = h / 2
   var r = Math.min(cx, cy) - 30
@@ -1352,6 +1358,7 @@ function sendFeedback() {
   iframe.onload = function () {
     if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了！ありがとうございます"
     if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
+    if (els.fbText) els.fbText.value = ""
     setTimeout(closeFeedback, 2000)
     setTimeout(function () {
       document.body.removeChild(iframe)
