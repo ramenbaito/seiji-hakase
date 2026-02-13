@@ -95,29 +95,66 @@ function createRPGScene(value) {
       </div>
       
       <div class="characters-left" style="opacity:${leftOpacity}">
-        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <rect x="15" y="10" width="10" height="15" fill="#ff9a6e" rx="2"/>
-          <rect x="12" y="25" width="16" height="20" fill="#ff9a6e" rx="2"/>
-          <rect x="14" y="45" width="6" height="12" fill="#333" rx="1"/>
-          <rect x="20" y="45" width="6" height="12" fill="#333" rx="1"/>
+        <svg width="60" height="80" viewBox="0 0 60 80" class="character">
+          <!-- 頭 -->
+          <circle cx="30" cy="15" r="8" fill="#ff9a6e"/>
+          <!-- 体 -->
+          <rect x="22" y="25" width="16" height="20" fill="#ff9a6e" rx="3"/>
+          <!-- 腕 -->
+          <rect x="18" y="28" width="4" height="15" fill="#ff9a6e" rx="2" transform="rotate(-10 20 35)"/>
+          <rect x="38" y="28" width="4" height="15" fill="#ff9a6e" rx="2" transform="rotate(10 40 35)"/>
+          <!-- 足 -->
+          <rect x="24" y="45" width="6" height="15" fill="#4a5568" rx="2"/>
+          <rect x="30" y="45" width="6" height="15" fill="#4a5568" rx="2"/>
+          <!-- 顔 -->
+          <circle cx="27" cy="13" r="1" fill="#333"/>
+          <circle cx="33" cy="13" r="1" fill="#333"/>
+          <path d="M 28 17 Q 30 18 32 17" stroke="#333" stroke-width="1" fill="none"/>
         </svg>
       </div>
       
       <div class="characters-right" style="opacity:${rightOpacity}">
-        <svg width="40" height="60" viewBox="0 0 40 60" class="character">
-          <rect x="15" y="10" width="10" height="15" fill="#6ea8ff" rx="2"/>
-          <rect x="12" y="25" width="16" height="20" fill="#6ea8ff" rx="2"/>
-          <rect x="14" y="45" width="6" height="12" fill="#333" rx="1"/>
-          <rect x="20" y="45" width="6" height="12" fill="#333" rx="1"/>
+        <svg width="60" height="80" viewBox="0 0 60 80" class="character">
+          <!-- 頭 -->
+          <circle cx="30" cy="15" r="8" fill="#6ea8ff"/>
+          <!-- 体 -->
+          <rect x="22" y="25" width="16" height="20" fill="#6ea8ff" rx="3"/>
+          <!-- 腕 -->
+          <rect x="18" y="28" width="4" height="15" fill="#6ea8ff" rx="2" transform="rotate(-10 20 35)"/>
+          <rect x="38" y="28" width="4" height="15" fill="#6ea8ff" rx="2" transform="rotate(10 40 35)"/>
+          <!-- 足 -->
+          <rect x="24" y="45" width="6" height="15" fill="#4a5568" rx="2"/>
+          <rect x="30" y="45" width="6" height="15" fill="#4a5568" rx="2"/>
+          <!-- 顔 -->
+          <circle cx="27" cy="13" r="1" fill="#333"/>
+          <circle cx="33" cy="13" r="1" fill="#333"/>
+          <path d="M 28 17 Q 30 18 32 17" stroke="#333" stroke-width="1" fill="none"/>
         </svg>
       </div>
       
       <div class="character main" style="left:${mainX}%">
-        <svg width="50" height="70" viewBox="0 0 50 70">
-          <rect x="18" y="12" width="14" height="18" fill="#f0c040" rx="2"/>
-          <rect x="15" y="30" width="20" height="25" fill="#f0c040" rx="2"/>
-          <rect x="17" y="55" width="8" height="15" fill="#333" rx="1"/>
-          <rect x="25" y="55" width="8" height="15" fill="#333" rx="1"/>
+        <svg width="70" height="90" viewBox="0 0 70 90">
+          <!-- 頭 -->
+          <circle cx="35" cy="18" r="10" fill="#f0c040"/>
+          <!-- 体 -->
+          <rect x="25" y="30" width="20" height="25" fill="#f0c040" rx="4"/>
+          <!-- 腕 -->
+          <rect x="20" y="33" width="5" height="18" fill="#f0c040" rx="2" transform="rotate(-15 22 42)"/>
+          <rect x="45" y="33" width="5" height="18" fill="#f0c040" rx="2" transform="rotate(15 47 42)"/>
+          <!-- 足 -->
+          <rect x="27" y="55" width="7" height="18" fill="#2d3748" rx="2"/>
+          <rect x="36" y="55" width="7" height="18" fill="#2d3748" rx="2"/>
+          <!-- 博士帽 -->
+          <rect x="25" y="8" width="20" height="3" fill="#2d3748"/>
+          <rect x="33" y="5" width="4" height="6" fill="#2d3748"/>
+          <!-- 顔 -->
+          <circle cx="31" cy="16" r="1.5" fill="#333"/>
+          <circle cx="39" cy="16" r="1.5" fill="#333"/>
+          <path d="M 33 20 Q 35 22 37 20" stroke="#333" stroke-width="1.5" fill="none"/>
+          <!-- メガネ -->
+          <circle cx="31" cy="16" r="4" stroke="#333" stroke-width="1" fill="none"/>
+          <circle cx="39" cy="16" r="4" stroke="#333" stroke-width="1" fill="none"/>
+          <line x1="35" y1="16" x2="35" y2="16" stroke="#333" stroke-width="1"/>
         </svg>
       </div>
       
@@ -418,11 +455,28 @@ function renderEnd() {
     
     <div class="result-card">
       <div class="result-character">
-        <svg width="80" height="100" viewBox="0 0 50 70">
-          <rect x="18" y="12" width="14" height="18" fill="#f0c040" rx="2"/>
-          <rect x="15" y="30" width="20" height="25" fill="#f0c040" rx="2"/>
-          <rect x="17" y="55" width="8" height="15" fill="#333" rx="1"/>
-          <rect x="25" y="55" width="8" height="15" fill="#333" rx="1"/>
+        <svg width="100" height="120" viewBox="0 0 70 90">
+          <!-- 頭 -->
+          <circle cx="35" cy="18" r="10" fill="#f0c040"/>
+          <!-- 体 -->
+          <rect x="25" y="30" width="20" height="25" fill="#f0c040" rx="4"/>
+          <!-- 腕 -->
+          <rect x="20" y="33" width="5" height="18" fill="#f0c040" rx="2" transform="rotate(-15 22 42)"/>
+          <rect x="45" y="33" width="5" height="18" fill="#f0c040" rx="2" transform="rotate(15 47 42)"/>
+          <!-- 足 -->
+          <rect x="27" y="55" width="7" height="18" fill="#2d3748" rx="2"/>
+          <rect x="36" y="55" width="7" height="18" fill="#2d3748" rx="2"/>
+          <!-- 博士帽 -->
+          <rect x="25" y="8" width="20" height="3" fill="#2d3748"/>
+          <rect x="33" y="5" width="4" height="6" fill="#2d3748"/>
+          <!-- 顔 -->
+          <circle cx="31" cy="16" r="1.5" fill="#333"/>
+          <circle cx="39" cy="16" r="1.5" fill="#333"/>
+          <path d="M 33 20 Q 35 22 37 20" stroke="#333" stroke-width="1.5" fill="none"/>
+          <!-- メガネ -->
+          <circle cx="31" cy="16" r="4" stroke="#333" stroke-width="1" fill="none"/>
+          <circle cx="39" cy="16" r="4" stroke="#333" stroke-width="1" fill="none"/>
+          <line x1="35" y1="16" x2="35" y2="16" stroke="#333" stroke-width="1"/>
         </svg>
       </div>
       
