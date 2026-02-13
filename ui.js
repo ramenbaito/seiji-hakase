@@ -858,13 +858,18 @@ function createResultScreen(answers) {
           <div class="summary-label">全政党マッチング</div>
           <div class="party-list-note">※ 各政党の公式見解を参考にした概算です</div>
           ${partyResults.map(function (p, i) {
-    var isTop = p.name === topParty.name
+    var isTop = i === 0
+    var isRunner = i === 1 || i === 2
+    var rank = isTop ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : ''
+    var nameStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
+    var fillOpacity = isTop ? 1 : isRunner ? 0.7 : 0.35
+    var pctStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
     return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out">' +
-      '<span class="party-row-name ' + (isTop ? 'match' : '') + '" style="' + (isTop ? 'color:' + p.color : '') + '">' + (isTop ? '★ ' : '') + p.name + '</span>' +
+      '<span class="party-row-name" style="' + nameStyle + '">' + rank + p.name + '</span>' +
       '<div class="party-row-bar">' +
-      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + (isTop ? 1 : 0.5) + '"></div>' +
+      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + fillOpacity + '"></div>' +
       '</div>' +
-      '<span class="party-row-pct" style="' + (isTop ? 'color:' + p.color + ';font-weight:800' : '') + '">' + p.match + '%</span>' +
+      '<span class="party-row-pct" style="' + pctStyle + '">' + p.match + '%</span>' +
       '</div>'
   }).join('')}
         </div>
@@ -1235,6 +1240,7 @@ function goBack() {
 
 function resetQuiz() {
   if (isTransitioning) return
+  if (!confirm("回答をリセットして最初からやり直しますか？")) return
 
   isTransitioning = true
   setTimeout(function () {

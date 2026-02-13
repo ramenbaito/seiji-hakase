@@ -653,7 +653,22 @@
     }
 
     .action-btn:hover {
-      transform: translateY(-1px)
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
+    }
+
+    .action-btn.left:hover {
+      border-color: rgba(78, 205, 196, 0.35);
+      background: rgba(78, 205, 196, 0.04)
+    }
+
+    .action-btn.right:hover {
+      border-color: rgba(255, 107, 107, 0.35);
+      background: rgba(255, 107, 107, 0.04)
+    }
+
+    .action-btn:active {
+      transform: translateY(0) scale(0.98)
     }
 
     .action-btn.left.active {
