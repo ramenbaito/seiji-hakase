@@ -1012,6 +1012,13 @@ function renderEnd() {
   var axisScores = calcAxisScores(state.answers)
   drawRadarChart("radarChart", axisScores)
 
+  // 政党バーのカウントアップアニメーション
+  document.querySelectorAll(".party-row-fill").forEach(function (fill) {
+    var targetWidth = fill.style.width
+    fill.style.width = "0%"
+    setTimeout(function () { fill.style.width = targetWidth }, 100)
+  })
+
   // キーボードリスナー解除
   document.removeEventListener("keydown", handleKeyNav)
 
