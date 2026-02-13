@@ -1372,6 +1372,13 @@ function bindFeedbackEvents() {
   if (els.fbOverlay) els.fbOverlay.addEventListener("click", function (e) {
     if (e.target === els.fbOverlay) closeFeedback()
   })
+
+  // ESCキーで閉じる
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && els.fbOverlay && els.fbOverlay.classList.contains("open")) {
+      closeFeedback()
+    }
+  })
 }
 
 function openFeedback() {
