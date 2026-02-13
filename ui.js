@@ -1193,6 +1193,10 @@ function updateSliderUI(value) {
     document.querySelector(".slider-end.right").classList.add("active")
   }
 
+  // aria-valuenow更新
+  var sliderEl = document.getElementById("slider")
+  if (sliderEl) sliderEl.setAttribute("aria-valuenow", value)
+
   // 説明テキスト更新
   var descEl = document.querySelector(".slider-desc")
   if (descEl) {
@@ -1316,7 +1320,11 @@ function goBack() {
 
   isTransitioning = true
   var card = document.querySelector(".quiz-card")
-  if (card) card.style.animation = "slideInLeft 0.3s ease-out"
+  if (card) {
+    card.style.transition = "opacity 0.2s, transform 0.2s"
+    card.style.opacity = "0"
+    card.style.transform = "translateX(20px)"
+  }
   setTimeout(function () {
     isTransitioning = false
     state.currentIndex--
