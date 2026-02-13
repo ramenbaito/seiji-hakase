@@ -62,10 +62,11 @@ function updateTaxDeltaHint(delta) {
   }
 }
 
-function createRPGScene(value) {
+function createRPGScene(value, question) {
   var leftOpacity = value < 0 ? Math.abs(value / 2) : 0.2
   var rightOpacity = value > 0 ? Math.abs(value / 2) : 0.2
   var mainX = 50 + (value * 15)
+  var sceneName = question.sceneName || "政治の街"
 
   return `
     <div class="rpg-scene">
@@ -74,18 +75,26 @@ function createRPGScene(value) {
     `<div class="star" style="left:${Math.random() * 100}%;top:${Math.random() * 60}%;animation-delay:${Math.random() * 2}s"></div>`
   ).join('')}
       </div>
-      
+
       <div class="buildings">
         ${[60, 80, 45, 90, 55, 70, 40].map(h =>
     `<div class="building" style="height:${h}px;width:${20 + Math.random() * 15}px"></div>`
   ).join('')}
       </div>
-      
+
       <div class="ground"></div>
       <div class="road">
         ${Array(5).fill(0).map(() => '<div class="road-line"></div>').join('')}
       </div>
-      
+
+      <div class="scene-label">${escapeHtml(sceneName)}</div>
+      <div class="hp-bar">
+        <span class="hp-label">HP</span>
+        <div class="hp-track">
+          <div class="hp-fill"></div>
+        </div>
+      </div>
+
       <div class="characters-left" style="opacity:${leftOpacity}">
         <svg width="40" height="60" viewBox="0 0 40 60" class="character">
           <circle cx="20" cy="12" r="6" fill="#FF6B6B"/>
@@ -99,7 +108,7 @@ function createRPGScene(value) {
           <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
-      
+
       <div class="characters-right" style="opacity:${rightOpacity}">
         <svg width="40" height="60" viewBox="0 0 40 60" class="character">
           <circle cx="20" cy="12" r="6" fill="#4ECDC4"/>
@@ -113,7 +122,7 @@ function createRPGScene(value) {
           <path d="M 18 14 Q 20 15 22 14" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
-      
+
       <div class="character main" style="left:${mainX}%">
         <svg width="50" height="70" viewBox="0 0 50 70">
           <circle cx="25" cy="15" r="8" fill="#FFE66D"/>
@@ -132,7 +141,7 @@ function createRPGScene(value) {
           <path d="M 23 17 Q 25 18 27 17" stroke="#2D3748" stroke-width="0.5" fill="none"/>
         </svg>
       </div>
-      
+
       <div class="arrow left">←</div>
       <div class="arrow right">→</div>
     </div>
@@ -150,13 +159,15 @@ function render() {
   var progressPct = Math.round((stage / TOTAL_QUESTIONS) * 100)
 
   var taxPreview = state.tax + getTaxDelta(q, value)
+  var narrative = q.narrative || "同じ街に、同時に起きている2つの現実があります。あなたは「どちらに近づくか」だけ決めてください。"
+  var sliderDesc = q.descriptions && q.descriptions[value.toString()] ? q.descriptions[value.toString()] : (value === 0 ? '中央' : value < 0 ? q.left.label : q.right.label)
 
   els.app.innerHTML = `
     <div class="rpg-header">
       <div class="rpg-title">🧓 政治博士 RPG</div>
       <div class="rpg-stage">STAGE ${stage}/${TOTAL_QUESTIONS}</div>
     </div>
-    
+
     <div class="exp-bar">
       <span class="exp-label">EXP</span>
       <div class="exp-track">
@@ -164,14 +175,14 @@ function render() {
       </div>
       <span class="exp-pct">${progressPct}%</span>
     </div>
-    
-    ${createRPGScene(value)}
-    
+
+    ${createRPGScene(value, q)}
+
     <div class="question-card">
       <h2 class="question-title">${escapeHtml(q.title)}</h2>
-      <p class="question-desc">${escapeHtml(q.subtitle)}</p>
+      <p class="question-desc">${escapeHtml(narrative)}</p>
     </div>
-    
+
     <div class="action-section">
       <div class="action-header">
         <svg class="action-icon" fill="currentColor" viewBox="0 0 20 20">
@@ -179,25 +190,25 @@ function render() {
         </svg>
         <span class="action-title">行動を選択</span>
       </div>
-      
+
       <div class="action-buttons">
         <div class="action-btn left ${leftActive ? 'active' : ''}" data-side="left">
           <div class="action-letter">A</div>
           <div class="action-content">
             <div class="action-label">${escapeHtml(q.left.label)}</div>
-            <div class="action-hint">${escapeHtml(q.left.desc)}</div>
+            <div class="action-hint">${escapeHtml(q.left.hint || q.left.desc || '')}</div>
           </div>
         </div>
-        
+
         <div class="action-btn right ${rightActive ? 'active' : ''}" data-side="right">
           <div class="action-letter">B</div>
           <div class="action-content">
             <div class="action-label">${escapeHtml(q.right.label)}</div>
-            <div class="action-hint">${escapeHtml(q.right.desc)}</div>
+            <div class="action-hint">${escapeHtml(q.right.hint || q.right.desc || '')}</div>
           </div>
         </div>
       </div>
-      
+
       <div class="slider-section">
         <div class="slider-label">どちらに近づける？</div>
         <div class="slider-row">
@@ -205,10 +216,10 @@ function render() {
           <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}" />
           <div class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(q.right.label)}</div>
         </div>
-        <div class="slider-desc">${value === 0 ? '中央' : value < 0 ? q.left.label : q.right.label}</div>
+        <div class="slider-desc">${escapeHtml(sliderDesc)}</div>
       </div>
     </div>
-    
+
     <div class="tax-section">
       <div class="tax-label">税金ゲージ</div>
       <div class="tax-bar">
@@ -218,7 +229,7 @@ function render() {
       <div class="tax-value" id="taxValue">${taxPreview}</div>
     </div>
     <div class="tax-delta" id="taxDeltaText"></div>
-    
+
     <div class="controls">
       <div class="note">※ 正解や善悪を示すものではありません。距離感として選んでください。</div>
       <div class="control-buttons">
