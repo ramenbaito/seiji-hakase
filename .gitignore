@@ -1,0 +1,5 @@
+.DS_Store
+*.swp
+*.swo
+*~
+windsurf_deployment.yaml

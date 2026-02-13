@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>政治博士</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1115;
+      --panel: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.62);
+      --muted2: rgba(255, 255, 255, 0.44);
+      --accent: #f0c040;
+      --left: #6ea8ff;
+      --right: #ff9a6e;
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 800px at 30% -10%, rgba(240, 192, 64, 0.12), transparent 60%),
+        radial-gradient(1000px 700px at 90% 10%, rgba(110, 168, 255, 0.1), transparent 55%),
+        radial-gradient(900px 700px at 60% 120%, rgba(255, 154, 110, 0.09), transparent 55%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 22px 14px
+    }
+
+    .app {
+      width: min(880px, 100%)
+    }
+
+    .top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+      text-transform: uppercase
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted2)
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 192, 64, 0.28);
+      background: rgba(240, 192, 64, 0.08);
+      color: rgba(240, 192, 64, 0.92);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .card {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden
+    }
+
+    .cardInner {
+      padding: 16px
+    }
+
+    .progressRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px
+    }
+
+    .bar {
+      flex: 1;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden
+    }
+
+    .bar>div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, rgba(240, 192, 64, 0.9), rgba(240, 192, 64, 0.25));
+      transition: width 220ms ease
+    }
+
+    .progressText {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      min-width: 70px;
+      text-align: right
+    }
+
+    .tax {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(0, 0, 0, 0.12)
+    }
+
+    .taxLabel {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.76)
+    }
+
+    .rangeWrap {
+      position: relative
+    }
+
+    .policyDot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e74c3c;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+      z-index: 2;
+      pointer-events: none
+    }
+
+    .policyDotLabel {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(231, 76, 60, 0.85);
+      transform: translateX(-50%);
+      white-space: nowrap
+    }
+
+    .taxDeltaText {
+      padding: 4px 16px;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 700;
+      min-height: 20px
+    }
+
+    .taxValue {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      min-width: 52px;
+      text-align: right
+    }
+
+    .taxBar {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden
+    }
+
+    .taxBar .center {
+      position: absolute;
+      top: -6px;
+      bottom: -6px;
+      left: 50%;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.24);
+      transform: translateX(-0.5px)
+    }
+
+    .taxBar .fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      background: linear-gradient(90deg, rgba(110, 168, 255, 0.85), rgba(240, 192, 64, 0.75), rgba(255, 154, 110, 0.85));
+      transition: width 220ms ease, left 220ms ease
+    }
+
+    .qTitle {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 900
+    }
+
+    .qSub {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted)
+    }
+
+    .choices {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px
+    }
+
+    @media(min-width:720px) {
+      .choices {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    .choice {
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(0, 0, 0, 0.14);
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 76px;
+      transition: transform 220ms ease, border-color 220ms ease, background 220ms ease
+    }
+
+    .choice .icon {
+      font-size: 22px;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      flex: 0 0 auto
+    }
+
+    .choice .meta {
+      display: grid;
+      gap: 3px
+    }
+
+    .choice .meta .label {
+      font-size: 14px;
+      font-weight: 900
+    }
+
+    .choice .meta .desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45
+    }
+
+    .choice[data-side="left"] {
+      transform: translateX(var(--lx, 0px))
+    }
+
+    .choice[data-side="right"] {
+      transform: translateX(var(--rx, 0px))
+    }
+
+    .choice[data-active="true"][data-side="left"] {
+      border-color: rgba(110, 168, 255, 0.42);
+      background: rgba(110, 168, 255, 0.08)
+    }
+
+    .choice[data-active="true"][data-side="right"] {
+      border-color: rgba(255, 154, 110, 0.42);
+      background: rgba(255, 154, 110, 0.08)
+    }
+
+    .choice[data-active="true"][data-side="left"] .icon {
+      border-color: rgba(110, 168, 255, 0.38);
+      background: rgba(110, 168, 255, 0.12)
+    }
+
+    .choice[data-active="true"][data-side="right"] .icon {
+      border-color: rgba(255, 154, 110, 0.38);
+      background: rgba(255, 154, 110, 0.12)
+    }
+
+    .sliderBlock {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04)
+    }
+
+    .sliderHead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .sliderHead .hint {
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 700
+    }
+
+    .rangeRow {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px
+    }
+
+    .rangeRow .ends {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800
+    }
+
+    .end {
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.12);
+      text-align: center
+    }
+
+    .end.left.active {
+      border-color: rgba(110, 168, 255, 0.35);
+      color: rgba(110, 168, 255, 0.95)
+    }
+
+    .end.right.active {
+      border-color: rgba(255, 154, 110, 0.35);
+      color: rgba(255, 154, 110, 0.95)
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      outline: none
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      border: 2px solid rgba(240, 192, 64, 0.6);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45)
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      border: 2px solid rgba(240, 192, 64, 0.6);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45)
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .btn {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(0, 0, 0, 0.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
+      transition: filter 160ms ease, transform 160ms ease, opacity 160ms ease
+    }
+
+    .btn:hover {
+      filter: brightness(1.12)
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    .btn.primary {
+      border-color: rgba(240, 192, 64, 0.35);
+      background: rgba(240, 192, 64, 0.14);
+      color: rgba(240, 192, 64, 0.95)
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed
+    }
+
+    .footnote {
+      margin-top: 12px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.55
+    }
+
+    .fade {
+      animation: fade 180ms ease
+    }
+
+    .radarWrap {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0
+    }
+
+    .resultSection {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04)
+    }
+
+    .resultHeading {
+      font-size: 13px;
+      font-weight: 900;
+      color: rgba(240, 192, 64, 0.9);
+      margin-bottom: 10px;
+      letter-spacing: 0.04em
+    }
+
+    .resultNote {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      margin: 0 0 10px
+    }
+
+    .axisRow {
+      margin-bottom: 12px
+    }
+
+    .axisRow:last-child {
+      margin-bottom: 0
+    }
+
+    .axisLabel {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px
+    }
+
+    .axisEnds {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--muted2);
+      margin-bottom: 4px
+    }
+
+    .axisBar {
+      position: relative;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: visible
+    }
+
+    .axisFill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(110, 168, 255, 0.7), rgba(240, 192, 64, 0.7), rgba(255, 154, 110, 0.7));
+      transition: width 300ms ease
+    }
+
+    .axisDot {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #f0c040;
+      border: 2px solid rgba(240, 192, 64, 0.6);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px rgba(240, 192, 64, 0.4)
+    }
+
+    .axisScore {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 2px
+    }
+
+    .partyRow {
+      display: grid;
+      grid-template-columns: 90px 1fr 40px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px
+    }
+
+    .partyRow:last-child {
+      margin-bottom: 0
+    }
+
+    .partyName {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text)
+    }
+
+    .partyBar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden
+    }
+
+    .partyFill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 400ms ease
+    }
+
+    .partyPct {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: right
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .fbBtn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 100;
+      transition: background 160ms ease, color 160ms ease
+    }
+
+    .fbBtn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7)
+    }
+
+    .fbOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 200;
+      place-items: center
+    }
+
+    .fbOverlay.open {
+      display: grid
+    }
+
+    .fbModal {
+      width: min(420px, 90vw);
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #1a1a1a;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5)
+    }
+
+    .fbModal h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--text)
+    }
+
+    .fbModal p {
+      margin: 0 0 12px;
+      font-size: 12px;
+      color: var(--muted2)
+    }
+
+    .fbModal textarea {
+      width: 100%;
+      height: 120px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 13px;
+      padding: 10px;
+      resize: vertical;
+      font-family: inherit
+    }
+
+    .fbModal textarea:focus {
+      outline: none;
+      border-color: rgba(240, 192, 64, 0.4)
+    }
+
+    .fbActions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px
+    }
+
+    .fbActions button {
+      border-radius: 12px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: filter 160ms ease
+    }
+
+    .fbCancel {
+      background: transparent;
+      color: var(--muted)
+    }
+
+    .fbSend {
+      background: rgba(240, 192, 64, 0.14);
+      border-color: rgba(240, 192, 64, 0.35) !important;
+      color: rgba(240, 192, 64, 0.95)
+    }
+
+    .fbSend:disabled {
+      opacity: 0.4;
+      cursor: not-allowed
+    }
+
+    .fbStatus {
+      margin-top: 8px;
+      font-size: 11px;
+      text-align: center;
+      min-height: 16px
+    }
+  </style>
+</head>
+
+<body>
+  <button class="fbBtn" id="fbOpen" type="button">☁️ フィードバック</button>
+  <div class="fbOverlay" id="fbOverlay">
+    <div class="fbModal">
+      <h3>フィードバック</h3>
+      <p>個人情報は不要です。気になったことを自由に書いてください。</p>
+      <textarea id="fbText" placeholder="ここに入力..."></textarea>
+      <div class="fbStatus" id="fbStatus"></div>
+      <div class="fbActions">
+        <button class="fbCancel" id="fbCancel" type="button">閉じる</button>
+        <button class="fbSend" id="fbSend" type="button">送信</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="app">
+      <div class="top">
+        <div class="brand">
+          <h1>🧓 政治博士</h1>
+          <p>どちらが正しいかではなく、どちらに近づきたいか</p>
+        </div>
+        <div class="pill" id="progressPill">Q1/15</div>
+      </div>
+
+      <div class="card" aria-live="polite">
+        <div class="cardInner" id="screen"></div>
+        <div class="tax" id="taxRow">
+          <div class="taxLabel">税金ゲージ</div>
+          <div class="taxBar" aria-hidden="true">
+            <div class="center"></div>
+            <div class="fill" id="taxFill"></div>
+          </div>
+          <div class="taxValue" id="taxValue">0</div>
+        </div>
+        <div class="taxDeltaText" id="taxDeltaText"></div>
+      </div>
+
+      <div class="footnote">※ 正解や善悪を示すものではありません。距離感として選んでください。</div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="scoring.js"></script>
+  <script src="ui.js"></script>
+</body>
+
+</html>
