@@ -624,6 +624,93 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
 // ═══════════════════════════════════════════════════════════
 // v0風の結果画面
 // ═══════════════════════════════════════════════════════════
+function drawRadarChart(canvasId, scores) {
+  var canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  var ctx = canvas.getContext("2d")
+  var w = canvas.width
+  var h = canvas.height
+  var cx = w / 2
+  var cy = h / 2
+  var r = Math.min(cx, cy) - 30
+
+  var axes = ["merit_equity", "small_big", "free_norm", "open_protect", "now_future"]
+  var labels = ["分配", "政府", "自由", "開放", "時間"]
+  var n = axes.length
+  var angleStep = (Math.PI * 2) / n
+  var startAngle = -Math.PI / 2
+
+  ctx.clearRect(0, 0, w, h)
+
+  // グリッド線（3段階）
+  for (var g = 1; g <= 3; g++) {
+    ctx.beginPath()
+    var gr = r * g / 3
+    for (var i = 0; i <= n; i++) {
+      var angle = startAngle + i * angleStep
+      var x = cx + gr * Math.cos(angle)
+      var y = cy + gr * Math.sin(angle)
+      if (i === 0) ctx.moveTo(x, y)
+      else ctx.lineTo(x, y)
+    }
+    ctx.strokeStyle = "rgba(255,255,255,0.08)"
+    ctx.lineWidth = 1
+    ctx.stroke()
+  }
+
+  // 軸線
+  for (var j = 0; j < n; j++) {
+    var angle = startAngle + j * angleStep
+    ctx.beginPath()
+    ctx.moveTo(cx, cy)
+    ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle))
+    ctx.strokeStyle = "rgba(255,255,255,0.1)"
+    ctx.lineWidth = 1
+    ctx.stroke()
+  }
+
+  // データエリア
+  ctx.beginPath()
+  for (var k = 0; k < n; k++) {
+    var val = (scores[axes[k]] || 50) / 100
+    var angle = startAngle + k * angleStep
+    var x = cx + r * val * Math.cos(angle)
+    var y = cy + r * val * Math.sin(angle)
+    if (k === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = "rgba(78, 205, 196, 0.15)"
+  ctx.fill()
+  ctx.strokeStyle = "rgba(78, 205, 196, 0.7)"
+  ctx.lineWidth = 2
+  ctx.stroke()
+
+  // データ点
+  for (var m = 0; m < n; m++) {
+    var val = (scores[axes[m]] || 50) / 100
+    var angle = startAngle + m * angleStep
+    var x = cx + r * val * Math.cos(angle)
+    var y = cy + r * val * Math.sin(angle)
+    ctx.beginPath()
+    ctx.arc(x, y, 4, 0, Math.PI * 2)
+    ctx.fillStyle = "#4ECDC4"
+    ctx.fill()
+  }
+
+  // ラベル
+  ctx.font = "11px sans-serif"
+  ctx.fillStyle = "rgba(255,255,240,0.6)"
+  ctx.textAlign = "center"
+  ctx.textBaseline = "middle"
+  for (var l = 0; l < n; l++) {
+    var angle = startAngle + l * angleStep
+    var lx = cx + (r + 18) * Math.cos(angle)
+    var ly = cy + (r + 18) * Math.sin(angle)
+    ctx.fillText(labels[l], lx, ly)
+  }
+}
+
 function generateTendencyText(scores) {
   var parts = []
   // merit_equity
@@ -705,6 +792,11 @@ function createResultScreen(answers) {
           <div class="party-match-label">あなたに最も近い政党</div>
           <div class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</div>
           <div class="party-desc">マッチ度 ${topParty.match}%</div>
+        </div>
+        
+        <!-- レーダーチャート -->
+        <div style="display:flex;justify-content:center;padding:8px 0">
+          <canvas id="radarChart" width="240" height="240" style="max-width:100%"></canvas>
         </div>
         
         <!-- あなたの傾向 -->
@@ -839,6 +931,13 @@ function renderEnd() {
     starFieldAnimation.destroy()
     starFieldAnimation = null
   }
+
+  // レーダーチャート描画
+  var axisScores = calcAxisScores(state.answers)
+  drawRadarChart("radarChart", axisScores)
+
+  // キーボードリスナー解除
+  document.removeEventListener("keydown", handleKeyNav)
 
   bindResultEvents()
 }
