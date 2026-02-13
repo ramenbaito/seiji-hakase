@@ -836,7 +836,7 @@ function createResultScreen(answers) {
         
         <!-- レーダーチャート -->
         <div style="display:flex;justify-content:center;padding:8px 0">
-          <canvas id="radarChart" width="240" height="240" style="max-width:100%"></canvas>
+          <canvas id="radarChart" width="280" height="280" style="max-width:100%"></canvas>
         </div>
         
         <!-- あなたの傾向 -->
