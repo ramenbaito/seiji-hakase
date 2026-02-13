@@ -1361,7 +1361,7 @@ function goBack() {
     state.currentIndex--
     saveState(state)
     render()
-  }, 300)
+  }, 250)
 }
 
 function resetQuiz() {
