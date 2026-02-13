@@ -526,7 +526,13 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
         <div class="rpg-title">
           <span>政治博士</span>
         </div>
-        <div class="rpg-stage">${idx + 1} / ${total}</div>
+        <div class="rpg-stage">
+          <div class="progress-dots">${Array.from({ length: total }, function (_, i) {
+    var cls = i < idx ? 'done' : i === idx ? 'current' : ''
+    return '<span class="pdot ' + cls + '"></span>'
+  }).join('')}</div>
+          <span>${idx + 1} / ${total}</span>
+        </div>
       </div>
       
       <!-- ステータスバー -->
