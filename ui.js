@@ -1229,6 +1229,14 @@ function confirmAnswer() {
   var slider = document.getElementById("slider")
   if (!slider) return
 
+  // fade-out効果
+  var card = document.querySelector(".quiz-card")
+  if (card) {
+    card.style.transition = "opacity 0.2s, transform 0.2s"
+    card.style.opacity = "0"
+    card.style.transform = "translateX(-20px)"
+  }
+
   var value = clampValue(slider.value)
   var q = QUESTIONS[state.currentIndex]
 
