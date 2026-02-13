@@ -1166,7 +1166,7 @@ function shareResult() {
   var text = "【政治博士】政党診断の結果\n\n" +
     "🏛️ 最も近い政党: " + topParty.name + "（" + topParty.match + "%）\n" +
     "📊 " + axes.merit_equity + " / " + axes.small_big + "\n\n" +
-    "15問で分かる、あなたの政治傾向 👉\n" + window.location.href
+    "15問で分かる、あなたの政治傾向 👉\n" + window.location.href + "\n\n#政治博士 #政党診断"
 
   if (navigator.share) {
     navigator.share({ title: "政治博士", text: text }).catch(function () { })
