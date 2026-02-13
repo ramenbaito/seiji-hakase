@@ -880,7 +880,9 @@ function createResultScreen(answers) {
           ${entries.map(function (entry) {
     var id = entry[0], v = entry[1].value || 0
     var posClass = v === 0 ? 'neutral' : v < 0 ? 'left' : 'right'
-    return '<div class="answer-row">' +
+    var qData = QUESTIONS.find(function (q) { return q.id === id })
+    var qTitle = qData ? qData.title : id
+    return '<div class="answer-row" title="' + qTitle + '">' +
       '<span class="answer-id">' + id + '</span>' +
       '<div class="answer-bar">' +
       '<div class="answer-center"></div>' +
