@@ -921,7 +921,10 @@ function createResultScreen(answers) {
       </div>
       
       <div class="result-controls">
-        <span class="result-note">あくまで参考です。実際の投票は自分でよく考えて決めてね！</span>
+        <div class="result-disclaimer">
+          <p>⚠️ この診断はあくまで参考です。各政党の公式見解を簡略化しており、すべての政策を反映しているわけではありません。</p>
+          <p>実際の投票は、候補者の政策や人柄をよく調べてから決めてくださいね。</p>
+        </div>
         <div style="display:flex;gap:8px">
           <button type="button" class="result-reset" id="shareBtn">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
