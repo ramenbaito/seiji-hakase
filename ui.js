@@ -962,6 +962,23 @@ function render() {
 
   els.app.innerHTML = createQuizCard(q, state.currentIndex, TOTAL_QUESTIONS, value, currentLevel, taxGauge)
 
+  // タイプライター効果（ナラティブ）
+  var descEl = document.querySelector(".question-desc")
+  if (descEl) {
+    var fullText = descEl.textContent
+    descEl.textContent = ""
+    descEl.style.minHeight = "3em"
+    var charIdx = 0
+    var typeTimer = setInterval(function () {
+      if (charIdx < fullText.length) {
+        descEl.textContent += fullText[charIdx]
+        charIdx++
+      } else {
+        clearInterval(typeTimer)
+      }
+    }, 25)
+  }
+
   // ページトップへスクロール
   window.scrollTo({ top: 0, behavior: 'smooth' })
 
