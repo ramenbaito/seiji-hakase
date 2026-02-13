@@ -435,4 +435,13 @@ var FEEDBACK_URL = "https://script.google.com/macros/s/AKfycbxtEHNqu4ZK-vD34TgVE
       saveState(state)
     }
     render()
+
+    // スプラッシュ画面を1.5秒後に消す
+    var splash = document.getElementById("splash")
+    if (splash) {
+      setTimeout(function () {
+        splash.classList.add("hide")
+        setTimeout(function () { splash.remove() }, 500)
+      }, 1500)
+    }
   })()
