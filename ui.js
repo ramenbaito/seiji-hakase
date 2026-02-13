@@ -784,7 +784,7 @@ function createResultScreen(answers) {
 
   return `
     <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px">
-      <div class="result-header">
+      <div class="result-header" style="animation:fadeScale 0.5s ease-out">
         <div class="result-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
