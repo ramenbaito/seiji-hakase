@@ -920,7 +920,7 @@ function createResultScreen(answers) {
         </div>
       </div>
       
-      <div class="result-controls">
+      <div class="result-controls" style="animation:slideInRight 0.5s ease-out 0.4s both">
         <div class="result-disclaimer">
           <p>⚠️ この診断はあくまで参考です。各政党の公式見解を簡略化しており、すべての政策を反映しているわけではありません。</p>
           <p>実際の投票は、候補者の政策や人柄をよく調べてから決めてくださいね。</p>
