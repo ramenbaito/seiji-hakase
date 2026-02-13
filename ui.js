@@ -1103,6 +1103,9 @@ function handleKeyNav(e) {
   } else if (e.key === "Enter") {
     confirmAnswer()
     e.preventDefault()
+  } else if (e.key === "Backspace") {
+    goBack()
+    e.preventDefault()
   } else if (e.key === "a" || e.key === "A") {
     slider.value = Math.max(-2, parseInt(slider.value) - 1)
     updateSliderUI(clampValue(slider.value))
