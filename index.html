@@ -764,8 +764,15 @@
       width: 40px;
       height: 2px;
       background: linear-gradient(90deg, transparent, rgba(240, 192, 64, 0.6), transparent);
-      margin: 16px auto 0;
+      margin: 16px auto 12px;
       animation: splashPulse 1s ease infinite
+    }
+
+    .splashCredit {
+      font-size: 10px;
+      color: var(--muted2);
+      letter-spacing: 0.06em;
+      opacity: 0.7
     }
 
     @keyframes splashIn {
@@ -1131,6 +1138,7 @@
       <h1 class="splashTitle">政治博士</h1>
       <p class="splashSub">どちらが正しいかではなく、どちらに近づきたいか</p>
       <div class="splashLine"></div>
+      <div class="splashCredit">powered by hazuki</div>
     </div>
   </div>
   <button class="fbBtn" id="fbOpen" type="button">☁️ フィードバック</button>
