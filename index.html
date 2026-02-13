@@ -139,6 +139,30 @@
       }
     }
 
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
     @keyframes textReveal {
       from {
         opacity: 0;
@@ -291,6 +315,13 @@
       background: linear-gradient(180deg, #0a0e1a 0%, #1a2340 35%, #2a3a5a 70%, #3a4a5a 100%)
     }
 
+    @media (max-width: 480px) {
+      .rpg-scene {
+        aspect-ratio: 4/3;
+        border-radius: 12px
+      }
+    }
+
     .star-canvas {
       position: absolute;
       inset: 0;
@@ -387,6 +418,16 @@
       color: var(--accent-yellow);
       border: 1px solid rgba(255, 230, 109, 0.4);
       background: rgba(10, 14, 26, 0.85);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap
+    }
+
+    .scene-time {
+      font-size: 10px;
+      opacity: 0.6;
+      font-weight: 600;
       backdrop-filter: blur(8px)
     }
 
@@ -539,16 +580,17 @@
 
     .question-title {
       color: var(--text-primary);
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
+      line-height: 1.4;
       margin-bottom: 4px;
       animation: textReveal 0.5s ease-out
     }
 
     .question-desc {
       color: var(--text-secondary);
-      font-size: 12px;
-      line-height: 1.6
+      font-size: 13px;
+      line-height: 1.7
     }
 
     /* v0風のアクションセクション */
@@ -745,6 +787,42 @@
     .slider-end.right.active {
       color: var(--accent-orange);
       border-color: rgba(255, 107, 107, 0.3)
+    }
+
+    .slider-steps {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 56px;
+      margin-top: 4px
+    }
+
+    .slider-steps .step {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border-color);
+      transition: all 0.2s
+    }
+
+    .slider-steps .step.center {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted)
+    }
+
+    .slider-steps .step.active.left {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 6px rgba(78, 205, 196, 0.4)
+    }
+
+    .slider-steps .step.active.right {
+      background: var(--accent-orange);
+      box-shadow: 0 0 6px rgba(255, 107, 107, 0.4)
+    }
+
+    .slider-steps .step.active:not(.left):not(.right) {
+      background: var(--accent-yellow);
+      box-shadow: 0 0 6px rgba(255, 230, 109, 0.4)
     }
 
     .slider-desc {
@@ -1059,6 +1137,27 @@
       color: var(--accent-orange)
     }
 
+    .axis-desc-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+      margin: -2px 0 6px 0
+    }
+
+    .axis-side {
+      font-size: 9px;
+      font-weight: 600;
+      opacity: 0.5
+    }
+
+    .axis-side.left {
+      color: var(--accent-cyan)
+    }
+
+    .axis-side.right {
+      color: var(--accent-orange)
+    }
+
     .result-divider {
       margin: 16px 0;
       height: 1px;
@@ -1121,10 +1220,16 @@
     }
 
     .party-row-pct {
-      width: 32px;
-      font-size: 10px;
+      width: 36px;
+      font-size: 11px;
       font-weight: 600;
       text-align: right
+    }
+
+    .party-list-note {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 8px
     }
 
     .result-controls {

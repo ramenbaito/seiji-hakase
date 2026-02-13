@@ -208,16 +208,18 @@ function createNPCSVGS(side, active, intensity) {
 // v0風のRPGシーン
 // ═══════════════════════════════════════════════════════════
 function getTimeOfDay(idx) {
-  // Q1(0)=早朝5時 → Q15(14)=深夜23時 として時間を計算
+  // Q1(0)=早朝5時 → Q15(14)=深夜23時
   var hour = 5 + Math.round(idx * (18 / 14))
-  if (hour <= 6) return { label: "早朝", sky: "linear-gradient(180deg, #1a1a3e 0%, #4a3a6a 30%, #e8a060 70%, #f0c888 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.15 }
-  if (hour <= 8) return { label: "朝", sky: "linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #FFE4B5 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
-  if (hour <= 11) return { label: "午前", sky: "linear-gradient(180deg, #5BA3D9 0%, #87CEEB 50%, #A8D8FF 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
-  if (hour <= 14) return { label: "昼", sky: "linear-gradient(180deg, #4A90D9 0%, #6BB5FF 50%, #87CEEB 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
-  if (hour <= 16) return { label: "午後", sky: "linear-gradient(180deg, #5A8FCE 0%, #87BBDE 50%, #C8A86E 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
-  if (hour <= 18) return { label: "夕方", sky: "linear-gradient(180deg, #2a1a4a 0%, #c44a20 30%, #f0a040 60%, #ffe880 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.3 }
-  if (hour <= 20) return { label: "夜", sky: "linear-gradient(180deg, #0a1628 0%, #1a2a4a 50%, #2a3a5a 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.6 }
-  return { label: "深夜", sky: "linear-gradient(180deg, #050a14 0%, #0F1923 40%, #1a2744 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.8 }
+  var min = (idx * 77) % 60 // 疑似的な分（バラけるように）
+  var timeStr = hour + ":" + (min < 10 ? "0" : "") + min
+  if (hour <= 6) return { label: "早朝", timeStr: timeStr, sky: "linear-gradient(180deg, #1a1a3e 0%, #4a3a6a 30%, #e8a060 70%, #f0c888 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.15 }
+  if (hour <= 8) return { label: "朝", timeStr: timeStr, sky: "linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #FFE4B5 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
+  if (hour <= 11) return { label: "午前", timeStr: timeStr, sky: "linear-gradient(180deg, #5BA3D9 0%, #87CEEB 50%, #A8D8FF 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
+  if (hour <= 14) return { label: "昼", timeStr: timeStr, sky: "linear-gradient(180deg, #4A90D9 0%, #6BB5FF 50%, #87CEEB 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.05 }
+  if (hour <= 16) return { label: "午後", timeStr: timeStr, sky: "linear-gradient(180deg, #5A8FCE 0%, #87BBDE 50%, #C8A86E 100%)", showMoon: false, showSun: true, sunLow: false, stars: false, windowGlow: 0.1 }
+  if (hour <= 18) return { label: "夕方", timeStr: timeStr, sky: "linear-gradient(180deg, #2a1a4a 0%, #c44a20 30%, #f0a040 60%, #ffe880 100%)", showMoon: false, showSun: true, sunLow: true, stars: false, windowGlow: 0.3 }
+  if (hour <= 20) return { label: "夜", timeStr: timeStr, sky: "linear-gradient(180deg, #0a1628 0%, #1a2a4a 50%, #2a3a5a 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.6 }
+  return { label: "深夜", timeStr: timeStr, sky: "linear-gradient(180deg, #050a14 0%, #0F1923 40%, #1a2744 100%)", showMoon: true, showSun: false, sunLow: false, stars: true, windowGlow: 0.8 }
 }
 
 function createRPGScene(value, question, idx) {
@@ -264,7 +266,10 @@ function createRPGScene(value, question, idx) {
       </div>
       
       <!-- シーンラベル -->
-      <div class="scene-label">${escapeHtml(sceneName)}</div>
+      <div class="scene-label">
+        <span class="scene-time">${time.timeStr}</span>
+        ${escapeHtml(sceneName)}
+      </div>
       
       
       <!-- 左キャラクター -->
@@ -308,7 +313,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
   }
 
   return `
-    <div class="quiz-card" style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:680px;animation:fadeScale 0.5s ease-out">
+    <div class="quiz-card" style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:680px;animation:slideInRight 0.4s ease-out">
       <!-- ヘッダー -->
       <div class="rpg-header">
         <div class="rpg-title">
@@ -380,6 +385,13 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
             <span class="slider-end left ${leftActive ? 'active' : ''}">${escapeHtml(question.left.label)}</span>
             <input type="range" class="rpg-slider" id="slider" min="-2" max="2" step="1" value="${value}"/>
             <span class="slider-end right ${rightActive ? 'active' : ''}">${escapeHtml(question.right.label)}</span>
+          </div>
+          <div class="slider-steps">
+            <span class="step ${value === -2 ? 'active left' : ''}"></span>
+            <span class="step ${value === -1 ? 'active left' : ''}"></span>
+            <span class="step center ${value === 0 ? 'active' : ''}"></span>
+            <span class="step ${value === 1 ? 'active right' : ''}"></span>
+            <span class="step ${value === 2 ? 'active right' : ''}"></span>
           </div>
           <div class="slider-desc ${value === 0 ? 'neutral' : value < 0 ? 'left' : 'right'}">${labels[value]}</div>
         </div>
@@ -464,10 +476,18 @@ function createResultScreen(answers) {
         
         <!-- 5軸スコア -->
         <div class="answer-summary">
-          <div class="summary-label">5軸スコア</div>
+          <div class="summary-label">あなたの政治傾向（5つの軸）</div>
           ${["merit_equity", "small_big", "free_norm", "open_protect", "now_future"].map(function (ax) {
     var score = axisScores[ax]
     var posClass = score < 40 ? 'left' : score > 60 ? 'right' : 'neutral'
+    var axisDesc = {
+      merit_equity: { left: "実力主義", right: "平等重視" },
+      small_big: { left: "小さな政府", right: "大きな政府" },
+      free_norm: { left: "自由優先", right: "ルール重視" },
+      open_protect: { left: "開放的", right: "保護的" },
+      now_future: { left: "今を重視", right: "未来を重視" }
+    }
+    var desc = axisDesc[ax] || { left: "", right: "" }
     return '<div class="answer-row">' +
       '<span class="answer-id" style="min-width:72px">' + AXIS_NAMES[ax] + '</span>' +
       '<div class="answer-bar">' +
@@ -475,6 +495,10 @@ function createResultScreen(answers) {
       '<div class="answer-dot ' + posClass + '" style="left:' + score + '%"></div>' +
       '</div>' +
       '<span class="answer-value ' + posClass + '">' + score + '</span>' +
+      '</div>' +
+      '<div class="axis-desc-row">' +
+      '<span class="axis-side left">' + desc.left + '</span>' +
+      '<span class="axis-side right">' + desc.right + '</span>' +
       '</div>'
   }).join('')}
         </div>
@@ -500,15 +524,16 @@ function createResultScreen(answers) {
         
         <!-- 全政党比較 -->
         <div class="party-list">
-          <div class="summary-label">政党マッチング</div>
-          ${partyResults.map(function (p) {
+          <div class="summary-label">全政党マッチング</div>
+          <div class="party-list-note">※ 各政党の公式見解を参考にした概算です</div>
+          ${partyResults.map(function (p, i) {
     var isTop = p.name === topParty.name
-    return '<div class="party-row">' +
-      '<span class="party-row-name ' + (isTop ? 'match' : '') + '" style="' + (isTop ? 'color:' + p.color : '') + '">' + p.name + '</span>' +
+    return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out">' +
+      '<span class="party-row-name ' + (isTop ? 'match' : '') + '" style="' + (isTop ? 'color:' + p.color : '') + '">' + (isTop ? '★ ' : '') + p.name + '</span>' +
       '<div class="party-row-bar">' +
-      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + (isTop ? 1 : 0.4) + '"></div>' +
+      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + (isTop ? 1 : 0.5) + '"></div>' +
       '</div>' +
-      '<span class="party-row-pct" style="' + (isTop ? 'color:' + p.color : '') + '">' + p.match + '%</span>' +
+      '<span class="party-row-pct" style="' + (isTop ? 'color:' + p.color + ';font-weight:800' : '') + '">' + p.match + '%</span>' +
       '</div>'
   }).join('')}
         </div>
@@ -797,6 +822,8 @@ function goBack() {
   if (isTransitioning || state.currentIndex === 0) return
 
   isTransitioning = true
+  var card = document.querySelector(".quiz-card")
+  if (card) card.style.animation = "slideInLeft 0.3s ease-out"
   setTimeout(function () {
     isTransitioning = false
     state.currentIndex--
@@ -857,27 +884,37 @@ function sendFeedback() {
   var text = els.fbText ? els.fbText.value.trim() : ""
   if (!text) return
 
+  if (els.fbSend) {
+    els.fbSend.disabled = true
+    els.fbSend.textContent = "送信中..."
+  }
   if (els.fbStatus) els.fbStatus.textContent = "送信中..."
 
-  // Google Apps Scriptに送信
-  fetch("https://script.google.com/macros/s/AKfycbzbVZfVY-OcHlFPqC3Mf4f3b5t9lNQhQfXZf6dGhQk/exec", {
+  // Google Apps Scriptに送信（no-corsでCORS回避）
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbxtEHNqu4ZK-vD34TgVE-btkB04mTXi0P8IOdk9LSOJfnF8XNjK8WPOqaoQhYJUcN02rg/exec"
+  var params = new URLSearchParams()
+  params.append("feedback", text)
+  params.append("timestamp", new Date().toISOString())
+  params.append("userAgent", navigator.userAgent)
+  params.append("url", window.location.href)
+
+  fetch(GAS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      feedback: text,
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-      url: window.location.href
-    })
+    body: params
   })
-    .then(function (res) { return res.json() })
-    .then(function (data) {
-      if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了"
-      setTimeout(closeFeedback, 1500)
+    .then(function (res) {
+      if (res.ok || res.type === "opaque") {
+        if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了！ありがとうございます"
+        if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
+        setTimeout(closeFeedback, 2000)
+      } else {
+        throw new Error("HTTP " + res.status)
+      }
     })
     .catch(function (err) {
       console.error("Feedback error:", err)
-      if (els.fbStatus) els.fbStatus.textContent = "❌ 送信失敗"
+      if (els.fbStatus) els.fbStatus.textContent = "❌ 送信失敗。もう一度お試しください"
+      if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
     })
 }
 
