@@ -870,13 +870,25 @@ function createResultScreen(answers) {
     var nameStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
     var fillOpacity = isTop ? 1 : isRunner ? 0.7 : 0.35
     var pctStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
-    return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out">' +
+    var partyTips = {
+      "自民党": "保守・経済成長重視。長期政権を担う",
+      "立憲民主党": "リベラル・社会保障重視。野党第一党",
+      "日本維新の会": "改革志向・小さな政府。規制緩和推進",
+      "公明党": "中道・福祉重視。与党として連立",
+      "国民民主党": "中道・現実路線。対案型野党",
+      "共産党": "左派・平等重視。護憲・反戦",
+      "れいわ新選組": "左派・再分配重視。消費税廃止を主張",
+      "社民党": "社会民主主義。平和・人権重視"
+    }
+    var tip = partyTips[p.name] || ''
+    return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out" title="' + tip + '">' +
       '<span class="party-row-name" style="' + nameStyle + '">' + rank + p.name + '</span>' +
       '<div class="party-row-bar">' +
       '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + fillOpacity + '"></div>' +
       '</div>' +
       '<span class="party-row-pct" style="' + pctStyle + '">' + p.match + '%</span>' +
-      '</div>'
+      '</div>' +
+      (isTop || isRunner ? '<div class="party-tip" style="color:' + (isTop || isRunner ? p.color : 'var(--text-muted)') + '">' + tip + '</div>' : '')
   }).join('')}
         </div>
       </div>
