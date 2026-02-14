@@ -264,7 +264,7 @@ var BASE_ANIMALS = {
   },
   now_future: {
     high: { emoji: "🦉", name: "アウル", tag: "先見の", desc: "将来を見据えて投資するタイプ", color: "#7C3AED" },
-    low: { emoji: "🐿️", name: "スクワレル", tag: "堅実な", desc: "今の暮らしを確実に守るタイプ", color: "#B45309" },
+    low: { emoji: "🐿️", name: "リス", tag: "堅実な", desc: "今の暮らしを確実に守るタイプ", color: "#B45309" },
     mid: { emoji: "🦊", name: "フォックス", tag: "現実派の", desc: "状況を見て判断するタイプ", color: "#E8853D" }
   }
 }
