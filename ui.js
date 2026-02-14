@@ -785,10 +785,11 @@ function createResultScreen(answers) {
   var avg = values.length > 0 ? values.reduce(function (s, v) { return s + v }, 0) / values.length : 0
   var level = Math.min(99, 10 + entries.length * 5 + Math.round(Math.abs(avg) * 3))
 
-  // scoring.js の5軸スコア＋政党マッチングを使用
+  // scoring.js の5軸スコア＋政党マッチング＋キャラ生成
   var axisScores = calcAxisScores(answers)
   var partyResults = calcPartyDistances(axisScores)
   var topParty = partyResults[0]
+  var character = buildCharacter(axisScores)
 
   return `
     <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px">
@@ -822,10 +823,17 @@ function createResultScreen(answers) {
         <div class="result-corner bl"></div>
         <div class="result-corner br"></div>
         
-        <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
-          <div class="result-character">
-            ${createHeroSVG(90)}
+        <!-- キャラカード -->
+        <div class="chara-card" style="border-color:${character.animal.color}40">
+          <div class="chara-emoji">${character.animal.emoji}</div>
+          <div class="chara-name" style="color:${character.animal.color}">${character.fullName}</div>
+          <div class="chara-tagline">${character.tagline}</div>
+          <div class="chara-items">
+            ${character.items.map(function (it) {
+    return '<span class="chara-item" title="' + it.item.label + '">' + it.item.emoji + '</span>'
+  }).join('')}
           </div>
+          <p class="chara-desc">${character.description}</p>
         </div>
         
         <!-- 政党マッチ -->

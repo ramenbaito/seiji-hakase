@@ -1188,6 +1188,69 @@
       animation: idleBounce 2s ease-in-out 0.5s infinite
     }
 
+    .chara-card {
+      text-align: center;
+      padding: 20px 16px;
+      border: 2px solid rgba(255, 230, 109, 0.2);
+      border-radius: 14px;
+      background: rgba(255, 255, 240, 0.03)
+    }
+
+    .chara-emoji {
+      font-size: 64px;
+      line-height: 1;
+      margin-bottom: 8px;
+      animation: idleBounce 2.5s ease-in-out infinite;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))
+    }
+
+    .chara-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px
+    }
+
+    .chara-tagline {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 12px
+    }
+
+    .chara-items {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .chara-item {
+      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(255, 255, 240, 0.04);
+      border: 1px solid rgba(255, 230, 109, 0.1);
+      cursor: help;
+      transition: all 0.2s
+    }
+
+    .chara-item:hover {
+      transform: scale(1.15);
+      background: rgba(255, 230, 109, 0.08);
+      border-color: rgba(255, 230, 109, 0.3)
+    }
+
+    .chara-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin: 0
+    }
+
     .party-match-label {
       font-size: 10px;
       color: var(--text-secondary);
