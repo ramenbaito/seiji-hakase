@@ -1513,7 +1513,9 @@ function initSplash() {
   // 建物を生成
   var buildingsContainer = document.getElementById("splashBuildings")
   if (buildingsContainer) {
-    var heights = [24, 36, 18, 42, 28, 0, 30, 20, 38, 22, 32, 16]
+    var heights = Array.from({ length: 12 }, function (_, i) {
+      return i === 5 ? 0 : Math.floor(16 + Math.random() * 30)
+    })
     for (var i = 0; i < heights.length; i++) {
       var h = heights[i]
       if (h === 0) {
