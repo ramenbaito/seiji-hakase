@@ -848,13 +848,13 @@ function createResultScreen(answers) {
         
         <!-- あなたの傾向 -->
         <div class="tendency-box">
-          <div class="summary-label">あなたの傾向まとめ</div>
+          <div class="summary-label">🧭 あなたの傾向まとめ</div>
           <p class="tendency-text">${generateTendencyText(axisScores)}</p>
         </div>
         
         <!-- 5軸スコア -->
         <div class="answer-summary">
-          <div class="summary-label">あなたの政治傾向（5つの軸）</div>
+          <div class="summary-label">📊 あなたの政治傾向（5つの軸）</div>
           ${["merit_equity", "small_big", "free_norm", "open_protect", "now_future"].map(function (ax) {
     var score = axisScores[ax]
     var posClass = score < 40 ? 'left' : score > 60 ? 'right' : 'neutral'
