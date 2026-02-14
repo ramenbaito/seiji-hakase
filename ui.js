@@ -1176,13 +1176,12 @@ function shareResult() {
   var axisScores = calcAxisScores(state.answers)
   var partyResults = calcPartyDistances(axisScores)
   var topParty = partyResults[0]
-  var axes = {
-    merit_equity: axisScores.merit_equity < 40 ? "実力主義" : axisScores.merit_equity > 60 ? "平等重視" : "バランス型",
-    small_big: axisScores.small_big < 40 ? "小さな政府" : axisScores.small_big > 60 ? "大きな政府" : "中立",
-  }
+  var character = buildCharacter(axisScores)
+  var itemEmojis = character.items.map(function (it) { return it.item.emoji }).join("")
   var text = "【政治博士】政党診断の結果\n\n" +
+    character.animal.emoji + " あなたは「" + character.fullName + "」\n" +
     "🏛️ 最も近い政党: " + topParty.name + "（" + topParty.match + "%）\n" +
-    "📊 " + axes.merit_equity + " / " + axes.small_big + "\n\n" +
+    "🎒 装備: " + itemEmojis + "\n\n" +
     "15問で分かる、あなたの政治傾向 👉\n" + window.location.href + "\n\n#政治博士 #政党診断"
 
   if (navigator.share) {
