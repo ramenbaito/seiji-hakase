@@ -468,6 +468,98 @@ function getBuildingsForScene(sceneName, time) {
   })
 }
 
+function getSceneProps(questionId, value) {
+  var leftActive = value < 0
+  var rightActive = value > 0
+  var props = {
+    "Q1": {
+      left: '<svg viewBox="0 0 60 60" width="40" height="40"><rect x="15" y="20" width="30" height="30" rx="4" fill="#FF9EAA"/><circle cx="30" cy="16" r="8" fill="#FFDBB4"/><circle cx="30" cy="14" r="5" fill="#5A3A20"/><circle cx="28" cy="16" r="1" fill="#333"/><circle cx="33" cy="16" r="1" fill="#333"/><circle cx="15" cy="42" r="8" fill="#666"/><circle cx="45" cy="42" r="8" fill="#666"/><line x1="15" y1="35" x2="45" y2="35" stroke="#888" stroke-width="2"/></svg>',
+      right: '<svg viewBox="0 0 60 60" width="40" height="40"><circle cx="30" cy="18" r="9" fill="#FFDBB4"/><circle cx="30" cy="14" r="6" fill="#CCC"/><circle cx="28" cy="18" r="1" fill="#333"/><circle cx="33" cy="18" r="1" fill="#333"/><rect x="18" y="28" width="24" height="24" rx="4" fill="#7B8A9E"/><line x1="30" y1="52" x2="30" y2="60" stroke="#8B7355" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="60" r="3" fill="#8B7355"/></svg>',
+      label: { left: "👶 子育て世代", right: "👴 シニア世代" }
+    },
+    "Q2": {
+      left: '<svg viewBox="0 0 60 50" width="48" height="40"><rect x="5" y="10" width="50" height="30" rx="3" fill="#4a5a3a"/><text x="30" y="29" text-anchor="middle" font-size="8" fill="#FFE66D" font-weight="bold">OPEN</text><rect x="10" y="40" width="10" height="6" rx="1" fill="#8B7355"/><rect x="40" y="40" width="10" height="6" rx="1" fill="#8B7355"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="48" height="40"><rect x="8" y="5" width="44" height="35" rx="3" fill="#5a6a7a"/><text x="30" y="26" text-anchor="middle" font-size="7" fill="#FFF" font-weight="bold">公共事業</text><rect x="15" y="40" width="30" height="6" rx="2" fill="#FFE66D"/><polygon points="10,5 30,0 50,5" fill="#4a5a6a"/></svg>',
+      label: { left: "🏪 民間", right: "🏛️ 国の投資" }
+    },
+    "Q3": {
+      left: '<svg viewBox="0 0 50 60" width="36" height="44"><rect x="12" y="30" width="26" height="20" rx="2" fill="#FFD700"/><polygon points="25,5 10,30 40,30" fill="#FFD700"/><circle cx="25" cy="22" r="4" fill="#FFF"/><text x="25" y="25" text-anchor="middle" font-size="6" fill="#FFD700" font-weight="bold">1</text></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><circle cx="15" cy="25" r="6" fill="#FFDBB4"/><circle cx="30" cy="25" r="6" fill="#FFDBB4"/><circle cx="45" cy="25" r="6" fill="#FFDBB4"/><line x1="15" y1="35" x2="45" y2="35" stroke="#4ECDC4" stroke-width="3" stroke-linecap="round"/><circle cx="15" cy="35" r="4" fill="#FFDBB4"/><circle cx="30" cy="35" r="4" fill="#FFDBB4"/><circle cx="45" cy="35" r="4" fill="#FFDBB4"/></svg>',
+      label: { left: "🏆 成果主義", right: "🤝 機会均等" }
+    },
+    "Q4": {
+      left: '<svg viewBox="0 0 60 50" width="44" height="36"><rect x="5" y="10" width="22" height="14" rx="1" fill="#0055A4"/><rect x="5" y="10" width="7" height="14" fill="#FFF"/><rect x="20" y="10" width="7" height="14" fill="#EF4135"/><rect x="33" y="10" width="22" height="14" rx="1" fill="#BC002D"/><circle cx="44" cy="17" r="4" fill="#FFF"/><path d="M20 38 L30 30 L40 38" fill="none" stroke="#4ECDC4" stroke-width="2.5" stroke-linecap="round"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><polygon points="30,5 35,18 48,18 37,26 41,40 30,32 19,40 23,26 12,18 25,18" fill="#4a5a4a" stroke="#6a7a6a" stroke-width="1"/><rect x="20" y="42" width="20" height="4" rx="1" fill="#5a5a5a"/></svg>',
+      label: { left: "🕊️ 外交協力", right: "🛡️ 防衛強化" }
+    },
+    "Q5": {
+      left: '<svg viewBox="0 0 60 50" width="44" height="36"><rect x="20" y="20" width="20" height="25" rx="1" fill="#5588BB"/><polygon points="20,20 30,8 40,20" fill="#5588BB"/><line x1="10" y1="10" x2="10" y2="35" stroke="#888" stroke-width="2"/><path d="M3 14 Q10 8 17 14 Q10 20 3 14" fill="#4ECDC4"/><circle cx="50" cy="12" r="8" fill="#FFE66D" opacity="0.8"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><rect x="10" y="15" width="18" height="25" rx="1" fill="#6a6a6a"/><rect x="32" y="10" width="18" height="30" rx="1" fill="#5a5a5a"/><path d="M15 10 Q20 3 25 10" fill="#999" stroke="#aaa" stroke-width="1"/><path d="M37 5 Q42 0 47 5" fill="#999" stroke="#aaa" stroke-width="1"/><text x="30" y="48" text-anchor="middle" font-size="6" fill="#FF9E9E">¥</text></svg>',
+      label: { left: "🌱 環境優先", right: "🏭 経済優先" }
+    },
+    "Q6": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="10" y="25" width="30" height="18" rx="2" fill="#555"/><rect x="14" y="28" width="22" height="12" rx="1" fill="#88CCFF"/><circle cx="25" cy="15" r="8" fill="#FFDBB4"/><circle cx="25" cy="12" r="5" fill="#5A3A20"/><rect x="17" y="23" width="16" height="10" rx="2" fill="#4ECDC4"/></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><circle cx="25" cy="12" r="8" fill="#FFDBB4"/><rect x="12" y="2" width="26" height="10" rx="5" fill="#FFE66D"/><circle cx="25" cy="10" r="5" fill="#5A3A20"/><rect x="15" y="22" width="20" height="16" rx="2" fill="#2D3748"/><path d="M15 22 L25 18 L35 22" fill="#2D3748"/></svg>',
+      label: { left: "💻 フリーランス", right: "👔 正社員" }
+    },
+    "Q7": {
+      left: '<svg viewBox="0 0 60 50" width="44" height="36"><rect x="5" y="15" width="12" height="30" rx="1" fill="#5a6a7a"/><rect x="20" y="8" width="14" height="37" rx="1" fill="#6a7a8a"/><rect x="37" y="12" width="10" height="33" rx="1" fill="#5a6a7a"/><rect x="50" y="18" width="8" height="27" rx="1" fill="#4a5a6a"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><polygon points="5,35 20,15 35,35" fill="#2a6a2a"/><polygon points="25,35 40,10 55,35" fill="#1a5a1a"/><rect x="10" y="36" width="40" height="8" rx="1" fill="#8B7355"/><path d="M10 40 Q30 38 50 40" fill="#7aaa4a"/></svg>',
+      label: { left: "🏙️ 都市集中", right: "🌾 地方支援" }
+    },
+    "Q8": {
+      left: '<svg viewBox="0 0 60 50" width="44" height="36"><circle cx="12" cy="15" r="7" fill="#D4A574"/><circle cx="30" cy="15" r="7" fill="#8B6914"/><circle cx="48" cy="15" r="7" fill="#FFDBB4"/><rect x="5" y="24" width="14" height="12" rx="2" fill="#4ECDC4"/><rect x="23" y="24" width="14" height="12" rx="2" fill="#FF9E42"/><rect x="41" y="24" width="14" height="12" rx="2" fill="#9E6BFF"/><text x="30" y="46" text-anchor="middle" font-size="6" fill="#FFF">🌍</text></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><circle cx="20" cy="15" r="7" fill="#FFDBB4"/><circle cx="40" cy="15" r="7" fill="#FFDBB4"/><circle cx="20" cy="12" r="5" fill="#1A1A1A"/><circle cx="40" cy="12" r="5" fill="#2A2A2A"/><rect x="13" y="24" width="14" height="12" rx="2" fill="#BC002D"/><rect x="33" y="24" width="14" height="12" rx="2" fill="#BC002D"/><rect x="18" y="40" width="24" height="3" rx="1" fill="#BC002D"/><circle cx="30" cy="41" r="4" fill="#FFF"/></svg>',
+      label: { left: "🌏 多文化共生", right: "🇯🇵 慎重対応" }
+    },
+    "Q9": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="12" y="8" width="26" height="34" rx="4" fill="#333"/><rect x="14" y="12" width="22" height="24" rx="2" fill="#4488FF"/><circle cx="25" cy="40" r="2" fill="#666"/><text x="25" y="27" text-anchor="middle" font-size="7" fill="#FFF">AI</text></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><circle cx="25" cy="22" r="14" fill="none" stroke="#FF6B6B" stroke-width="2.5"/><rect x="18" y="15" width="14" height="14" rx="2" fill="#FFE66D"/><text x="25" y="25" text-anchor="middle" font-size="8" fill="#333" font-weight="bold">🔒</text><rect x="20" y="38" width="10" height="6" rx="1" fill="#888"/></svg>',
+      label: { left: "📱 自由活用", right: "🔐 規制整備" }
+    },
+    "Q10": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="8" y="12" width="34" height="28" rx="3" fill="#E8E8E8"/><text x="25" y="30" text-anchor="middle" font-size="7" fill="#333" font-weight="bold">民間</text><polygon points="8,12 25,3 42,12" fill="#4ECDC4"/></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="10" y="15" width="30" height="22" rx="3" fill="#E8E8E8"/><rect x="20" y="8" width="10" height="10" rx="1" fill="#FF4444"/><text x="25" y="15" text-anchor="middle" font-size="10" fill="#FFF" font-weight="bold">+</text><text x="25" y="32" text-anchor="middle" font-size="5" fill="#333">保険証</text></svg>',
+      label: { left: "🏥 民間医療", right: "💳 公的保険" }
+    },
+    "Q11": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><ellipse cx="25" cy="30" rx="14" ry="12" fill="#FFB74D"/><rect x="20" y="15" width="10" height="15" rx="2" fill="#FFB74D"/><text x="25" y="35" text-anchor="middle" font-size="8" fill="#FFF" font-weight="bold">¥</text></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><polygon points="25,5 30,20 45,20 33,30 37,45 25,35 13,45 17,30 5,20 20,20" fill="none" stroke="#FFE66D" stroke-width="1.5"/><path d="M10 40 L20 25 L30 32 L40 15" fill="none" stroke="#4ECDC4" stroke-width="2" stroke-linecap="round"/><polygon points="38,13 42,13 40,17" fill="#4ECDC4"/></svg>',
+      label: { left: "🏦 財政健全化", right: "📈 積極投資" }
+    },
+    "Q12": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><circle cx="25" cy="20" r="10" fill="#FFD700"/><text x="25" y="24" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">¥</text><path d="M15 35 L25 28 L35 35" fill="none" stroke="#4ECDC4" stroke-width="2.5" stroke-linecap="round"/></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><line x1="25" y1="5" x2="25" y2="35" stroke="#888" stroke-width="2"/><polygon points="12,20 25,8 38,20" fill="none" stroke="#888" stroke-width="1.5"/><circle cx="16" cy="28" r="5" fill="#FF6B6B"/><circle cx="34" cy="28" r="5" fill="#4ECDC4"/><text x="16" y="31" text-anchor="middle" font-size="6" fill="#FFF">少</text><text x="34" y="31" text-anchor="middle" font-size="6" fill="#FFF">多</text></svg>',
+      label: { left: "💰 自由経済", right: "⚖️ 再分配" }
+    },
+    "Q13": {
+      left: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="8" y="15" width="34" height="22" rx="10" fill="#4ECDC4" opacity="0.3"/><text x="25" y="30" text-anchor="middle" font-size="12" fill="#FFF">💬</text><path d="M25 37 L20 45" stroke="#4ECDC4" stroke-width="2"/></svg>',
+      right: '<svg viewBox="0 0 50 50" width="36" height="36"><rect x="10" y="10" width="30" height="30" rx="3" fill="#2D3748"/><text x="25" y="22" text-anchor="middle" font-size="6" fill="#FFE66D" font-weight="bold">RULE</text><line x1="15" y1="28" x2="35" y2="28" stroke="#FFE66D" stroke-width="1"/><line x1="15" y1="33" x2="30" y2="33" stroke="#FFE66D" stroke-width="1" opacity="0.5"/></svg>',
+      label: { left: "📢 表現の自由", right: "📜 ルール整備" }
+    },
+    "Q14": {
+      left: '<svg viewBox="0 0 60 50" width="44" height="36"><rect x="10" y="18" width="40" height="22" rx="2" fill="#4a7aaa"/><path d="M10 18 Q30 8 50 18" fill="#5a8abb"/><rect x="20" y="35" width="20" height="8" rx="1" fill="#8B5A2B"/><rect x="0" y="38" width="60" height="4" fill="#3a6a9a"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><path d="M20 35 L25 15 L30 25 L35 10 L40 35" fill="none" stroke="#7aaa4a" stroke-width="2"/><rect x="15" y="35" width="30" height="8" rx="1" fill="#8B7355"/><circle cx="30" cy="30" r="3" fill="#FFD700"/><text x="30" y="48" text-anchor="middle" font-size="5" fill="#FFE66D">国産米</text></svg>',
+      label: { left: "🚢 自由貿易", right: "🌾 国産保護" }
+    },
+    "Q15": {
+      left: '<svg viewBox="0 0 50 60" width="36" height="44"><circle cx="25" cy="18" r="7" fill="#FFDBB4"/><rect x="18" y="26" width="14" height="16" rx="2" fill="#4ECDC4"/><path d="M15 55 L25 35 L35 55" fill="none" stroke="#888" stroke-width="1.5"/><polygon points="25,5 28,12 22,12" fill="#FFE66D"/></svg>',
+      right: '<svg viewBox="0 0 60 50" width="44" height="36"><circle cx="15" cy="18" r="6" fill="#FFDBB4"/><circle cx="30" cy="18" r="6" fill="#FFDBB4"/><circle cx="45" cy="18" r="6" fill="#FFDBB4"/><rect x="9" y="26" width="12" height="10" rx="2" fill="#FF6B6B"/><rect x="24" y="26" width="12" height="10" rx="2" fill="#4ECDC4"/><rect x="39" y="26" width="12" height="10" rx="2" fill="#FFE66D"/><path d="M15 38 Q30 42 45 38" fill="none" stroke="#FF9E9E" stroke-width="2" stroke-linecap="round"/></svg>',
+      label: { left: "🧗 自立", right: "🤝 支え合い" }
+    }
+  }
+  var p = props[questionId]
+  if (!p) return ''
+  var leftOpacity = leftActive ? 1 : (rightActive ? 0.3 : 0.6)
+  var rightOpacity = rightActive ? 1 : (leftActive ? 0.3 : 0.6)
+  var leftScale = leftActive ? 'scale(1.15)' : 'scale(1)'
+  var rightScale = rightActive ? 'scale(1.15)' : 'scale(1)'
+  return '<div class="scene-props">' +
+    '<div class="scene-prop-left" style="opacity:' + leftOpacity + ';transform:' + leftScale + '">' + p.left + (p.label ? '<span class="scene-prop-label">' + p.label.left + '</span>' : '') + '</div>' +
+    '<div class="scene-prop-right" style="opacity:' + rightOpacity + ';transform:' + rightScale + '">' + p.right + (p.label ? '<span class="scene-prop-label">' + p.label.right + '</span>' : '') + '</div>' +
+    '</div>'
+}
+
 function createRPGScene(value, question, idx) {
   var leftActive = value < 0
   var rightActive = value > 0
@@ -499,6 +591,8 @@ function createRPGScene(value, question, idx) {
         ${escapeHtml(sceneName)}
       </div>
       
+      <!-- シーンプロップス -->
+      ${getSceneProps(question.id, value)}
       
       <!-- 左キャラクター -->
       <div class="characters-left ${leftActive ? 'active' : ''}">
