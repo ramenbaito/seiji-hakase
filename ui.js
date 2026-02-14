@@ -543,8 +543,8 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
   return `
     <div class="quiz-card" style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:680px;animation:slideInRight 0.4s ease-out">
       <!-- ヘッダー -->
-      <div class="rpg-header">
-        <div class="rpg-title">
+      <div class="rpg-header" style="flex-direction:column;align-items:center;gap:4px">
+        <div class="rpg-title" style="font-size:21px">
           <span>政治博士</span>
         </div>
         <div class="rpg-stage">
@@ -553,23 +553,6 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
     return '<span class="pdot ' + cls + '"></span>'
   }).join('')}</div>
           <span>${idx + 1} / ${total}</span>
-        </div>
-      </div>
-      
-      <!-- ステータスバー -->
-      <div class="status-bars">
-        <div class="status-bar">
-          <span class="status-label" style="color:#FFE66D">EXP</span>
-          <div class="status-track">
-            <div class="status-fill exp-fill" style="width:${progressPct}%"></div>
-          </div>
-          <span class="status-value">${progressPct}%</span>
-        </div>
-        <div class="status-bar">
-          <span class="status-label" style="color:#FF6B6B">TAX</span>
-          <div class="status-track">
-            <div class="status-fill tax-fill" style="width:${Math.min(100, Math.max(10, 50 + taxGauge * 10))}%"></div>
-          </div>
         </div>
       </div>
       
@@ -806,15 +789,6 @@ function createResultScreen(answers) {
           <span>QUEST COMPLETE</span>
         </div>
         <div class="result-stage">結果</div>
-      </div>
-      
-      <!-- EXP MAX -->
-      <div class="status-bar" style="animation:slideInRight 0.4s ease-out 0.1s both">
-        <span class="status-label" style="color:#FFE66D">EXP</span>
-        <div class="status-track">
-          <div class="status-fill exp-fill" style="width:100%"></div>
-        </div>
-        <span class="status-value" style="color:#FFE66D;font-weight:700">MAX</span>
       </div>
       
       <div class="result-card" style="animation:slideInRight 0.5s ease-out 0.2s both">
