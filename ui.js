@@ -904,7 +904,7 @@ function createResultScreen(answers) {
         
         <!-- 全政党比較 -->
         <div class="party-list">
-          <div class="summary-label">全政党マッチング</div>
+          <div class="summary-label">🏛️ 全政党マッチング</div>
           <div class="party-list-note">※ 各政党の公式見解を参考にした概算です</div>
           ${partyResults.map(function (p, i) {
     var isTop = i === 0
