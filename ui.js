@@ -832,7 +832,13 @@ function createResultScreen(answers) {
         <div class="party-match" style="border:2px solid ${topParty.color}40;background:${topParty.color}08">
           <div class="party-match-label">あなたに最も近い政党</div>
           <div class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</div>
-          <div class="party-desc">マッチ度 ${topParty.match}%</div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px">
+            <svg width="36" height="36" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="${topParty.color}" stroke-width="3" stroke-dasharray="${topParty.match * 0.974} ${97.4 - topParty.match * 0.974}" stroke-dashoffset="24.35" stroke-linecap="round" style="transition:stroke-dasharray 1s ease-out"/>
+            </svg>
+            <span class="party-desc">マッチ度 ${topParty.match}%</span>
+          </div>
         </div>
         
         <!-- レーダーチャート -->
