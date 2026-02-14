@@ -158,9 +158,40 @@ function createHeroSVG(size) {
   `
 }
 
-function createNPCSVGS(side, active, intensity) {
+function createNPCSVGS(side, active, intensity, questionId) {
   var baseColor = side === "left" ? "#4ECDC4" : "#FF6B6B"
   var hairColors = side === "left" ? ["#5A3A20", "#2A2A2A", "#8B6914"] : ["#CCCCCC", "#888888", "#AAAAAA"]
+  var skinColors = ["#FFDBB4", "#FFDBB4", "#FFDBB4"]
+
+  // 質問テーマ別のカスタマイズ
+  var npcStyles = {
+    "Q1": {
+      left: { hair: ["#5A3A20", "#2A2A2A", "#8B4513"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#FF9EAA", "#88CCFF", "#FFE66D"] },
+      right: { hair: ["#CCCCCC", "#AAAAAA", "#DDDDDD"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#7B8A9E", "#6A7A8E", "#8B9AAE"] }
+    },
+    "Q4": {
+      left: { hair: ["#2A2A2A", "#5A3A20", "#1A1A1A"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#2D3748", "#2D3748", "#2D3748"] },
+      right: { hair: ["#2A2A2A", "#1A1A1A", "#3A3A3A"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#4a5a4a", "#4a5a4a", "#5a6a5a"] }
+    },
+    "Q6": {
+      left: { hair: ["#5A3A20", "#8B6914", "#2A2A2A"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#4ECDC4", "#88CCFF", "#FFB74D"] },
+      right: { hair: ["#1A1A1A", "#2A2A2A", "#3A3A3A"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#2D3748", "#2D3748", "#2D3748"] }
+    },
+    "Q8": {
+      left: { hair: ["#8B4513", "#1A1A1A", "#D4A574"], skin: ["#D4A574", "#8B6914", "#FFDBB4"], clothes: ["#4ECDC4", "#FF9E42", "#9E6BFF"] },
+      right: { hair: ["#1A1A1A", "#2A2A2A", "#3A3A3A"], skin: ["#FFDBB4", "#FFDBB4", "#FFDBB4"], clothes: ["#BC002D", "#BC002D", "#BC002D"] }
+    }
+  }
+
+  var clothesColors = null
+  if (questionId && npcStyles[questionId]) {
+    var style = npcStyles[questionId][side]
+    if (style) {
+      hairColors = style.hair
+      skinColors = style.skin
+      clothesColors = style.clothes
+    }
+  }
   // intensity: 0=中立, 1=やや, 2=強く → スケール: 0%, 10%, 30%
   var absInt = intensity || 0
   var scalePct = absInt === 2 ? 30 : absInt === 1 ? 10 : 0
@@ -187,12 +218,12 @@ function createNPCSVGS(side, active, intensity) {
 
     npcs += `
       <svg viewBox="0 0 60 100" style="width:${width}px;height:${height}px;opacity:${opacity};transition:all 0.3s ease-out" aria-hidden="true">
-        <circle cx="30" cy="${isMain ? 22 : 14}" r="${isMain ? 16 : 13}" fill="#FFDBB4"/>
+        <circle cx="30" cy="${isMain ? 22 : 14}" r="${isMain ? 16 : 13}" fill="${skinColors[i]}"/>
         <ellipse cx="30" cy="${isMain ? 12 : 14}" rx="${isMain ? 17 : 14}" ry="${isMain ? 10 : 8}" fill="${hairColors[i]}"/>
         ${eyeShape()}
         <path d="${mouthY(isMain)}" fill="none" stroke="#E87040" stroke-width="1.5" stroke-linecap="round"/>
         ${cheeks}
-        <rect x="16" y="40" width="28" height="28" rx="5" fill="${isMain ? baseColor : baseColor + '99'}"/>
+        <rect x="16" y="40" width="28" height="28" rx="5" fill="${clothesColors ? clothesColors[i] : (isMain ? baseColor : baseColor + '99')}"/>
         <rect x="19" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
         <rect x="32" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
         <ellipse cx="23" cy="85" rx="6" ry="3" fill="#2D3748"/>
@@ -596,12 +627,12 @@ function createRPGScene(value, question, idx) {
       
       <!-- 左キャラクター -->
       <div class="characters-left ${leftActive ? 'active' : ''}">
-        ${createNPCSVGS("left", leftActive, leftActive ? Math.abs(value) : 0)}
+        ${createNPCSVGS("left", leftActive, leftActive ? Math.abs(value) : 0, question.id)}
       </div>
       
       <!-- 右キャラクター -->
       <div class="characters-right ${rightActive ? 'active' : ''}">
-        ${createNPCSVGS("right", rightActive, rightActive ? Math.abs(value) : 0)}
+        ${createNPCSVGS("right", rightActive, rightActive ? Math.abs(value) : 0, question.id)}
       </div>
       
       <!-- 主人公 -->
