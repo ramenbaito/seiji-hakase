@@ -1881,7 +1881,20 @@
     .fbSend {
       background: var(--accent-yellow);
       color: var(--bg-primary);
-      font-weight: 600
+      font-weight: 600;
+      transition: all 0.2s
+    }
+
+    .fbSend:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 230, 109, 0.3)
+    }
+
+    .fbSend:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none
     }
   </style>
 </head>
