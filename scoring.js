@@ -138,14 +138,62 @@ function calcAxisScores(answers) {
 // 政党データ（各軸 0〜100）
 // ※ 実際の政党の立場を参考にした概算値。誘導目的ではない。
 var PARTIES = [
-  { name: "自民党", scores: { merit_equity: 35, small_big: 45, free_norm: 40, open_protect: 45, now_future: 40 }, color: "#3b82f6" },
-  { name: "立憲民主党", scores: { merit_equity: 65, small_big: 65, free_norm: 60, open_protect: 55, now_future: 55 }, color: "#ef4444" },
-  { name: "日本維新の会", scores: { merit_equity: 30, small_big: 30, free_norm: 55, open_protect: 50, now_future: 50 }, color: "#22c55e" },
-  { name: "公明党", scores: { merit_equity: 55, small_big: 55, free_norm: 45, open_protect: 45, now_future: 50 }, color: "#a855f7" },
-  { name: "国民民主党", scores: { merit_equity: 50, small_big: 45, free_norm: 55, open_protect: 50, now_future: 55 }, color: "#f59e0b" },
-  { name: "共産党", scores: { merit_equity: 80, small_big: 80, free_norm: 50, open_protect: 60, now_future: 55 }, color: "#dc2626" },
-  { name: "れいわ新選組", scores: { merit_equity: 85, small_big: 85, free_norm: 55, open_protect: 55, now_future: 50 }, color: "#ec4899" },
-  { name: "社民党", scores: { merit_equity: 75, small_big: 75, free_norm: 60, open_protect: 55, now_future: 55 }, color: "#06b6d4" },
+  {
+    name: "自民党",
+    scores: { merit_equity: 35, small_big: 45, free_norm: 40, open_protect: 45, now_future: 40 },
+    color: "#3b82f6",
+    url: "https://www.jimin.jp/",
+    policyUrl: "https://www.jimin.jp/policy/"
+  },
+  {
+    name: "立憲民主党",
+    scores: { merit_equity: 65, small_big: 65, free_norm: 60, open_protect: 55, now_future: 55 },
+    color: "#ef4444",
+    url: "https://cdp-japan.jp/",
+    policyUrl: "https://cdp-japan.jp/policy"
+  },
+  {
+    name: "日本維新の会",
+    scores: { merit_equity: 30, small_big: 30, free_norm: 55, open_protect: 50, now_future: 50 },
+    color: "#22c55e",
+    url: "https://o-ishin.jp/",
+    policyUrl: "https://o-ishin.jp/policy/"
+  },
+  {
+    name: "公明党",
+    scores: { merit_equity: 55, small_big: 55, free_norm: 45, open_protect: 45, now_future: 50 },
+    color: "#a855f7",
+    url: "https://www.komei.or.jp/",
+    policyUrl: "https://www.komei.or.jp/policy/"
+  },
+  {
+    name: "国民民主党",
+    scores: { merit_equity: 50, small_big: 45, free_norm: 55, open_protect: 50, now_future: 55 },
+    color: "#f59e0b",
+    url: "https://new-kokumin.jp/",
+    policyUrl: "https://new-kokumin.jp/policy"
+  },
+  {
+    name: "共産党",
+    scores: { merit_equity: 80, small_big: 80, free_norm: 50, open_protect: 60, now_future: 55 },
+    color: "#dc2626",
+    url: "https://www.jcp.or.jp/",
+    policyUrl: "https://www.jcp.or.jp/web_policy/"
+  },
+  {
+    name: "れいわ新選組",
+    scores: { merit_equity: 85, small_big: 85, free_norm: 55, open_protect: 55, now_future: 50 },
+    color: "#ec4899",
+    url: "https://reiwa-shinsengumi.com/",
+    policyUrl: "https://reiwa-shinsengumi.com/policy/"
+  },
+  {
+    name: "社民党",
+    scores: { merit_equity: 75, small_big: 75, free_norm: 60, open_protect: 55, now_future: 55 },
+    color: "#06b6d4",
+    url: "https://sdp.or.jp/",
+    policyUrl: "https://sdp.or.jp/policy/"
+  },
 ]
 
 function calcPartyDistances(userScores) {
@@ -161,7 +209,7 @@ function calcPartyDistances(userScores) {
     var distance = Math.sqrt(sumSq)
     var maxDist = Math.sqrt(5 * 100 * 100)
     var match = Math.round(Math.max(0, (1 - distance / maxDist) * 100))
-    results.push({ name: p.name, match: match, color: p.color, distance: distance })
+    results.push({ name: p.name, match: match, color: p.color, distance: distance, url: p.url, policyUrl: p.policyUrl })
   }
   results.sort(function (a, b) { return b.match - a.match })
   return results

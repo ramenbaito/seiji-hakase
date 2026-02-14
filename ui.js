@@ -939,7 +939,7 @@ function createResultScreen(answers) {
       '</div>' +
       '<span class="party-row-pct" style="' + pctStyle + '">' + p.match + '%</span>' +
       '</div>' +
-      (isTop || isRunner ? '<div class="party-tip" style="color:' + (isTop || isRunner ? p.color : 'var(--text-muted)') + '">' + tip + '</div>' : '')
+      (isTop || isRunner ? '<div class="party-tip" style="color:' + (isTop || isRunner ? p.color : 'var(--text-muted)') + '">' + tip + (p.policyUrl ? ' <a href="' + p.policyUrl + '" target="_blank" rel="noopener" class="party-source-link" style="color:' + p.color + '">政策を見る→</a>' : '') + '</div>' : '')
   }).join('')}
         </div>
       </div>
