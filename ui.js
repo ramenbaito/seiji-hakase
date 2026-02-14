@@ -111,49 +111,90 @@ function createStarField(canvas) {
 function createHeroSVG(size) {
   size = size || 80
   return `
-    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 192" aria-hidden="true">
-      <!-- 博士帽 -->
-      <path d="M30 36 L60 8 L90 36 Z" fill="#2D3748" stroke="#4A5568" stroke-width="1.5"/>
-      <rect x="25" y="34" width="70" height="8" rx="2" fill="#2D3748" stroke="#4A5568" stroke-width="1"/>
-      <circle cx="60" cy="20" r="4" fill="#FFE66D"/>
+    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 200" aria-hidden="true">
+      <!-- 髪の毛（後ろ） -->
+      <ellipse cx="60" cy="42" rx="32" ry="28" fill="#4A2810"/>
+      <path d="M28 45 Q28 70 35 80 L35 55 Z" fill="#3A1E08"/>
+      <path d="M92 45 Q92 70 85 80 L85 55 Z" fill="#3A1E08"/>
       
       <!-- 頭 -->
-      <circle cx="60" cy="60" r="28" fill="#FFDBB4"/>
+      <ellipse cx="60" cy="52" rx="26" ry="24" fill="#FFDBB4"/>
       
-      <!-- メガネ -->
-      <rect x="40" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
-      <rect x="64" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
-      <line x1="56" y1="58" x2="64" y2="58" stroke="#4A5568" stroke-width="2"/>
+      <!-- 髪の毛（前髪） -->
+      <path d="M34 42 Q38 28 50 25 Q55 30 60 24 Q65 30 70 25 Q82 28 86 42 L82 38 Q75 30 68 34 Q63 28 58 34 Q52 28 47 34 Q40 30 38 38 Z" fill="#4A2810"/>
+      <path d="M34 42 Q36 48 38 42" fill="#5A3818"/>
+      <path d="M86 42 Q84 48 82 42" fill="#5A3818"/>
       
-      <!-- 目 -->
-      <ellipse cx="48" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
-      <ellipse cx="72" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
-      <circle cx="50" cy="57" r="1.5" fill="#FFF"/>
-      <circle cx="74" cy="57" r="1.5" fill="#FFF"/>
+      <!-- 眉毛 -->
+      <path d="M42 48 Q48 44 54 48" fill="none" stroke="#3A1E08" stroke-width="2" stroke-linecap="round"/>
+      <path d="M66 48 Q72 44 78 48" fill="none" stroke="#3A1E08" stroke-width="2" stroke-linecap="round"/>
       
-      <!-- 口 -->
-      <path d="M52 70 Q60 78 68 70" fill="none" stroke="#E87040" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- 目（大きなアニメ目） -->
+      <ellipse cx="48" cy="56" rx="7" ry="8" fill="#FFF"/>
+      <ellipse cx="72" cy="56" rx="7" ry="8" fill="#FFF"/>
+      <ellipse cx="49" cy="57" rx="5" ry="6" fill="#2C5F8A"/>
+      <ellipse cx="73" cy="57" rx="5" ry="6" fill="#2C5F8A"/>
+      <ellipse cx="49" cy="58" rx="3.5" ry="4" fill="#1A3A5A"/>
+      <ellipse cx="73" cy="58" rx="3.5" ry="4" fill="#1A3A5A"/>
+      <circle cx="46" cy="54" r="2.5" fill="#FFF"/>
+      <circle cx="70" cy="54" r="2.5" fill="#FFF"/>
+      <circle cx="51" cy="59" r="1.2" fill="#FFF" opacity="0.7"/>
+      <circle cx="75" cy="59" r="1.2" fill="#FFF" opacity="0.7"/>
+      
+      <!-- まつ毛 -->
+      <path d="M41 50 Q42 48 44 49" stroke="#1A1A1A" stroke-width="1" fill="none"/>
+      <path d="M76 49 Q78 48 79 50" stroke="#1A1A1A" stroke-width="1" fill="none"/>
+      
+      <!-- 鼻 -->
+      <path d="M59 62 Q60 64 61 62" fill="none" stroke="#E8B090" stroke-width="1.2" stroke-linecap="round"/>
+      
+      <!-- 口（笑顔） -->
+      <path d="M52 68 Q60 76 68 68" fill="#E87040" stroke="#D06030" stroke-width="0.8"/>
+      <path d="M54 68 Q60 73 66 68" fill="#FFF" opacity="0.6"/>
       
       <!-- ほっぺ -->
-      <ellipse cx="38" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
-      <ellipse cx="82" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
+      <ellipse cx="38" cy="64" rx="5" ry="3" fill="#FFB4B4" opacity="0.5"/>
+      <ellipse cx="82" cy="64" rx="5" ry="3" fill="#FFB4B4" opacity="0.5"/>
       
-      <!-- 体 -->
-      <rect x="36" y="90" width="48" height="52" rx="8" fill="#4ECDC4"/>
-      <path d="M56 90 L64 90 L62 120 L60 123 L58 120 Z" fill="#45B7A8"/>
-      <circle cx="60" cy="98" r="4" fill="#FFE66D"/>
+      <!-- 耳 -->
+      <ellipse cx="33" cy="55" rx="4" ry="6" fill="#FFDBB4"/>
+      <ellipse cx="33" cy="55" rx="2.5" ry="4" fill="#F0C8A0"/>
+      <ellipse cx="87" cy="55" rx="4" ry="6" fill="#FFDBB4"/>
+      <ellipse cx="87" cy="55" rx="2.5" ry="4" fill="#F0C8A0"/>
+      
+      <!-- 首 -->
+      <rect x="52" y="74" width="16" height="10" rx="3" fill="#FFDBB4"/>
+      
+      <!-- ジャケット -->
+      <path d="M36 84 Q36 80 44 78 L60 82 L76 78 Q84 80 84 84 L86 140 L34 140 Z" fill="#3A6BA8"/>
+      <path d="M60 82 L58 140" stroke="#2A5A98" stroke-width="1"/>
+      <path d="M60 82 L62 140" stroke="#2A5A98" stroke-width="1"/>
+      
+      <!-- 襟 -->
+      <path d="M48 78 L60 88 L52 84 Z" fill="#FFF"/>
+      <path d="M72 78 L60 88 L68 84 Z" fill="#FFF"/>
+      
+      <!-- ボタン -->
+      <circle cx="60" cy="95" r="2" fill="#FFE66D"/>
+      <circle cx="60" cy="108" r="2" fill="#FFE66D"/>
+      <circle cx="60" cy="121" r="2" fill="#FFE66D"/>
       
       <!-- 腕 -->
-      <rect x="20" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
-      <rect x="82" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
-      <circle cx="29" cy="132" r="7" fill="#FFDBB4"/>
-      <circle cx="91" cy="132" r="7" fill="#FFDBB4"/>
+      <path d="M34 84 L20 100 L18 126 Q16 132 22 132 L28 130 L30 106 L36 92" fill="#3A6BA8"/>
+      <path d="M86 84 L100 100 L102 126 Q104 132 98 132 L92 130 L90 106 L84 92" fill="#3A6BA8"/>
       
-      <!-- 足 -->
-      <rect x="40" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
-      <rect x="64" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
-      <ellipse cx="48" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
-      <ellipse cx="72" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
+      <!-- 手 -->
+      <ellipse cx="22" cy="132" rx="6" ry="5" fill="#FFDBB4"/>
+      <ellipse cx="98" cy="132" rx="6" ry="5" fill="#FFDBB4"/>
+      
+      <!-- ズボン -->
+      <path d="M36 138 L38 170 Q39 174 46 174 L54 174 Q56 174 56 170 L58 145 L62 145 L64 170 Q64 174 66 174 L74 174 Q81 174 82 170 L84 138 Z" fill="#2D3748"/>
+      
+      <!-- 靴 -->
+      <path d="M38 172 L36 178 Q34 184 42 184 L56 184 Q58 182 56 178 L54 174" fill="#5A3A20"/>
+      <path d="M82 172 L84 178 Q86 184 78 184 L64 184 Q62 182 64 178 L66 174" fill="#5A3A20"/>
+      <path d="M36 179 Q44 177 56 179" fill="none" stroke="#4A2A10" stroke-width="0.8"/>
+      <path d="M84 179 Q76 177 64 179" fill="none" stroke="#4A2A10" stroke-width="0.8"/>
     </svg>
   `
 }
@@ -196,40 +237,76 @@ function createNPCSVGS(side, active, intensity, questionId) {
   var absInt = intensity || 0
   var scalePct = absInt === 2 ? 30 : absInt === 1 ? 10 : 0
   var scale = 1 + scalePct / 100
-  // active = ユーザーが寄っている → 笑顔、そうでなければ普通/困り顔
-  var mouthY = function (main) {
-    if (active) return main ? 'M27 28 Q30 34 33 28' : 'M27 27 Q30 31 33 27'
-    return main ? 'M27 31 Q30 28 33 31' : 'M27 30 Q30 28 33 30'
-  }
-  var eyeShape = function () {
-    if (active) return '<circle cx="25" cy="23" r="2" fill="#1A1A1A"/><circle cx="35" cy="23" r="2" fill="#1A1A1A"/><circle cx="26" cy="22" r="0.8" fill="#FFF"/><circle cx="36" cy="22" r="0.8" fill="#FFF"/>'
-    return '<ellipse cx="25" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/><ellipse cx="35" cy="24" rx="2" ry="1.5" fill="#1A1A1A"/>'
-  }
-  var cheeks = active ? '<ellipse cx="21" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/><ellipse cx="39" cy="27" rx="3" ry="1.5" fill="#FFB4B4" opacity="0.4"/>' : ''
+
+  // 髪型バリエーション
+  var hairStyles = [
+    function (hc) { return '<ellipse cx="30" cy="13" rx="16" ry="11" fill="' + hc + '"/><path d="M14 16 Q16 22 18 16" fill="' + hc + '"/><path d="M42 16 Q44 22 46 16" fill="' + hc + '"/>' },
+    function (hc) { return '<ellipse cx="30" cy="14" rx="15" ry="10" fill="' + hc + '"/><path d="M15 18 Q18 8 24 14 Q28 8 32 14 Q36 8 40 14 Q44 8 45 18" fill="' + hc + '"/>' },
+    function (hc) { return '<ellipse cx="30" cy="14" rx="14" ry="9" fill="' + hc + '"/><path d="M16 17 L18 5 Q30 2 42 5 L44 17" fill="' + hc + '"/>' }
+  ]
 
   var npcs = ""
   for (var i = 0; i < 3; i++) {
     var isMain = i === 1
-    var baseW = isMain ? 44 : 32
-    var baseH = isMain ? 80 : 60
+    var baseW = isMain ? 48 : 34
+    var baseH = isMain ? 90 : 65
     var width = Math.round(baseW * (active ? scale : 1))
     var height = Math.round(baseH * (active ? scale : 1))
     var opacity = isMain ? (active ? 1 : 0.7) : (active ? 0.7 : 0.4)
+    var sc = skinColors[i]
+    var hc = hairColors[i]
+    var cc = clothesColors ? clothesColors[i] : (isMain ? baseColor : baseColor + '99')
 
-    npcs += `
-      <svg viewBox="0 0 60 100" style="width:${width}px;height:${height}px;opacity:${opacity};transition:all 0.3s ease-out" aria-hidden="true">
-        <circle cx="30" cy="${isMain ? 22 : 14}" r="${isMain ? 16 : 13}" fill="${skinColors[i]}"/>
-        <ellipse cx="30" cy="${isMain ? 12 : 14}" rx="${isMain ? 17 : 14}" ry="${isMain ? 10 : 8}" fill="${hairColors[i]}"/>
-        ${eyeShape()}
-        <path d="${mouthY(isMain)}" fill="none" stroke="#E87040" stroke-width="1.5" stroke-linecap="round"/>
-        ${cheeks}
-        <rect x="16" y="40" width="28" height="28" rx="5" fill="${clothesColors ? clothesColors[i] : (isMain ? baseColor : baseColor + '99')}"/>
-        <rect x="19" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
-        <rect x="32" y="66" width="9" height="18" rx="3" fill="#4A5568"/>
-        <ellipse cx="23" cy="85" rx="6" ry="3" fill="#2D3748"/>
-        <ellipse cx="37" cy="85" rx="6" ry="3" fill="#2D3748"/>
-      </svg>
-    `
+    // 表情
+    var eyes, mouth, cheeks
+    if (active) {
+      eyes = '<ellipse cx="24" cy="24" rx="3.5" ry="4" fill="#FFF"/><ellipse cx="36" cy="24" rx="3.5" ry="4" fill="#FFF"/>' +
+        '<ellipse cx="24.5" cy="25" rx="2.2" ry="2.8" fill="#1A1A1A"/><ellipse cx="36.5" cy="25" rx="2.2" ry="2.8" fill="#1A1A1A"/>' +
+        '<circle cx="23" cy="23" r="1.2" fill="#FFF"/><circle cx="35" cy="23" r="1.2" fill="#FFF"/>'
+      mouth = '<path d="M25 31 Q30 36 35 31" fill="#E87040" stroke="#D06030" stroke-width="0.5"/>'
+      cheeks = '<ellipse cx="19" cy="29" rx="3" ry="1.8" fill="#FFB4B4" opacity="0.5"/><ellipse cx="41" cy="29" rx="3" ry="1.8" fill="#FFB4B4" opacity="0.5"/>'
+    } else {
+      eyes = '<ellipse cx="24" cy="25" rx="2.5" ry="2" fill="#1A1A1A"/><ellipse cx="36" cy="25" rx="2.5" ry="2" fill="#1A1A1A"/>'
+      mouth = '<path d="M27 32 Q30 30 33 32" fill="none" stroke="#C06040" stroke-width="1.2" stroke-linecap="round"/>'
+      cheeks = ''
+    }
+    // 眉
+    var brows = '<path d="M21 21 Q24 19 27 21" fill="none" stroke="' + hc + '" stroke-width="1.2" stroke-linecap="round"/>' +
+      '<path d="M33 21 Q36 19 39 21" fill="none" stroke="' + hc + '" stroke-width="1.2" stroke-linecap="round"/>'
+
+    npcs += '<svg viewBox="0 0 60 100" style="width:' + width + 'px;height:' + height + 'px;opacity:' + opacity + ';transition:all 0.3s ease-out" aria-hidden="true">' +
+      // 髪（後ろ）
+      '<ellipse cx="30" cy="18" rx="16" ry="14" fill="' + hc + '"/>' +
+      // 頭
+      '<ellipse cx="30" cy="22" rx="14" ry="13" fill="' + sc + '"/>' +
+      // 髪（前）
+      hairStyles[i](hc) +
+      // 耳
+      '<ellipse cx="16" cy="24" rx="2.5" ry="3.5" fill="' + sc + '"/>' +
+      '<ellipse cx="44" cy="24" rx="2.5" ry="3.5" fill="' + sc + '"/>' +
+      // 眉・目・口・ほっぺ
+      brows + eyes + mouth + cheeks +
+      // 鼻
+      '<path d="M29 27 Q30 29 31 27" fill="none" stroke="#E0B090" stroke-width="0.8" stroke-linecap="round"/>' +
+      // 首
+      '<rect x="26" y="34" width="8" height="5" rx="2" fill="' + sc + '"/>' +
+      // 体（ジャケット風）
+      '<path d="M18 39 Q18 37 22 36 L30 38 L38 36 Q42 37 42 39 L43 62 L17 62 Z" fill="' + cc + '"/>' +
+      // 襟
+      '<path d="M25 36 L30 41 L27 39 Z" fill="#FFF" opacity="0.6"/>' +
+      '<path d="M35 36 L30 41 L33 39 Z" fill="#FFF" opacity="0.6"/>' +
+      // 腕
+      '<path d="M17 40 L12 50 L13 58 L16 58 L17 50 L18 44" fill="' + cc + '"/>' +
+      '<path d="M43 40 L48 50 L47 58 L44 58 L43 50 L42 44" fill="' + cc + '"/>' +
+      // 手
+      '<ellipse cx="14" cy="59" rx="3" ry="2.5" fill="' + sc + '"/>' +
+      '<ellipse cx="46" cy="59" rx="3" ry="2.5" fill="' + sc + '"/>' +
+      // ズボン
+      '<path d="M18 61 L20 80 L27 80 L29 66 L31 66 L33 80 L40 80 L42 61 Z" fill="#4A5568"/>' +
+      // 靴
+      '<path d="M19 79 L17 84 Q16 86 22 86 L28 86 Q29 84 27 82" fill="#3A2A1A"/>' +
+      '<path d="M41 79 L43 84 Q44 86 38 86 L32 86 Q31 84 33 82" fill="#3A2A1A"/>' +
+      '</svg>'
   }
 
   return npcs
@@ -347,22 +424,22 @@ function getBuildingsForScene(sceneName, time) {
       { h: 20, w: 14, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
     ],
     "病院の待合室": [
-      { h: 14, w: 12, color: "#3a4a5a" },
+      { h: 14, w: 12, color: "#3a4a5a", windows: 1 },
       { h: 22, w: 14, color: "#5a6a7a", windows: 2 },
-      { h: 38, w: 20, color: "#e8e8e8", windows: 4, roof: "flat" }, // 病院（白い建物）
+      { h: 38, w: 22, color: "#e8e8e8", windows: 4, roof: "flat", sign: "🏥 病院", signColor: "#EF5350" },
       { h: 32, w: 16, color: "#d8d8d8", windows: 3 },
       { h: 0 },
-      { h: 18, w: 12, color: "#4a5a6a", windows: 2 },
+      { h: 18, w: 12, color: "#4a5a6a", windows: 2, sign: "薬局", signColor: "#66BB6A" },
       { h: 10, w: 10, color: "#3a4a5a" },
     ],
     "ショッピングモール": [
-      { h: 12, w: 10, color: "#3a4a5a" },
-      { h: 18, w: 14, color: "#5a5a6a", windows: 2 },
-      { h: 24, w: 28, color: "#6a5a4a", windows: 3, roof: "flat" }, // モール
-      { h: 24, w: 28, color: "#6a5a4a", windows: 3, roof: "flat" },
+      { h: 14, w: 12, color: "#4a5a6a", windows: 1, sign: "CAFE", signColor: "#8D6E63" },
+      { h: 20, w: 16, color: "#5a5a6a", windows: 2, sign: "SHOP", signColor: "#42A5F5", awning: "#1565C0" },
+      { h: 26, w: 28, color: "#6a5a4a", windows: 3, roof: "flat", sign: "MALL", signColor: "#FFE66D", awning: "#E65100" },
+      { h: 26, w: 28, color: "#6a5a4a", windows: 3, roof: "flat", awning: "#BF360C" },
       { h: 0 },
-      { h: 16, w: 12, color: "#4a5a5a", windows: 1 },
-      { h: 20, w: 14, color: "#5a4a4a", windows: 2 },
+      { h: 18, w: 14, color: "#4a5a5a", windows: 2, sign: "雑貨", signColor: "#F48FB1", awning: "#AD1457" },
+      { h: 22, w: 16, color: "#5a4a4a", windows: 2, sign: "服屋", signColor: "#CE93D8" },
     ],
     "鉄塔の見える丘": [
       { h: 6, w: 14, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
@@ -395,14 +472,14 @@ function getBuildingsForScene(sceneName, time) {
       { h: 4, w: 8, color: "#1a3a1a" },
     ],
     "朝の商店街": [
-      { h: 14, w: 14, color: "#5a4a3a", windows: 1 },
-      { h: 16, w: 12, color: "#4a5a4a", windows: 1, roof: "triangle", roofColor: "#3a4a3a" },
-      { h: 12, w: 16, color: "#5a5a4a", windows: 1 },
-      { h: 18, w: 14, color: "#4a4a5a", windows: 2, roof: "triangle", roofColor: "#3a3a4a" },
+      { h: 14, w: 16, color: "#6a5a4a", windows: 1, sign: "八百屋", signColor: "#4CAF50", awning: "#E65100" },
+      { h: 18, w: 14, color: "#5a5a4a", windows: 2, roof: "triangle", roofColor: "#4a4a3a", sign: "本屋", signColor: "#FFE66D" },
+      { h: 12, w: 18, color: "#5a4a4a", windows: 1, sign: "魚屋", signColor: "#42A5F5", awning: "#1565C0" },
+      { h: 20, w: 16, color: "#4a4a5a", windows: 2, roof: "triangle", roofColor: "#3a3a4a", sign: "定食屋", signColor: "#FF8A65", awning: "#BF360C" },
       { h: 0 },
-      { h: 14, w: 12, color: "#5a4a4a", windows: 1 },
-      { h: 10, w: 14, color: "#4a5a5a", windows: 1, roof: "triangle", roofColor: "#3a4a4a" },
-      { h: 16, w: 12, color: "#5a5a5a", windows: 1 },
+      { h: 14, w: 14, color: "#5a4a4a", windows: 1, sign: "薬局", signColor: "#81C784", awning: "#2E7D32" },
+      { h: 12, w: 16, color: "#4a5a5a", windows: 1, sign: "花屋", signColor: "#F48FB1", awning: "#AD1457" },
+      { h: 18, w: 14, color: "#5a5a5a", windows: 2, sign: "パン屋", signColor: "#FFE0B2", awning: "#E65100" },
     ],
     "港の見える橋の上": [
       { h: 4, w: 6, color: "#4a5a6a" },
@@ -425,13 +502,13 @@ function getBuildingsForScene(sceneName, time) {
       { h: 10, w: 14, color: "#2a4a2a", roof: "triangle", roofColor: "#1a3a1a" },
     ],
     "オフィスビルの前": [
-      { h: 20, w: 12, color: "#4a5a6a", windows: 2 },
-      { h: 32, w: 16, color: "#5a6a7a", windows: 3 },
-      { h: 40, w: 18, color: "#6a7a8a", windows: 4, roof: "flat" },
-      { h: 36, w: 16, color: "#5a6a7a", windows: 3, roof: "flat" },
+      { h: 22, w: 14, color: "#4a5a6a", windows: 2 },
+      { h: 34, w: 16, color: "#5a6a7a", windows: 3, sign: "OFFICE", signColor: "#90CAF9" },
+      { h: 42, w: 20, color: "#6a7a8a", windows: 5, roof: "flat", sign: "TOWER", signColor: "#B0BEC5" },
+      { h: 38, w: 16, color: "#5a6a7a", windows: 4, roof: "flat" },
       { h: 0 },
-      { h: 24, w: 14, color: "#4a5a6a", windows: 2 },
-      { h: 18, w: 10, color: "#3a4a5a", windows: 1 },
+      { h: 26, w: 14, color: "#4a5a6a", windows: 3 },
+      { h: 20, w: 12, color: "#3a4a5a", windows: 2 },
     ],
     "駅前のロータリー": [
       { h: 16, w: 12, color: "#4a4a5a", windows: 1 },
@@ -462,11 +539,11 @@ function getBuildingsForScene(sceneName, time) {
       { h: 8, w: 12, color: "#2a5a2a", roof: "triangle", roofColor: "#1a4a1a" },
     ],
     "夜のスーパー": [
-      { h: 18, w: 12, color: "#2a2a3a", windows: 1 },
-      { h: 14, w: 28, color: "#3a3a4a", windows: 2, roof: "flat" },
-      { h: 14, w: 28, color: "#3a3a4a", windows: 2, roof: "flat" },
+      { h: 18, w: 14, color: "#2a2a3a", windows: 1, sign: "酒屋", signColor: "#FFCC80" },
+      { h: 16, w: 30, color: "#3a3a4a", windows: 2, roof: "flat", sign: "🛒 スーパー", signColor: "#EF5350", awning: "#B71C1C" },
+      { h: 16, w: 30, color: "#3a3a4a", windows: 2, roof: "flat", awning: "#B71C1C" },
       { h: 0 },
-      { h: 20, w: 14, color: "#2a2a3a", windows: 2 },
+      { h: 20, w: 14, color: "#2a2a3a", windows: 2, sign: "弁当", signColor: "#FFE082" },
       { h: 12, w: 10, color: "#2a2a2a", windows: 1 },
     ]
   }
@@ -484,18 +561,53 @@ function getBuildingsForScene(sceneName, time) {
     if (!b.h || b.h === 0) return '<div style="width:40px"></div>'
     var w = b.w || (10 + Math.floor(Math.random() * 8))
     var color = b.color || "#1a2a3a"
-    var windows = ""
+    var h = b.h * 2
+    var details = ""
+
+    // 窓（枠付き）
     var winCount = b.windows || Math.floor(b.h / 8)
     for (var j = 0; j < winCount; j++) {
       var lit = Math.random() > 0.4
       var glowAlpha = lit ? time.windowGlow : time.windowGlow * 0.2
-      windows += '<div class="building-window" style="left:' + (20 + (j * 37) % 60) + '%;top:' + (15 + j * 22) + '%;background:rgba(255,230,109,' + glowAlpha + ')"></div>'
+      var wLeft = 15 + (j * 35) % 65
+      var wTop = 12 + j * 20
+      details += '<div style="position:absolute;left:' + wLeft + '%;top:' + wTop + '%;width:30%;height:16%;border:1.5px solid rgba(255,255,255,0.15);border-radius:1px;background:rgba(255,230,109,' + glowAlpha + ');box-shadow:inset 0 0 2px rgba(0,0,0,0.3)">' +
+        '<div style="position:absolute;left:49%;top:0;width:1px;height:100%;background:rgba(255,255,255,0.1)"></div>' +
+        '<div style="position:absolute;top:49%;left:0;width:100%;height:1px;background:rgba(255,255,255,0.1)"></div></div>'
     }
+
+    // 屋根
     var roofHtml = ""
     if (b.roof === "triangle") {
-      roofHtml = '<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:' + (w / 2 + 2) + 'px solid transparent;border-right:' + (w / 2 + 2) + 'px solid transparent;border-bottom:10px solid ' + (b.roofColor || color) + '"></div>'
+      roofHtml = '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:' + (w / 2 + 4) + 'px solid transparent;border-right:' + (w / 2 + 4) + 'px solid transparent;border-bottom:12px solid ' + (b.roofColor || color) + '"></div>'
     }
-    return '<div class="building" style="height:' + (b.h * 2) + 'px;width:' + w + 'px;background:' + color + '">' + roofHtml + windows + '</div>'
+
+    // ドア（1階部分）
+    var doorHtml = ''
+    if (b.h > 10 && !b.isTree) {
+      doorHtml = '<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:28%;height:22%;max-height:18px;background:rgba(0,0,0,0.25);border-radius:2px 2px 0 0;border:1px solid rgba(255,255,255,0.08)">' +
+        '<div style="position:absolute;right:20%;top:45%;width:2px;height:2px;border-radius:50%;background:rgba(255,230,109,' + (time.windowGlow * 0.5) + ')"></div></div>'
+    }
+
+    // 看板（商店街系のみ）
+    var signHtml = ''
+    if (b.sign) {
+      signHtml = '<div style="position:absolute;top:-4px;left:50%;transform:translateX(-50%);padding:1px 4px;background:' + (b.signColor || '#FFE66D') + ';border-radius:2px;font-size:5px;color:#333;font-weight:bold;white-space:nowrap;z-index:2">' + b.sign + '</div>'
+    }
+
+    // 庇（ひさし）
+    var awningHtml = ''
+    if (b.awning) {
+      awningHtml = '<div style="position:absolute;bottom:22%;left:-4%;width:108%;height:6px;background:' + b.awning + ';border-radius:0 0 3px 3px;box-shadow:0 1px 2px rgba(0,0,0,0.3)"></div>'
+    }
+
+    // 壁面テクスチャ
+    var wallTexture = 'background:' + color + ';'
+    if (b.h > 15) {
+      wallTexture += 'background:linear-gradient(180deg, ' + color + ' 0%, ' + color + 'DD 100%);border:1px solid rgba(255,255,255,0.05);'
+    }
+
+    return '<div class="building" style="height:' + h + 'px;width:' + w + 'px;' + wallTexture + 'border-radius:2px 2px 0 0">' + roofHtml + details + doorHtml + signHtml + awningHtml + '</div>'
   })
 }
 
