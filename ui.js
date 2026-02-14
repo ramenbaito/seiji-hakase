@@ -929,7 +929,9 @@ function createResultScreen(answers) {
       "国民民主党": "中道・現実路線。対案型野党",
       "共産党": "左派・平等重視。護憲・反戦",
       "れいわ新選組": "左派・再分配重視。消費税廃止を主張",
-      "社民党": "社会民主主義。平和・人権重視"
+      "社民党": "社会民主主義。平和・人権重視",
+      "参政党": "保守・自主独立路線。食と教育を重視",
+      "日本保守党": "保守・伝統重視。国益と安全保障を最優先"
     }
     var tip = partyTips[p.name] || ''
     return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out" title="' + tip + '">' +
