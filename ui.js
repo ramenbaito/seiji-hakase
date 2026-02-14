@@ -556,6 +556,17 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
         </div>
       </div>
       
+      <!-- 税金バー（中央基準） -->
+      <div class="tax-bar-wrap">
+        <span class="tax-bar-label">税負担</span>
+        <div class="tax-bar-track">
+          <div class="tax-bar-center"></div>
+          <div class="tax-bar-fill" style="left:${taxGauge >= 0 ? '50%' : (50 + taxGauge * 5) + '%'};width:${Math.abs(taxGauge) * 5}%;background:${taxGauge >= 0 ? '#FF6B6B' : '#4ECDC4'}"></div>
+          <div class="tax-bar-indicator" style="left:${50 + taxGauge * 5}%"></div>
+        </div>
+        <div class="tax-bar-value">${taxGauge > 0 ? '+' + Math.round(taxGauge * 10) / 10 : taxGauge < 0 ? Math.round(taxGauge * 10) / 10 : '0'}</div>
+      </div>
+      
       ${createRPGScene(value, question, idx)}
       
       <!-- ダイアログボックス -->

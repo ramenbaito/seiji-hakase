@@ -290,7 +290,69 @@
       animation: pulseGlow 1.5s ease-in-out infinite
     }
 
-    /* v0風のEXP/Taxバー */
+    /* 税金バー（中央基準） */
+    .tax-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px
+    }
+
+    .tax-bar-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.05em
+    }
+
+    .tax-bar-track {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 99px;
+      border: 1px solid var(--border-color);
+      overflow: visible
+    }
+
+    .tax-bar-center {
+      position: absolute;
+      left: 50%;
+      top: -2px;
+      width: 1px;
+      height: 10px;
+      background: rgba(255, 255, 240, 0.2)
+    }
+
+    .tax-bar-fill {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      border-radius: 99px;
+      transition: all 0.4s ease-out
+    }
+
+    .tax-bar-indicator {
+      position: absolute;
+      top: -3px;
+      width: 8px;
+      height: 12px;
+      margin-left: -4px;
+      border-radius: 4px;
+      background: #fff;
+      border: 1.5px solid rgba(255, 230, 109, 0.4);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      transition: left 0.4s ease-out
+    }
+
+    .tax-bar-value {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      min-height: 14px
+    }
+
+    /* v0風のステータスバー（互換用） */
     .status-bars {
       display: flex;
       flex-direction: column;
