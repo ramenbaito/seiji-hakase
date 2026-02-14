@@ -857,7 +857,7 @@ function createResultScreen(answers) {
         <!-- あなたの傾向 -->
         <div class="tendency-box">
           <div class="summary-label">🧭 あなたの傾向まとめ</div>
-          <p class="tendency-text">${generateTendencyText(axisScores)}</p>
+          <p class="tendency-text">${character.description}</p>
         </div>
         
         <!-- 5軸スコア -->
