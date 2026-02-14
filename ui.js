@@ -910,17 +910,12 @@ function createResultScreen(answers) {
         
         <div class="result-divider"></div>
         
-        <!-- 全政党比較 -->
+        <!-- トップ3政党（大きく表示） -->
         <div class="party-list">
-          <div class="summary-label">🏛️ 全政党マッチング</div>
+          <div class="summary-label">🏛️ あなたに近い政党 TOP3</div>
           <div class="party-list-note">※ 各政党の公式見解を参考にした概算です</div>
-          ${partyResults.map(function (p, i) {
-    var isTop = i === 0
-    var isRunner = i === 1 || i === 2
-    var rank = isTop ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : ''
-    var nameStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
-    var fillOpacity = isTop ? 1 : isRunner ? 0.7 : 0.35
-    var pctStyle = isTop ? 'color:' + p.color + ';font-weight:800' : isRunner ? 'color:' + p.color + ';font-weight:600' : ''
+          ${partyResults.slice(0, 3).map(function (p, i) {
+    var rank = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'
     var partyTips = {
       "自民党": "保守・経済成長重視。長期政権を担う",
       "立憲民主党": "リベラル・社会保障重視。野党第一党",
@@ -934,15 +929,31 @@ function createResultScreen(answers) {
       "日本保守党": "保守・伝統重視。国益と安全保障を最優先"
     }
     var tip = partyTips[p.name] || ''
-    return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out" title="' + tip + '">' +
-      '<a href="' + (p.url || '#') + '" target="_blank" rel="noopener" class="party-row-name" style="' + nameStyle + '">' + rank + p.name + '</a>' +
-      '<div class="party-row-bar">' +
-      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + fillOpacity + '"></div>' +
-      '</div>' +
-      '<span class="party-row-pct" style="' + pctStyle + '">' + p.match + '%</span>' +
-      '</div>' +
-      (isTop || isRunner ? '<div class="party-tip" style="color:' + (isTop || isRunner ? p.color : 'var(--text-muted)') + '">' + tip + (p.policyUrl ? ' <a href="' + p.policyUrl + '" target="_blank" rel="noopener" class="party-source-link" style="color:' + p.color + '">政策を見る→</a>' : '') + '</div>' : '')
+    return '<div class="party-top-card" style="border-color:' + p.color + '30;animation:slideInRight ' + (0.3 + i * 0.1) + 's ease-out both">' +
+      '<div class="party-top-rank">' + rank + '</div>' +
+      '<a href="' + (p.url || '#') + '" target="_blank" rel="noopener" class="party-top-name" style="color:' + p.color + '">' + p.name + '</a>' +
+      '<div class="party-top-bar"><div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + '"></div></div>' +
+      '<span class="party-top-pct" style="color:' + p.color + '">' + p.match + '%</span>' +
+      '<div class="party-top-tip">' + tip + '</div>' +
+      (p.policyUrl ? '<a href="' + p.policyUrl + '" target="_blank" rel="noopener" class="party-top-policy" style="border-color:' + p.color + '40;color:' + p.color + '">政策を見る →</a>' : '') +
+      '</div>'
   }).join('')}
+        </div>
+        
+        <!-- 残りの政党（折りたたみ） -->
+        <div class="party-rest-wrap">
+          <button type="button" class="party-rest-toggle" id="partyRestToggle">🏛️ 他の政党も見る（${partyResults.length - 3}党）</button>
+          <div class="party-rest-list" id="partyRestList" style="display:none">
+            ${partyResults.slice(3).map(function (p, i) {
+    return '<div class="party-row" style="animation:slideInRight ' + (0.1 + i * 0.05) + 's ease-out">' +
+      '<a href="' + (p.url || '#') + '" target="_blank" rel="noopener" class="party-row-name">' + p.name + '</a>' +
+      '<div class="party-row-bar">' +
+      '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:0.35"></div>' +
+      '</div>' +
+      '<span class="party-row-pct">' + p.match + '%</span>' +
+      '</div>'
+  }).join('')}
+          </div>
         </div>
       </div>
       
@@ -1160,6 +1171,21 @@ function handleKeyNav(e) {
 function bindResultEvents() {
   var resetBtn = document.getElementById("resetBtn")
   var shareBtn = document.getElementById("shareBtn")
+  var partyToggle = document.getElementById("partyRestToggle")
+
+  if (partyToggle) {
+    partyToggle.addEventListener("click", function () {
+      var list = document.getElementById("partyRestList")
+      if (!list) return
+      if (list.style.display === "none") {
+        list.style.display = "block"
+        partyToggle.textContent = "🏛️ 閉じる"
+      } else {
+        list.style.display = "none"
+        partyToggle.textContent = "🏛️ 他の政党も見る"
+      }
+    })
+  }
 
   if (resetBtn) {
     resetBtn.addEventListener("click", function () {
