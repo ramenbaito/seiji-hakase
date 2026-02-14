@@ -839,7 +839,7 @@ function createResultScreen(answers) {
         <!-- 政党マッチ -->
         <div class="party-match" style="border:2px solid ${topParty.color}40;background:${topParty.color}08">
           <div class="party-match-label">あなたに最も近い政党</div>
-          <div class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</div>
+          <a href="${topParty.url}" target="_blank" rel="noopener" class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</a>
           <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px">
             <svg width="36" height="36" viewBox="0 0 36 36">
               <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
@@ -935,7 +935,7 @@ function createResultScreen(answers) {
     }
     var tip = partyTips[p.name] || ''
     return '<div class="party-row" style="animation:slideInRight ' + (0.3 + i * 0.05) + 's ease-out" title="' + tip + '">' +
-      '<span class="party-row-name" style="' + nameStyle + '">' + rank + p.name + '</span>' +
+      '<a href="' + (p.url || '#') + '" target="_blank" rel="noopener" class="party-row-name" style="' + nameStyle + '">' + rank + p.name + '</a>' +
       '<div class="party-row-bar">' +
       '<div class="party-row-fill" style="width:' + p.match + '%;background:' + p.color + ';opacity:' + fillOpacity + '"></div>' +
       '</div>' +
