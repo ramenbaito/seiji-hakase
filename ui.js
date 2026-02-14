@@ -882,8 +882,8 @@ function createResultScreen(answers) {
         </div>
         
         <!-- 回答サマリー -->
-        <div class="answer-summary">
-          <div class="summary-label">回答サマリー</div>
+        <details class="answer-summary">
+          <summary class="summary-label" style="cursor:pointer;user-select:none">回答サマリー ▼</summary>
           ${entries.map(function (entry) {
     var id = entry[0], v = entry[1].value || 0
     var posClass = v === 0 ? 'neutral' : v < 0 ? 'left' : 'right'
@@ -898,7 +898,7 @@ function createResultScreen(answers) {
       '<span class="answer-value ' + posClass + '">' + (v > 0 ? '+' + v : v) + '</span>' +
       '</div>'
   }).join('')}
-        </div>
+        </details>
         
         <div class="result-divider"></div>
         
