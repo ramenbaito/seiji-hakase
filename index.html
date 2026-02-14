@@ -352,6 +352,72 @@
       min-height: 14px
     }
 
+    .policy-tap {
+      cursor: pointer;
+      border-bottom: 1px dotted rgba(255, 230, 109, 0.4);
+      transition: all 0.2s
+    }
+
+    .policy-tap:hover {
+      color: var(--accent-yellow);
+      border-bottom-color: var(--accent-yellow)
+    }
+
+    .policy-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+      animation: fadeIn 0.2s ease-out
+    }
+
+    .policy-popup-content {
+      background: var(--bg-secondary);
+      border: 1.5px solid rgba(255, 230, 109, 0.25);
+      border-radius: 14px;
+      padding: 20px;
+      max-width: 360px;
+      width: 100%;
+      animation: slideIn 0.3s ease-out
+    }
+
+    .policy-popup-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent-yellow)
+    }
+
+    .policy-popup-text {
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 14px
+    }
+
+    .policy-popup-close {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid rgba(255, 230, 109, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 230, 109, 0.06);
+      color: var(--text-primary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s
+    }
+
+    .policy-popup-close:hover {
+      background: rgba(255, 230, 109, 0.12)
+    }
+
     /* v0風のステータスバー（互換用） */
     .status-bars {
       display: flex;

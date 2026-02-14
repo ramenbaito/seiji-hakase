@@ -567,6 +567,15 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
         <div class="tax-bar-value">${taxGauge > 0 ? '+' + Math.round(taxGauge * 10) / 10 : taxGauge < 0 ? Math.round(taxGauge * 10) / 10 : '0'}</div>
       </div>
       
+      <!-- 現状の政策ポップアップ -->
+      <div class="policy-popup" id="policyPopup" style="display:none">
+        <div class="policy-popup-content">
+          <div class="policy-popup-title">📋 現状の政策</div>
+          <p class="policy-popup-text">${escapeHtml(question.currentPolicy || '')}</p>
+          <button type="button" class="policy-popup-close" id="policyClose">閉じる</button>
+        </div>
+      </div>
+      
       ${createRPGScene(value, question, idx)}
       
       <!-- ダイアログボックス -->
@@ -622,7 +631,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
             <span class="step ${value === 1 ? 'active right' : ''}"></span>
             <span class="step ${value === 2 ? 'active right' : ''}"></span>
           </div>
-          <div class="slider-desc ${value === 0 ? 'neutral' : value < 0 ? 'left' : 'right'}">${labels[value]}</div>
+          <div class="slider-desc ${value === 0 ? 'neutral policy-tap' : value < 0 ? 'left' : 'right'}" ${value === 0 ? 'id="policyTap"' : ''}>${labels[value]}</div>
         </div>
       </div>
       
@@ -1063,6 +1072,26 @@ function bindQuestionEvents() {
   var nextBtn = document.getElementById("nextBtn")
 
   if (!slider) return
+
+  // 現状の政策ポップアップ
+  var policyTap = document.getElementById("policyTap")
+  var policyPopup = document.getElementById("policyPopup")
+  var policyClose = document.getElementById("policyClose")
+  if (policyTap && policyPopup) {
+    policyTap.addEventListener("click", function () {
+      policyPopup.style.display = "flex"
+    })
+  }
+  if (policyClose && policyPopup) {
+    policyClose.addEventListener("click", function () {
+      policyPopup.style.display = "none"
+    })
+  }
+  if (policyPopup) {
+    policyPopup.addEventListener("click", function (e) {
+      if (e.target === policyPopup) policyPopup.style.display = "none"
+    })
+  }
 
   // スライダーイベント
   slider.addEventListener("input", function () {
