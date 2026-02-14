@@ -1742,7 +1742,7 @@ function sendFeedback() {
 
   var input = document.createElement("input")
   input.type = "hidden"
-  input.name = "entry.1461335528"
+  input.name = "entry.37763675"
   input.value = text + "\n---\n" + new Date().toISOString() + " | " + window.location.href
   form.appendChild(input)
 
