@@ -1725,8 +1725,8 @@ function sendFeedback() {
   }
   if (els.fbStatus) els.fbStatus.textContent = "送信中..."
 
-  // Google Apps Scriptに送信（hidden iframe + form submitでCORS完全回避）
-  var GAS_URL = "https://script.google.com/macros/s/AKfycbxtEHNqu4ZK-vD34TgVE-btkB04mTXi0P8IOdk9LSOJfnF8XNjK8WPOqaoQhYJUcN02rg/exec"
+  // Googleフォームに送信（iframe + form でCORS回避）
+  var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScZYnTp5GIe4Ee0nRe-V9Mo38xE08qNw6whxAXuHNW789-jTg/formResponse"
 
   var iframeName = "fb_iframe_" + Date.now()
   var iframe = document.createElement("iframe")
@@ -1736,44 +1736,27 @@ function sendFeedback() {
 
   var form = document.createElement("form")
   form.method = "POST"
-  form.action = GAS_URL
+  form.action = FORM_URL
   form.target = iframeName
   form.style.display = "none"
 
-  var fields = { feedback: text, timestamp: new Date().toISOString(), url: window.location.href }
-  for (var key in fields) {
-    var input = document.createElement("input")
-    input.type = "hidden"
-    input.name = key
-    input.value = fields[key]
-    form.appendChild(input)
-  }
+  var input = document.createElement("input")
+  input.type = "hidden"
+  input.name = "entry.1461335528"
+  input.value = text + "\n---\n" + new Date().toISOString() + " | " + window.location.href
+  form.appendChild(input)
 
   document.body.appendChild(form)
   form.submit()
 
-  // iframeのロード完了を待つ（成功とみなす）
-  iframe.onload = function () {
+  setTimeout(function () {
     if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了！ありがとうございます"
     if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
     if (els.fbText) els.fbText.value = ""
     setTimeout(closeFeedback, 2000)
-    setTimeout(function () {
-      document.body.removeChild(iframe)
-      document.body.removeChild(form)
-    }, 3000)
-  }
-
-  // タイムアウト（5秒で成功とみなす — iframeのonloadが発火しない場合のフォールバック）
-  setTimeout(function () {
-    if (els.fbStatus && els.fbStatus.textContent === "送信中...") {
-      els.fbStatus.textContent = "✅ 送信完了！ありがとうございます"
-      if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
-      setTimeout(closeFeedback, 2000)
-    }
     try { document.body.removeChild(iframe) } catch (e) { }
     try { document.body.removeChild(form) } catch (e) { }
-  }, 5000)
+  }, 3000)
 }
 
 // ═══════════════════════════════════════════════════════════
