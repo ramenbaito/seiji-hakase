@@ -194,6 +194,20 @@ var PARTIES = [
     url: "https://sdp.or.jp/",
     policyUrl: "https://sdp.or.jp/policy/"
   },
+  {
+    name: "参政党",
+    scores: { merit_equity: 35, small_big: 40, free_norm: 30, open_protect: 20, now_future: 40 },
+    color: "#f97316",
+    url: "https://www.sanseito.jp/",
+    policyUrl: "https://www.sanseito.jp/policy/"
+  },
+  {
+    name: "日本保守党",
+    scores: { merit_equity: 30, small_big: 35, free_norm: 25, open_protect: 15, now_future: 35 },
+    color: "#1e3a5f",
+    url: "https://hoshuto.jp/",
+    policyUrl: "https://hoshuto.jp/policy/"
+  },
 ]
 
 function calcPartyDistances(userScores) {
