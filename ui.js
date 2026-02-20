@@ -883,7 +883,6 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
         <div class="dialogue-corner br"></div>
         <div class="scene-badge">${getSceneEmoji(question.scene)} ${escapeHtml(question.scene)}</div>
         <h2 class="question-title">${escapeHtml(question.title)}</h2>
-        <p class="question-desc">${escapeHtml(narrative)}</p>
       </div>
       
       <!-- アクションセクション -->
