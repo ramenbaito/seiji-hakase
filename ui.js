@@ -488,14 +488,14 @@ function getBuildingsForScene(sceneName, time) {
       { h: 4, w: 8, color: "#1a3a1a" },
     ],
     "朝の商店街": [
-      { h: 14, w: 16, color: "#6a5a4a", windows: 1, sign: "八百屋", signColor: "#4CAF50", awning: "#E65100" },
-      { h: 18, w: 14, color: "#5a5a4a", windows: 2, roof: "triangle", roofColor: "#4a4a3a", sign: "本屋", signColor: "#FFE66D" },
-      { h: 12, w: 18, color: "#5a4a4a", windows: 1, sign: "魚屋", signColor: "#42A5F5", awning: "#1565C0" },
-      { h: 20, w: 16, color: "#4a4a5a", windows: 2, roof: "triangle", roofColor: "#3a3a4a", sign: "定食屋", signColor: "#FF8A65", awning: "#BF360C" },
+      { h: 16, w: 18, color: "#6a5a4a", windows: 1, sign: "八百屋", signColor: "#4CAF50", awning: "#E65100", awningStripe: "#FF8F00", noren: "#2E7D32", norenText: "青果", display: "veggies" },
+      { h: 20, w: 15, color: "#5a5548", windows: 2, roof: "triangle", roofColor: "#4a4438", sign: "本屋", signColor: "#FFE66D", noren: "#3E2723", norenText: "書籍" },
+      { h: 14, w: 20, color: "#5a4a4a", windows: 1, sign: "魚屋", signColor: "#42A5F5", awning: "#1565C0", awningStripe: "#1976D2", noren: "#0D47A1", norenText: "鮮魚", display: "fish" },
+      { h: 22, w: 18, color: "#4a4a5a", windows: 2, roof: "triangle", roofColor: "#3a3a4a", sign: "定食屋", signColor: "#FF8A65", awning: "#BF360C", awningStripe: "#E65100", noren: "#BF360C", norenText: "定食", lantern: true },
       { h: 0 },
-      { h: 14, w: 14, color: "#5a4a4a", windows: 1, sign: "薬局", signColor: "#81C784", awning: "#2E7D32" },
-      { h: 12, w: 16, color: "#4a5a5a", windows: 1, sign: "花屋", signColor: "#F48FB1", awning: "#AD1457" },
-      { h: 18, w: 14, color: "#5a5a5a", windows: 2, sign: "パン屋", signColor: "#FFE0B2", awning: "#E65100" },
+      { h: 16, w: 15, color: "#5a504a", windows: 1, sign: "薬局", signColor: "#81C784", awning: "#2E7D32", awningStripe: "#388E3C", display: "pharmacy" },
+      { h: 14, w: 18, color: "#5a5550", windows: 1, sign: "花屋", signColor: "#F48FB1", awning: "#AD1457", awningStripe: "#C2185B", display: "flowers" },
+      { h: 20, w: 16, color: "#5a5550", windows: 2, sign: "パン屋", signColor: "#FFE0B2", awning: "#E65100", awningStripe: "#FF8F00", noren: "#795548", norenText: "焼立", display: "bread" },
     ],
     "港の見える橋の上": [
       { h: 4, w: 6, color: "#4a5a6a" },
@@ -611,10 +611,66 @@ function getBuildingsForScene(sceneName, time) {
       signHtml = '<div style="position:absolute;top:-4px;left:50%;transform:translateX(-50%);padding:1px 4px;background:' + (b.signColor || '#FFE66D') + ';border-radius:2px;font-size:5px;color:#333;font-weight:bold;white-space:nowrap;z-index:2">' + b.sign + '</div>'
     }
 
-    // 庇（ひさし）
+    // 庇（ひさし）— ストライプ対応
     var awningHtml = ''
     if (b.awning) {
-      awningHtml = '<div style="position:absolute;bottom:22%;left:-4%;width:108%;height:6px;background:' + b.awning + ';border-radius:0 0 3px 3px;box-shadow:0 1px 2px rgba(0,0,0,0.3)"></div>'
+      if (b.awningStripe) {
+        awningHtml = '<div style="position:absolute;bottom:22%;left:-4%;width:108%;height:8px;background:repeating-linear-gradient(90deg,' + b.awning + ' 0px,' + b.awning + ' 3px,' + b.awningStripe + ' 3px,' + b.awningStripe + ' 6px);border-radius:0 0 4px 4px;box-shadow:0 2px 3px rgba(0,0,0,0.4)"></div>'
+      } else {
+        awningHtml = '<div style="position:absolute;bottom:22%;left:-4%;width:108%;height:6px;background:' + b.awning + ';border-radius:0 0 3px 3px;box-shadow:0 1px 2px rgba(0,0,0,0.3)"></div>'
+      }
+    }
+
+    // のれん
+    var norenHtml = ''
+    if (b.noren) {
+      var nt = b.norenText || ''
+      norenHtml = '<div style="position:absolute;bottom:24%;left:50%;transform:translateX(-50%);display:flex;gap:1px">'
+      for (var n = 0; n < 3; n++) {
+        norenHtml += '<div style="width:' + Math.floor(w * 0.24) + 'px;height:10px;background:' + b.noren + ';border-radius:0 0 2px 2px;opacity:0.9"></div>'
+      }
+      norenHtml += '</div>'
+      if (nt) {
+        norenHtml += '<div style="position:absolute;bottom:26%;left:50%;transform:translateX(-50%);font-size:3.5px;color:#FFF;font-weight:bold;text-shadow:0 0 2px rgba(0,0,0,0.5);white-space:nowrap;pointer-events:none">' + nt + '</div>'
+      }
+    }
+
+    // 商品陳列
+    var displayHtml = ''
+    if (b.display === "veggies") {
+      displayHtml = '<div style="position:absolute;bottom:-3px;left:-2px;display:flex;gap:1px">' +
+        '<div style="width:5px;height:4px;background:#4CAF50;border-radius:50%"></div>' +
+        '<div style="width:5px;height:4px;background:#FF5722;border-radius:50%"></div>' +
+        '<div style="width:5px;height:4px;background:#FFC107;border-radius:50%"></div>' +
+        '<div style="width:5px;height:4px;background:#8BC34A;border-radius:50%"></div>' +
+        '</div>' +
+        '<div style="position:absolute;bottom:-6px;left:-3px;width:' + (w + 4) + 'px;height:4px;background:#8B6914;border-radius:1px"></div>'
+    } else if (b.display === "fish") {
+      displayHtml = '<div style="position:absolute;bottom:-4px;left:2px;width:' + (w - 4) + 'px;height:3px;background:linear-gradient(90deg,#90CAF9,#42A5F5,#1E88E5);border-radius:1px;opacity:0.7"></div>' +
+        '<div style="position:absolute;bottom:-6px;left:-2px;width:' + (w + 2) + 'px;height:4px;background:#5D4037;border-radius:1px"></div>'
+    } else if (b.display === "flowers") {
+      displayHtml = '<div style="position:absolute;bottom:-4px;left:-2px;display:flex;gap:2px">' +
+        '<div style="width:4px;height:6px;background:#E91E63;border-radius:50% 50% 0 0"></div>' +
+        '<div style="width:4px;height:8px;background:#FFC107;border-radius:50% 50% 0 0"></div>' +
+        '<div style="width:4px;height:5px;background:#9C27B0;border-radius:50% 50% 0 0"></div>' +
+        '<div style="width:4px;height:7px;background:#F44336;border-radius:50% 50% 0 0"></div>' +
+        '<div style="width:4px;height:6px;background:#FF9800;border-radius:50% 50% 0 0"></div>' +
+        '</div>'
+    } else if (b.display === "bread") {
+      displayHtml = '<div style="position:absolute;bottom:-3px;left:2px;display:flex;gap:1px">' +
+        '<div style="width:4px;height:3px;background:#D4A574;border-radius:50%"></div>' +
+        '<div style="width:5px;height:3px;background:#C49A6C;border-radius:40%"></div>' +
+        '<div style="width:4px;height:4px;background:#E8C07A;border-radius:50%"></div>' +
+        '</div>'
+    } else if (b.display === "pharmacy") {
+      displayHtml = '<div style="position:absolute;bottom:2px;right:-2px;width:4px;height:6px;background:#4CAF50;border-radius:1px;font-size:3px;color:#FFF;text-align:center;line-height:6px">+</div>'
+    }
+
+    // 提灯
+    var lanternHtml = ''
+    if (b.lantern) {
+      lanternHtml = '<div style="position:absolute;top:-8px;left:-3px;width:5px;height:7px;background:#FF3D00;border-radius:50%;box-shadow:0 0 3px rgba(255,61,0,0.5)"></div>' +
+        '<div style="position:absolute;top:-8px;right:-3px;width:5px;height:7px;background:#FF3D00;border-radius:50%;box-shadow:0 0 3px rgba(255,61,0,0.5)"></div>'
     }
 
     // 壁面テクスチャ
@@ -623,7 +679,7 @@ function getBuildingsForScene(sceneName, time) {
       wallTexture += 'background:linear-gradient(180deg, ' + color + ' 0%, ' + color + 'DD 100%);border:1px solid rgba(255,255,255,0.05);'
     }
 
-    return '<div class="building" style="height:' + h + 'px;width:' + w + 'px;' + wallTexture + 'border-radius:2px 2px 0 0">' + roofHtml + details + doorHtml + signHtml + awningHtml + '</div>'
+    return '<div class="building" style="height:' + h + 'px;width:' + w + 'px;' + wallTexture + 'border-radius:2px 2px 0 0">' + roofHtml + details + doorHtml + signHtml + awningHtml + norenHtml + displayHtml + lanternHtml + '</div>'
   })
 }
 
