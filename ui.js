@@ -63,6 +63,17 @@ function renderPolicyChart(chart) {
   return html
 }
 
+function renderSliderInfo(sliderInfo, value) {
+  var info = sliderInfo[String(value)]
+  if (!info) return ''
+  var color = value === 0 ? '#FFE66D' : value < 0 ? '#4ECDC4' : '#FF6B6B'
+  var html = '<div style="font-size:11px;font-weight:bold;color:' + color + ';margin-bottom:6px">' + escapeHtml(info.label) + 'と…</div>'
+  for (var i = 0; i < info.lines.length; i++) {
+    html += '<div style="font-size:11px;color:#E2E8F0;line-height:1.7">' + escapeHtml(info.lines[i]) + '</div>'
+  }
+  return html
+}
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -929,6 +940,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
           </div>
           <div class="slider-desc ${value === 0 ? 'neutral policy-tap' : value < 0 ? 'left' : 'right'}" ${value === 0 ? 'id="policyTap"' : ''}>${labels[value]}</div>
         </div>
+        ${question.sliderInfo ? '<div class="slider-info-panel" id="sliderInfoPanel">' + renderSliderInfo(question.sliderInfo, value) + '</div>' : ''}
       </div>
       
       <!-- コントロール -->
@@ -1609,6 +1621,12 @@ function updateSliderUI(value) {
     else if (value > 0 && q.right.hint) hintText = q.right.hint
     descEl.innerHTML = labels[value] + (hintText ? '<span class="slider-hint">' + escapeHtml(hintText) + '</span>' : '')
     descEl.className = "slider-desc " + (value === 0 ? 'neutral' : value < 0 ? 'left' : 'right')
+  }
+
+  // スライダー情報パネル更新
+  var infoPanel = document.getElementById("sliderInfoPanel")
+  if (infoPanel && q.sliderInfo) {
+    infoPanel.innerHTML = renderSliderInfo(q.sliderInfo, value)
   }
 
   // ステップマーク更新
