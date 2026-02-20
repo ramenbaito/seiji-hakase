@@ -150,90 +150,53 @@ function createStarField(canvas) {
 function createHeroSVG(size) {
   size = size || 80
   return `
-    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 200" aria-hidden="true">
-      <!-- 髪の毛（後ろ） -->
-      <ellipse cx="60" cy="42" rx="32" ry="28" fill="#4A2810"/>
-      <path d="M28 45 Q28 70 35 80 L35 55 Z" fill="#3A1E08"/>
-      <path d="M92 45 Q92 70 85 80 L85 55 Z" fill="#3A1E08"/>
-      
-      <!-- 頭 -->
-      <ellipse cx="60" cy="52" rx="26" ry="24" fill="#FFDBB4"/>
-      
-      <!-- 髪の毛（前髪） -->
-      <path d="M34 42 Q38 28 50 25 Q55 30 60 24 Q65 30 70 25 Q82 28 86 42 L82 38 Q75 30 68 34 Q63 28 58 34 Q52 28 47 34 Q40 30 38 38 Z" fill="#4A2810"/>
-      <path d="M34 42 Q36 48 38 42" fill="#5A3818"/>
-      <path d="M86 42 Q84 48 82 42" fill="#5A3818"/>
-      
-      <!-- 眉毛 -->
-      <path d="M42 48 Q48 44 54 48" fill="none" stroke="#3A1E08" stroke-width="2" stroke-linecap="round"/>
-      <path d="M66 48 Q72 44 78 48" fill="none" stroke="#3A1E08" stroke-width="2" stroke-linecap="round"/>
-      
-      <!-- 目（大きなアニメ目） -->
-      <ellipse cx="48" cy="56" rx="7" ry="8" fill="#FFF"/>
-      <ellipse cx="72" cy="56" rx="7" ry="8" fill="#FFF"/>
-      <ellipse cx="49" cy="57" rx="5" ry="6" fill="#2C5F8A"/>
-      <ellipse cx="73" cy="57" rx="5" ry="6" fill="#2C5F8A"/>
-      <ellipse cx="49" cy="58" rx="3.5" ry="4" fill="#1A3A5A"/>
-      <ellipse cx="73" cy="58" rx="3.5" ry="4" fill="#1A3A5A"/>
-      <circle cx="46" cy="54" r="2.5" fill="#FFF"/>
-      <circle cx="70" cy="54" r="2.5" fill="#FFF"/>
-      <circle cx="51" cy="59" r="1.2" fill="#FFF" opacity="0.7"/>
-      <circle cx="75" cy="59" r="1.2" fill="#FFF" opacity="0.7"/>
-      
-      <!-- まつ毛 -->
-      <path d="M41 50 Q42 48 44 49" stroke="#1A1A1A" stroke-width="1" fill="none"/>
-      <path d="M76 49 Q78 48 79 50" stroke="#1A1A1A" stroke-width="1" fill="none"/>
-      
-      <!-- 鼻 -->
-      <path d="M59 62 Q60 64 61 62" fill="none" stroke="#E8B090" stroke-width="1.2" stroke-linecap="round"/>
-      
-      <!-- 口（笑顔） -->
-      <path d="M52 68 Q60 76 68 68" fill="#E87040" stroke="#D06030" stroke-width="0.8"/>
-      <path d="M54 68 Q60 73 66 68" fill="#FFF" opacity="0.6"/>
-      
+    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 192" aria-hidden="true">
+      <!-- 博士帽 -->
+      <path d="M30 36 L60 8 L90 36 Z" fill="#2D3748" stroke="#4A5568" stroke-width="1.5"/>
+      <rect x="25" y="34" width="70" height="8" rx="2" fill="#2D3748" stroke="#4A5568" stroke-width="1"/>
+      <circle cx="60" cy="20" r="4" fill="#FFE66D"/>
+
+      <!-- 顔 -->
+      <circle cx="60" cy="60" r="28" fill="#FFDBB4"/>
+
+      <!-- メガネ -->
+      <rect x="40" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
+      <rect x="64" y="52" width="16" height="12" rx="3" fill="none" stroke="#4A5568" stroke-width="2.5"/>
+      <line x1="56" y1="58" x2="64" y2="58" stroke="#4A5568" stroke-width="2"/>
+
+      <!-- 目 -->
+      <ellipse cx="48" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+      <ellipse cx="72" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+      <circle cx="50" cy="57" r="1.5" fill="#FFF"/>
+      <circle cx="74" cy="57" r="1.5" fill="#FFF"/>
+
+      <!-- 口 -->
+      <path d="M52 70 Q60 78 68 70" fill="none" stroke="#E87040" stroke-width="2.5" stroke-linecap="round"/>
+
       <!-- ほっぺ -->
-      <ellipse cx="38" cy="64" rx="5" ry="3" fill="#FFB4B4" opacity="0.5"/>
-      <ellipse cx="82" cy="64" rx="5" ry="3" fill="#FFB4B4" opacity="0.5"/>
-      
-      <!-- 耳 -->
-      <ellipse cx="33" cy="55" rx="4" ry="6" fill="#FFDBB4"/>
-      <ellipse cx="33" cy="55" rx="2.5" ry="4" fill="#F0C8A0"/>
-      <ellipse cx="87" cy="55" rx="4" ry="6" fill="#FFDBB4"/>
-      <ellipse cx="87" cy="55" rx="2.5" ry="4" fill="#F0C8A0"/>
-      
-      <!-- 首 -->
-      <rect x="52" y="74" width="16" height="10" rx="3" fill="#FFDBB4"/>
-      
-      <!-- ジャケット -->
-      <path d="M36 84 Q36 80 44 78 L60 82 L76 78 Q84 80 84 84 L86 140 L34 140 Z" fill="#3A6BA8"/>
-      <path d="M60 82 L58 140" stroke="#2A5A98" stroke-width="1"/>
-      <path d="M60 82 L62 140" stroke="#2A5A98" stroke-width="1"/>
-      
-      <!-- 襟 -->
-      <path d="M48 78 L60 88 L52 84 Z" fill="#FFF"/>
-      <path d="M72 78 L60 88 L68 84 Z" fill="#FFF"/>
-      
-      <!-- ボタン -->
-      <circle cx="60" cy="95" r="2" fill="#FFE66D"/>
-      <circle cx="60" cy="108" r="2" fill="#FFE66D"/>
-      <circle cx="60" cy="121" r="2" fill="#FFE66D"/>
-      
+      <ellipse cx="38" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
+      <ellipse cx="82" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
+
+      <!-- 体（ティール） -->
+      <rect x="36" y="90" width="48" height="52" rx="8" fill="#4ECDC4"/>
+      <path d="M56 90 L64 90 L62 120 L60 123 L58 120 Z" fill="#45B7A8"/>
+      <circle cx="60" cy="98" r="4" fill="#FFE66D"/>
+
       <!-- 腕 -->
-      <path d="M34 84 L20 100 L18 126 Q16 132 22 132 L28 130 L30 106 L36 92" fill="#3A6BA8"/>
-      <path d="M86 84 L100 100 L102 126 Q104 132 98 132 L92 130 L90 106 L84 92" fill="#3A6BA8"/>
-      
+      <rect x="20" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
+      <rect x="82" y="94" width="18" height="36" rx="7" fill="#4ECDC4"/>
+
       <!-- 手 -->
-      <ellipse cx="22" cy="132" rx="6" ry="5" fill="#FFDBB4"/>
-      <ellipse cx="98" cy="132" rx="6" ry="5" fill="#FFDBB4"/>
-      
-      <!-- ズボン -->
-      <path d="M36 138 L38 170 Q39 174 46 174 L54 174 Q56 174 56 170 L58 145 L62 145 L64 170 Q64 174 66 174 L74 174 Q81 174 82 170 L84 138 Z" fill="#2D3748"/>
-      
+      <circle cx="29" cy="132" r="7" fill="#FFDBB4"/>
+      <circle cx="91" cy="132" r="7" fill="#FFDBB4"/>
+
+      <!-- 脚 -->
+      <rect x="40" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
+      <rect x="64" y="140" width="16" height="30" rx="6" fill="#2D3748"/>
+
       <!-- 靴 -->
-      <path d="M38 172 L36 178 Q34 184 42 184 L56 184 Q58 182 56 178 L54 174" fill="#5A3A20"/>
-      <path d="M82 172 L84 178 Q86 184 78 184 L64 184 Q62 182 64 178 L66 174" fill="#5A3A20"/>
-      <path d="M36 179 Q44 177 56 179" fill="none" stroke="#4A2A10" stroke-width="0.8"/>
-      <path d="M84 179 Q76 177 64 179" fill="none" stroke="#4A2A10" stroke-width="0.8"/>
+      <ellipse cx="48" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
+      <ellipse cx="72" cy="172" rx="11" ry="5" fill="#1A1A1A"/>
     </svg>
   `
 }
