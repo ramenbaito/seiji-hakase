@@ -32,7 +32,21 @@ const QUESTIONS = [
     },
     axes: ["small_big"],
     taxDelta: { "-2": -6, "-1": -3, "0": 0, "1": 3, "2": 6 },
-    currentPolicy: "月給30万円の場合、天引きされる社会保険料は約4.4万円（健康保険 約1.5万円＋厚生年金 約2.7万円＋雇用保険 約0.2万円）。病院の窓口負担は現役世代3割、75歳以上は原則1割。社会保障費は年間約134兆円（年金56兆・医療41兆・介護福祉37兆）。",
+    currentPolicy: "",
+    policyChart: {
+      title: "日本の社会保障費（年間 約134兆円）",
+      bars: [
+        { label: "年金", value: 56, max: 134, color: "#FF8A65", unit: "兆円" },
+        { label: "医療", value: 41, max: 134, color: "#42A5F5", unit: "兆円" },
+        { label: "介護", value: 14, max: 134, color: "#66BB6A", unit: "兆円" },
+        { label: "福祉その他", value: 23, max: 134, color: "#AB47BC", unit: "兆円" }
+      ],
+      notes: [
+        "財源: 保険料(58%) ＋ 税金(34%) ＋ その他(8%)",
+        "国の予算(約112兆円)の約3割が社会保障",
+        "高齢化で毎年約1兆円ずつ増加中"
+      ]
+    },
     npcInfo: {
       left: {
         title: "現役世代（30歳会社員）",

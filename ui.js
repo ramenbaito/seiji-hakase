@@ -40,6 +40,29 @@ var starFieldAnimation = null
 // ═══════════════════════════════════════════════════════════
 // Utility Functions
 // ═══════════════════════════════════════════════════════════
+function renderPolicyChart(chart) {
+  var html = '<div class="policy-popup-title">📊 ' + escapeHtml(chart.title) + '</div>'
+  html += '<div style="margin:12px 0">'
+  for (var i = 0; i < chart.bars.length; i++) {
+    var b = chart.bars[i]
+    var pct = Math.round(b.value / b.max * 100)
+    html += '<div style="margin-bottom:8px">'
+    html += '<div style="display:flex;justify-content:space-between;font-size:11px;color:#E2E8F0;margin-bottom:2px"><span>' + escapeHtml(b.label) + '</span><span style="font-weight:bold">' + b.value + b.unit + '</span></div>'
+    html += '<div style="width:100%;height:14px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden">'
+    html += '<div style="width:' + pct + '%;height:100%;background:' + b.color + ';border-radius:4px;transition:width 0.6s ease-out"></div>'
+    html += '</div></div>'
+  }
+  html += '</div>'
+  if (chart.notes && chart.notes.length) {
+    html += '<div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:8px;margin-top:4px">'
+    for (var j = 0; j < chart.notes.length; j++) {
+      html += '<div style="font-size:10px;color:#A0AEC0;line-height:1.6">• ' + escapeHtml(chart.notes[j]) + '</div>'
+    }
+    html += '</div>'
+  }
+  return html
+}
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -882,8 +905,7 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
       <!-- 現状の政策ポップアップ -->
       <div class="policy-popup" id="policyPopup" style="display:none">
         <div class="policy-popup-content">
-          <div class="policy-popup-title">📋 現状の政策</div>
-          <p class="policy-popup-text">${escapeHtml(question.currentPolicy || '')}</p>
+          ${question.policyChart ? renderPolicyChart(question.policyChart) : '<div class="policy-popup-title">📋 現状の政策</div><p class="policy-popup-text">' + escapeHtml(question.currentPolicy || '') + '</p>'}
           <button type="button" class="policy-popup-close" id="policyClose">閉じる</button>
         </div>
       </div>
