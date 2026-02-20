@@ -1806,10 +1806,32 @@ function showNpcInfoPopup(info, side) {
   card.appendChild(title)
 
   for (var i = 0; i < info.lines.length; i++) {
-    var line = document.createElement("div")
-    line.style.cssText = "font-size:13px;color:#E2E8F0;line-height:1.8;font-family:monospace"
-    line.textContent = info.lines[i] || "\u00A0"
-    card.appendChild(line)
+    var item = info.lines[i]
+    if (item && typeof item === "object" && item.tap) {
+      // タップ可能な行
+      var tapLine = document.createElement("div")
+      tapLine.style.cssText = "font-size:12px;color:#FFE66D;line-height:1.8;font-family:monospace;cursor:pointer;padding:2px 4px;margin:2px -4px;border-radius:4px;border:1px dashed rgba(255,230,109,0.3)"
+      tapLine.textContent = item.text
+        ; (function (tapText) {
+          var expanded = false
+          var detail = document.createElement("div")
+          detail.style.cssText = "font-size:11px;color:#A0AEC0;line-height:1.7;padding:8px 10px;margin:4px 0 6px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #FFE66D;white-space:pre-wrap;display:none"
+          detail.textContent = tapText
+          tapLine.addEventListener("click", function (e) {
+            e.stopPropagation()
+            expanded = !expanded
+            detail.style.display = expanded ? "block" : "none"
+          })
+          tapLine.parentNode || card.appendChild(tapLine)
+          card.appendChild(detail)
+        })(item.tap)
+      if (!tapLine.parentNode) card.appendChild(tapLine)
+    } else {
+      var line = document.createElement("div")
+      line.style.cssText = "font-size:13px;color:#E2E8F0;line-height:1.8;font-family:monospace"
+      line.textContent = (typeof item === "string" ? item : "") || "\u00A0"
+      card.appendChild(line)
+    }
   }
 
   var closeBtn = document.createElement("button")
