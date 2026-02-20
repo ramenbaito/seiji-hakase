@@ -4,6 +4,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GWDQQFNSCW"></script>
+  <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-GWDQQFNSCW');</script>
   <title>政治博士 — すべての人にわかりやすい政治を</title>
   <meta name="description" content="15の質問に答えるだけで、あなたの政治的傾向と最も近い政党がわかる無料診断アプリ。中学生からお年寄りまで誰でも使えます。" />
   <meta name="theme-color" content="#0F1923" />
@@ -11,9 +14,14 @@
   <meta property="og:title" content="政治博士 — 政党診断MBTI" />
   <meta property="og:description" content="15の質問に答えるだけで、あなたに最も近い政党がわかる。すべての人にわかりやすい政治を。" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ramenbaito.github.io/seiji-hakase/" />
+  <meta property="og:image" content="https://ramenbaito.github.io/seiji-hakase/ogp.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="ja_JP" />
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://ramenbaito.github.io/seiji-hakase/ogp.png" />
   <meta name="twitter:title" content="政治博士 — 政党診断MBTI" />
   <meta name="twitter:description" content="15問で分かる、あなたの政治傾向。無料で誰でも使える政党マッチング診断。" />
   <link rel="icon"
@@ -2312,15 +2320,43 @@
     </div>
   </div>
 
+  <!-- ローディング表示 -->
+  <div id="appLoader"
+    style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#0F1923;z-index:9999;transition:opacity 0.4s">
+    <div style="text-align:center;color:#A0AEC0;font-family:sans-serif">
+      <div style="font-size:48px;margin-bottom:12px">🏛️</div>
+      <div style="font-size:14px">読み込み中...</div>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="app" id="app" role="main" aria-live="polite">
       <!-- Content will be dynamically inserted here -->
     </div>
   </div>
 
+  <!-- 免責事項 -->
+  <div id="disclaimer"
+    style="display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(15,25,35,0.95);border-top:1px solid #2a3a4a;padding:10px 16px;z-index:100;font-size:11px;color:#718096;text-align:center;font-family:sans-serif">
+    <span>本サービスの診断結果は参考情報であり、特定の政党への投票を推奨するものではありません。個人情報は収集しません。</span>
+    <button onclick="this.parentElement.style.display='none';localStorage.setItem('disclaimer_ok','1')"
+      style="margin-left:12px;background:#2a3a4a;color:#A0AEC0;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px">OK</button>
+  </div>
+
   <script src="data.js"></script>
   <script src="scoring.js"></script>
   <script src="ui.js"></script>
+  <script>
+    // ローディング非表示
+    window.addEventListener('DOMContentLoaded', function () {
+      var loader = document.getElementById('appLoader');
+      if (loader) { loader.style.opacity = '0'; setTimeout(function () { loader.remove(); }, 400); }
+      // 免責事項（初回のみ表示）
+      if (!localStorage.getItem('disclaimer_ok')) {
+        var d = document.getElementById('disclaimer'); if (d) d.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 
 </html>

@@ -3,6 +3,22 @@
  */
 
 // ═══════════════════════════════════════════════════════════
+// localStorage安全チェック
+// ═══════════════════════════════════════════════════════════
+var storageAvailable = (function () {
+  try { var t = "__test__"; localStorage.setItem(t, t); localStorage.removeItem(t); return true }
+  catch (e) { return false }
+})()
+if (!storageAvailable) {
+  var _mem = {}
+  window.localStorage = {
+    getItem: function (k) { return _mem[k] || null },
+    setItem: function (k, v) { _mem[k] = String(v) },
+    removeItem: function (k) { delete _mem[k] }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // Global State & Elements
 // ═══════════════════════════════════════════════════════════
 var els = {
