@@ -754,18 +754,21 @@ function createRPGScene(value, question, idx) {
       ${getSceneProps(question.id, value)}
       
       <!-- 左キャラクター -->
-      <div class="characters-left ${leftActive ? 'active' : ''}">
+      <div class="characters-left ${leftActive ? 'active' : ''}" ${question.npcInfo ? 'data-npc-side="left" style="cursor:pointer"' : ''}>
         ${createNPCSVGS("left", leftActive, leftActive ? Math.abs(value) : 0, question.id)}
+        ${question.npcInfo ? '<div class="npc-tap-hint npc-tap-hint-left">👆 タップで詳細</div>' : ''}
       </div>
       
       <!-- 右キャラクター -->
-      <div class="characters-right ${rightActive ? 'active' : ''}">
+      <div class="characters-right ${rightActive ? 'active' : ''}" ${question.npcInfo ? 'data-npc-side="right" style="cursor:pointer"' : ''}>
         ${createNPCSVGS("right", rightActive, rightActive ? Math.abs(value) : 0, question.id)}
+        ${question.npcInfo ? '<div class="npc-tap-hint npc-tap-hint-right">👆 タップで詳細</div>' : ''}
       </div>
       
       <!-- 主人公 -->
-      <div class="character-main" style="left:${heroX}%">
+      <div class="character-main" style="left:${heroX}%;cursor:pointer" data-hero-tap="true">
         ${createHeroSVG(window.innerWidth > 768 ? 80 : 55)}
+        <div class="npc-tap-hint" style="bottom:-18px;left:50%;transform:translateX(-50%)">💬 現状の政策</div>
       </div>
       
       <!-- 矢印 -->
@@ -1326,12 +1329,18 @@ function bindQuestionEvents() {
 
   if (!slider) return
 
-  // 現状の政策ポップアップ
+  // 現状の政策ポップアップ（ヒーロータップ or policyTap）
   var policyTap = document.getElementById("policyTap")
   var policyPopup = document.getElementById("policyPopup")
   var policyClose = document.getElementById("policyClose")
+  var heroTap = document.querySelector('[data-hero-tap]')
   if (policyTap && policyPopup) {
     policyTap.addEventListener("click", function () {
+      policyPopup.style.display = "flex"
+    })
+  }
+  if (heroTap && policyPopup) {
+    heroTap.addEventListener("click", function () {
       policyPopup.style.display = "flex"
     })
   }
@@ -1345,6 +1354,19 @@ function bindQuestionEvents() {
       if (e.target === policyPopup) policyPopup.style.display = "none"
     })
   }
+
+  // NPCタップで情報ポップアップ
+  var npcElements = document.querySelectorAll('[data-npc-side]')
+  npcElements.forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.stopPropagation()
+      var side = this.getAttribute("data-npc-side")
+      var q = QUESTIONS[state.currentIndex]
+      if (q && q.npcInfo && q.npcInfo[side]) {
+        showNpcInfoPopup(q.npcInfo[side], side)
+      }
+    })
+  })
 
   // スライダーイベント
   slider.addEventListener("input", function () {
@@ -1723,6 +1745,41 @@ function bindFeedbackEvents() {
 function openFeedback() {
   if (els.fbOverlay) els.fbOverlay.classList.add("open")
   if (els.fbText) els.fbText.focus()
+}
+
+function showNpcInfoPopup(info, side) {
+  var existing = document.getElementById("npcInfoPopup")
+  if (existing) existing.remove()
+
+  var color = side === "left" ? "#4ECDC4" : "#FF6B6B"
+  var overlay = document.createElement("div")
+  overlay.id = "npcInfoPopup"
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9000;animation:fadeIn 0.2s"
+
+  var card = document.createElement("div")
+  card.style.cssText = "background:#1a2a3a;border:2px solid " + color + ";border-radius:16px;padding:20px 24px;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.4)"
+
+  var title = document.createElement("div")
+  title.style.cssText = "font-size:15px;font-weight:bold;color:" + color + ";margin-bottom:12px;text-align:center"
+  title.textContent = info.title
+  card.appendChild(title)
+
+  for (var i = 0; i < info.lines.length; i++) {
+    var line = document.createElement("div")
+    line.style.cssText = "font-size:13px;color:#E2E8F0;line-height:1.8;font-family:monospace"
+    line.textContent = info.lines[i] || "\u00A0"
+    card.appendChild(line)
+  }
+
+  var closeBtn = document.createElement("button")
+  closeBtn.textContent = "閉じる"
+  closeBtn.style.cssText = "display:block;margin:16px auto 0;background:" + color + ";color:#0F1923;border:none;padding:8px 24px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer"
+  closeBtn.addEventListener("click", function () { overlay.remove() })
+  card.appendChild(closeBtn)
+
+  overlay.appendChild(card)
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.remove() })
+  document.body.appendChild(overlay)
 }
 
 function closeFeedback() {

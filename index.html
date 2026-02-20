@@ -373,8 +373,7 @@
 
     .policy-popup {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.6);
@@ -390,6 +389,7 @@
       background: var(--bg-secondary);
       border: 1.5px solid rgba(255, 230, 109, 0.25);
       border-radius: 14px;
+      position: relative;
       padding: 20px;
       max-width: 360px;
       width: 100%;
@@ -736,6 +736,26 @@
     .characters-right.active {
       transform: translateX(-12px) scale(1.08);
       filter: drop-shadow(0 0 12px rgba(255, 107, 107, 0.5))
+    }
+
+    .npc-tap-hint {
+      position: absolute;
+      bottom: -18px;
+      font-size: 10px;
+      color: #A0AEC0;
+      white-space: nowrap;
+      animation: idleBounce 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .npc-tap-hint-left {
+      left: 50%;
+      transform: translateX(-50%)
+    }
+
+    .npc-tap-hint-right {
+      left: 50%;
+      transform: translateX(-50%)
     }
 
     .character-main {
