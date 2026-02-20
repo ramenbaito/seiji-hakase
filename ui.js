@@ -490,9 +490,8 @@ function getBuildingsForScene(sceneName, time) {
       { img: "img/hospital.png", imgH: 96, imgW: 80 },
       { h: 0 },
       { h: 0 },
-      { img: "img/house.png", imgH: 88, imgW: 76 },
+      { img: "img/kouminkan.png", imgH: 92, imgW: 80 },
       { img: "img/shop.png", imgH: 84, imgW: 68 },
-      { img: "img/yaoya.png", imgH: 92, imgW: 76 },
     ],
     "港の見える橋の上": [
       { h: 4, w: 6, color: "#4a5a6a" },
