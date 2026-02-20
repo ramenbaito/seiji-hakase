@@ -485,14 +485,14 @@ function getBuildingsForScene(sceneName, time) {
       { h: 4, w: 8, color: "#1a3a1a" },
     ],
     "朝の商店街": [
-      { h: 16, w: 18, color: "#6a5a4a", windows: 1, sign: "八百屋", signColor: "#4CAF50", awning: "#E65100", awningStripe: "#FF8F00", noren: "#2E7D32", norenText: "青果", display: "veggies" },
-      { h: 20, w: 15, color: "#5a5548", windows: 2, roof: "triangle", roofColor: "#4a4438", sign: "本屋", signColor: "#FFE66D", noren: "#3E2723", norenText: "書籍" },
-      { h: 14, w: 20, color: "#5a4a4a", windows: 1, sign: "魚屋", signColor: "#42A5F5", awning: "#1565C0", awningStripe: "#1976D2", noren: "#0D47A1", norenText: "鮮魚", display: "fish" },
-      { h: 22, w: 18, color: "#4a4a5a", windows: 2, roof: "triangle", roofColor: "#3a3a4a", sign: "定食屋", signColor: "#FF8A65", awning: "#BF360C", awningStripe: "#E65100", noren: "#BF360C", norenText: "定食", lantern: true },
+      { img: "img/yaoya.png", imgH: 50, imgW: 40 },
+      { img: "img/shop.png", imgH: 45, imgW: 36 },
+      { img: "img/hospital.png", imgH: 48, imgW: 40 },
       { h: 0 },
-      { h: 16, w: 15, color: "#5a504a", windows: 1, sign: "薬局", signColor: "#81C784", awning: "#2E7D32", awningStripe: "#388E3C", display: "pharmacy" },
-      { h: 14, w: 18, color: "#5a5550", windows: 1, sign: "花屋", signColor: "#F48FB1", awning: "#AD1457", awningStripe: "#C2185B", display: "flowers" },
-      { h: 20, w: 16, color: "#5a5550", windows: 2, sign: "パン屋", signColor: "#FFE0B2", awning: "#E65100", awningStripe: "#FF8F00", noren: "#795548", norenText: "焼立", display: "bread" },
+      { h: 0 },
+      { img: "img/house.png", imgH: 44, imgW: 38 },
+      { img: "img/shop.png", imgH: 42, imgW: 34 },
+      { img: "img/yaoya.png", imgH: 46, imgW: 38 },
     ],
     "港の見える橋の上": [
       { h: 4, w: 6, color: "#4a5a6a" },
@@ -571,6 +571,9 @@ function getBuildingsForScene(sceneName, time) {
   var buildings = sceneBuildings[sceneName] || defaultBuildings
 
   return buildings.map(function (b) {
+    if (b.img) {
+      return '<div style="width:' + (b.imgW || 40) + 'px;display:flex;align-items:flex-end"><img src="' + b.img + '" style="width:' + (b.imgW || 40) + 'px;height:' + (b.imgH || 40) + 'px;object-fit:contain;opacity:0.85;filter:brightness(0.9)" alt="" loading="lazy"></div>'
+    }
     if (!b.h || b.h === 0) return '<div style="width:40px"></div>'
     var w = b.w || (10 + Math.floor(Math.random() * 8))
     var color = b.color || "#1a2a3a"
