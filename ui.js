@@ -67,7 +67,7 @@ function renderSliderInfo(sliderInfo, value) {
   var info = sliderInfo[String(value)]
   if (!info) return ''
   var color = value === 0 ? '#FFE66D' : value < 0 ? '#4ECDC4' : '#FF6B6B'
-  var html = '<div style="font-size:11px;font-weight:bold;color:' + color + ';margin-bottom:6px">' + escapeHtml(info.label) + 'の場合…</div>'
+  var html = '<div style="font-size:11px;font-weight:bold;color:' + color + ';margin-bottom:6px">' + escapeHtml(info.label) + '…</div>'
   for (var i = 0; i < info.lines.length; i++) {
     html += '<div style="font-size:11px;color:#E2E8F0;line-height:1.7">' + escapeHtml(info.lines[i]) + '</div>'
   }
