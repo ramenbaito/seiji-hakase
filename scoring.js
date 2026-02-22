@@ -2,10 +2,6 @@
  * scoring.js — スコア変換・税計算・状態管理
  */
 
-function valueToInternal(value) {
-  return (value + 2) * 25
-}
-
 function clampValue(v) {
   var n = parseInt(String(v), 10)
   if (isNaN(n)) return 0
@@ -250,22 +246,22 @@ var BASE_ANIMALS = {
   small_big: {
     high: { emoji: "🐘", name: "エレファント", tag: "制度派の", desc: "制度で人を守るタイプ", color: "#9CA3AF" },
     low: { emoji: "🦒", name: "ジラフ", tag: "自立派の", desc: "自分の足で立つタイプ", color: "#F5C542" },
-    mid: { emoji: "🦊", name: "フォックス", tag: "現実派の", desc: "状況を見て判断するタイプ", color: "#E8853D" }
+    mid: { emoji: "🦉", name: "アウル", tag: "賢明な", desc: "冷静に分析するタイプ", color: "#7C3AED" }
   },
   free_norm: {
     high: { emoji: "🐺", name: "ウルフ", tag: "統率の", desc: "秩序とルールを重んじるタイプ", color: "#6B7280" },
     low: { emoji: "🦦", name: "オター", tag: "自由な", desc: "個人の自由を大切にするタイプ", color: "#60A5FA" },
-    mid: { emoji: "🦊", name: "フォックス", tag: "現実派の", desc: "状況を見て判断するタイプ", color: "#E8853D" }
+    mid: { emoji: "🦋", name: "バタフライ", tag: "柔軟な", desc: "状況に合わせて変わるタイプ", color: "#EC4899" }
   },
   open_protect: {
     high: { emoji: "🦅", name: "イーグル", tag: "守護の", desc: "自国の文化と産業を守るタイプ", color: "#92400E" },
     low: { emoji: "🕊️", name: "ダヴ", tag: "協調の", desc: "国際交流と開放を好むタイプ", color: "#E0E7FF" },
-    mid: { emoji: "🦊", name: "フォックス", tag: "現実派の", desc: "状況を見て判断するタイプ", color: "#E8853D" }
+    mid: { emoji: "🐧", name: "ペンギン", tag: "社交の", desc: "バランスを取るタイプ", color: "#06B6D4" }
   },
   now_future: {
     high: { emoji: "🦉", name: "アウル", tag: "先見の", desc: "将来を見据えて投資するタイプ", color: "#7C3AED" },
     low: { emoji: "🐿️", name: "リス", tag: "堅実な", desc: "今の暮らしを確実に守るタイプ", color: "#B45309" },
-    mid: { emoji: "🦊", name: "フォックス", tag: "現実派の", desc: "状況を見て判断するタイプ", color: "#E8853D" }
+    mid: { emoji: "🐢", name: "タートル", tag: "忍耐の", desc: "じっくり考えるタイプ", color: "#059669" }
   }
 }
 
@@ -273,7 +269,7 @@ var BASE_ANIMALS = {
 var EQUIP_ITEMS = {
   merit_equity: {
     low: { emoji: "📈", label: "成長グラフ" },
-    mid: { emoji: "⚙️", label: "調整ギア" },
+    mid: { emoji: "⚖️", label: "天秤" },
     high: { emoji: "🛡️", label: "安全網" }
   },
   small_big: {
@@ -355,11 +351,31 @@ function buildFlavorText(base, axisScores) {
   var top2 = ranked.slice(0, 2)
 
   var axisDescMap = {
-    merit_equity: { low: "成長と挑戦を優先", high: "格差をなくし安定を重視" },
-    small_big: { low: "自由な経済と自立を好む", high: "手厚い制度と保障を求める" },
-    free_norm: { low: "個人の自由を最大限に尊重", high: "社会のルールと秩序を大切に" },
-    open_protect: { low: "国際交流と開放的な政策に前向き", high: "自国の文化と産業を守ることを重視" },
-    now_future: { low: "今の暮らしと経済を優先", high: "将来の世代と環境を重視" }
+    merit_equity: {
+      low: "競争を通じて成長を重視し、実力主義を信条とする",
+      high: "平等と公正を最優先し、社会的安全網を重視する",
+      mid: "状況に応じて競争と協調のバランスを取る"
+    },
+    small_big: {
+      low: "小さな政府と自由市場経済を志向し、自己責任を重んじる",
+      high: "大きな政府の役割を信じ、手厚い社会保障を求める",
+      mid: "政府の役割について現実的なバランスを模索する"
+    },
+    free_norm: {
+      low: "個人の自由と自己決定権を何よりも大切にする",
+      high: "社会秩序と共同体のルールを遵守することを重視する",
+      mid: "自由と規範の間で柔軟な対応を心がける"
+    },
+    open_protect: {
+      low: "国際協力と文化交流を積極的に推進する",
+      high: "自国の文化と産業を守ることを最優先する",
+      mid: "開放と保護のバランスを慎重に検討する"
+    },
+    now_future: {
+      low: "現在の経済安定と生活の質を最優先する",
+      high: "将来の世代と環境保護に投資することを重視する",
+      mid: "現在と未来のニーズをバランス良く配分する"
+    }
   }
 
   var lines = []
@@ -367,11 +383,21 @@ function buildFlavorText(base, axisScores) {
     var dir = getDirection(top2[i].score)
     var desc = axisDescMap[top2[i].axis]
     if (desc) {
-      lines.push(dir === "mid" ? "バランスを重視" : (dir === "low" ? desc.low : desc.high))
+      lines.push(dir === "mid" ? desc.mid : (dir === "low" ? desc.low : desc.high))
     }
   }
 
-  return lines.join("し、") + "する傾向があります。"
+  // 性格の強さに応じた表現を追加
+  var intensityText = ""
+  if (base.intensity > 30) {
+    intensityText = "この傾向は非常に強く、"
+  } else if (base.intensity > 15) {
+    intensityText = "この傾向は比較的強く、"
+  } else {
+    intensityText = "この傾向は穏やかですが、"
+  }
+
+  return intensityText + lines.join("し、") + "する政治スタンスの持ち主です。"
 }
 
 // メインのキャラクター生成関数

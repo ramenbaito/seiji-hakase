@@ -7,12 +7,12 @@
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GWDQQFNSCW"></script>
   <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-GWDQQFNSCW');</script>
-  <title>政治博士 — すべての人にわかりやすい政治を</title>
-  <meta name="description" content="15の質問に答えるだけで、あなたの政治的傾向と最も近い政党がわかる無料診断アプリ。中学生からお年寄りまで誰でも使えます。" />
+  <title>政治博士 | 15問で政治スタンスと政党マッチングがわかる診断</title>
+  <meta name="description" content="政治博士は15問に答えるだけで政治スタンスと相性の良い政党がわかる無料診断アプリ。政策チャートとNPCの解説で、政治や選挙が初めての人でも直感的に学べます。" />
   <meta name="theme-color" content="#0F1923" />
   <!-- OGP -->
-  <meta property="og:title" content="政治博士 — 政党診断MBTI" />
-  <meta property="og:description" content="15の質問に答えるだけで、あなたに最も近い政党がわかる。すべての人にわかりやすい政治を。" />
+  <meta property="og:title" content="政治博士 | 政党診断・政治スタンス診断" />
+  <meta property="og:description" content="15問の政治クイズに答えると、あなたの政治スタンスと近い政党がわかります。政策チャートやNPCの解説で、政治を楽しく学べる無料アプリ。" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://ramenbaito.github.io/seiji-hakase/" />
   <meta property="og:image" content="https://ramenbaito.github.io/seiji-hakase/ogp.png" />
@@ -22,12 +22,12 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://ramenbaito.github.io/seiji-hakase/ogp.png" />
-  <meta name="twitter:title" content="政治博士 — 政党診断MBTI" />
-  <meta name="twitter:description" content="15問で分かる、あなたの政治傾向。無料で誰でも使える政党マッチング診断。" />
+  <meta name="twitter:title" content="政治博士 | 15問でわかる政党マッチング診断" />
+  <meta name="twitter:description" content="15問に答えるだけで政治スタンスと相性の良い政党が判明。プレイしながら政治を学べる無料Webアプリ。" />
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>" />
   <style>
-    /* v0から完全移植したCSS keyframes */
+    /* v0から完全移植したCSS keyframes - Updated 20250222 */
     @keyframes starTwinkle {
 
       0%,
@@ -50,6 +50,182 @@
       50% {
         transform: translateY(-8px)
       }
+    }
+
+    /* キャラクターアニメーション追加 */
+    @keyframes heroBreathing {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    @keyframes heroBlink {
+
+      0%,
+      90%,
+      100% {
+        transform: scaleY(1);
+      }
+
+      95% {
+        transform: scaleY(0.1);
+      }
+    }
+
+    @keyframes npcIdle {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      25% {
+        transform: translateY(-1px) rotate(0.5deg);
+      }
+
+      75% {
+        transform: translateY(1px) rotate(-0.5deg);
+      }
+    }
+
+    @keyframes npcActive {
+
+      0%,
+      100% {
+        transform: translateY(0px) scale(1);
+      }
+
+      50% {
+        transform: translateY(-3px) scale(1.05);
+      }
+    }
+
+    .hero-eyes {
+      animation: heroBlink 4s ease-in-out infinite;
+    }
+
+    .hero-mouth {
+      transition: all 0.3s ease;
+    }
+
+    .hero-reacting .hero-mouth {
+      transform: scale(1.2);
+      fill: #FF8A65;
+    }
+
+    .npc-eyes {
+      transition: all 0.2s ease;
+    }
+
+    .npc-active .npc-eyes {
+      transform: scale(1.1);
+    }
+
+    .npc-mouth {
+      transition: all 0.3s ease;
+    }
+
+    .npc-active .npc-mouth {
+      transform: scale(1.2);
+    }
+
+    /* シーン遷移アニメーション強化 */
+    @keyframes sceneTransitionIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes sceneTransitionOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(1.05);
+      }
+    }
+
+    .rpg-scene {
+      animation: sceneTransitionIn 0.6s ease-out;
+    }
+
+    .scene-transitioning .rpg-scene {
+      animation: sceneTransitionOut 0.4s ease-in;
+    }
+
+    /* ボタンホバーアニメーション強化 */
+    @keyframes buttonGlow {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+      }
+    }
+
+    @keyframes buttonGlowRight {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+      }
+    }
+
+    .action-btn.left:hover {
+      animation: buttonGlow 2s ease-in-out infinite;
+    }
+
+    .action-btn.right:hover {
+      animation: buttonGlowRight 2s ease-in-out infinite;
+    }
+
+    /* スライダーアニメーション改善 */
+    .rpg-slider::-webkit-slider-thumb {
+      transition: all 0.2s ease;
+    }
+
+    .rpg-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(255, 230, 109, 0.8);
+    }
+
+    /* ポップアップアニメーション改善 */
+    @keyframes popupSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.9);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .policy-popup-content {
+      animation: popupSlideIn 0.3s ease-out;
     }
 
     @keyframes floatUp {
@@ -2158,26 +2334,28 @@
       }
     }
 
-    /* フィードバックモーダル */
+    /* フィードバックモーダル - FORCE UPDATE */
     .fbBtn {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      z-index: 100;
-      padding: 10px 16px;
-      border-radius: 20px;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 12px;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s
+      position: fixed !important;
+      top: 16px !important;
+      right: 16px !important;
+      bottom: auto !important;
+      left: auto !important;
+      z-index: 100 !important;
+      padding: 10px 16px !important;
+      border-radius: 20px !important;
+      border: none !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: white !important;
+      font-size: 12px !important;
+      cursor: pointer !important;
+      backdrop-filter: blur(8px) !important;
+      transition: all 0.2s !important;
     }
 
     .fbBtn:hover {
       background: rgba(255, 255, 255, 0.18);
-      transform: translateY(-1px)
+      transform: translateY(1px)
     }
 
     .fbBtn:active {
@@ -2377,6 +2555,7 @@
 
   <script src="data.js"></script>
   <script src="scoring.js"></script>
+  <script src="analytics.js"></script>
   <script src="ui.js"></script>
   <script>
     // ローディング非表示

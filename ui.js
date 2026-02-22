@@ -36,6 +36,7 @@ var state = loadState()
 var currentLevel = 1
 var isTransitioning = false
 var starFieldAnimation = null
+var isFeedbackSending = false
 
 // ═══════════════════════════════════════════════════════════
 // Utility Functions
@@ -69,7 +70,9 @@ function renderSliderInfo(sliderInfo, value) {
   var color = value === 0 ? '#FFE66D' : value < 0 ? '#4ECDC4' : '#FF6B6B'
   var html = '<div style="font-size:11px;font-weight:bold;color:' + color + ';margin-bottom:6px">' + escapeHtml(info.label) + '…</div>'
   for (var i = 0; i < info.lines.length; i++) {
-    html += '<div style="font-size:11px;color:#E2E8F0;line-height:1.7">' + escapeHtml(info.lines[i]) + '</div>'
+    var line = info.lines[i]
+    var lineStr = typeof line === "string" ? line : (line && typeof line === "object" && line.text) ? line.text : ""
+    html += '<div style="font-size:11px;color:#E2E8F0;line-height:1.7">' + escapeHtml(lineStr) + '</div>'
   }
   return html
 }
@@ -83,7 +86,7 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;")
 }
 
-// clampValue, valueToInternal は scoring.js で定義済み
+// clampValue は scoring.js で定義済み
 
 // ═══════════════════════════════════════════════════════════
 // v0風のStarField Canvas
@@ -161,7 +164,20 @@ function createStarField(canvas) {
 function createHeroSVG(size) {
   size = size || 80
   return `
-    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 192" aria-hidden="true">
+    <svg width="${size}" height="${size * 1.6}" viewBox="0 0 120 192" aria-hidden="true" style="animation:heroBreathing 3s ease-in-out infinite">
+      <style>
+        @keyframes heroBreathing {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+        }
+        @keyframes heroBlink {
+          0%, 90%, 100% { transform: scaleY(1); }
+          95% { transform: scaleY(0.1); }
+        }
+        .hero-eyes { animation: heroBlink 4s ease-in-out infinite; }
+        .hero-mouth { transition: all 0.3s ease; }
+        .hero-reacting .hero-mouth { transform: scale(1.2); fill: #FF8A65; }
+      </style>
       <!-- 博士帽 -->
       <path d="M30 36 L60 8 L90 36 Z" fill="#2D3748" stroke="#4A5568" stroke-width="1.5"/>
       <rect x="25" y="34" width="70" height="8" rx="2" fill="#2D3748" stroke="#4A5568" stroke-width="1"/>
@@ -176,13 +192,15 @@ function createHeroSVG(size) {
       <line x1="56" y1="58" x2="64" y2="58" stroke="#4A5568" stroke-width="2"/>
 
       <!-- 目 -->
-      <ellipse cx="48" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
-      <ellipse cx="72" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
-      <circle cx="50" cy="57" r="1.5" fill="#FFF"/>
-      <circle cx="74" cy="57" r="1.5" fill="#FFF"/>
+      <g class="hero-eyes">
+        <ellipse cx="48" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+        <ellipse cx="72" cy="59" rx="4" ry="4.5" fill="#1A1A1A"/>
+        <circle cx="50" cy="57" r="1.5" fill="#FFF"/>
+        <circle cx="74" cy="57" r="1.5" fill="#FFF"/>
+      </g>
 
       <!-- 口 -->
-      <path d="M52 70 Q60 78 68 70" fill="none" stroke="#E87040" stroke-width="2.5" stroke-linecap="round"/>
+      <path class="hero-mouth" d="M52 70 Q60 78 68 70" fill="none" stroke="#E87040" stroke-width="2.5" stroke-linecap="round"/>
 
       <!-- ほっぺ -->
       <ellipse cx="38" cy="68" rx="6" ry="3.5" fill="#FFB4B4" opacity="0.45"/>
@@ -287,7 +305,8 @@ function createNPCSVGS(side, active, intensity, questionId) {
     var brows = '<path d="M21 21 Q24 19 27 21" fill="none" stroke="' + hc + '" stroke-width="1.2" stroke-linecap="round"/>' +
       '<path d="M33 21 Q36 19 39 21" fill="none" stroke="' + hc + '" stroke-width="1.2" stroke-linecap="round"/>'
 
-    npcs += '<svg viewBox="0 0 60 100" style="width:' + width + 'px;height:' + height + 'px;opacity:' + opacity + ';transition:all 0.3s ease-out" aria-hidden="true">' +
+    var animationClass = active ? 'npc-active' : ''
+    npcs += '<svg viewBox="0 0 60 100" class="npc-svg ' + animationClass + '" style="width:' + width + 'px;height:' + height + 'px;opacity:' + opacity + ';transition:all 0.3s ease-out;animation:' + (active ? 'npcActive 2s ease-in-out infinite' : 'npcIdle 4s ease-in-out infinite') + '" aria-hidden="true">' +
       // 髪（後ろ）
       '<ellipse cx="30" cy="18" rx="16" ry="14" fill="' + hc + '"/>' +
       // 頭
@@ -1303,6 +1322,10 @@ function render() {
 
   els.app.innerHTML = createQuizCard(q, state.currentIndex, TOTAL_QUESTIONS, value, currentLevel, taxGauge)
 
+  if (typeof analyticsTrack !== "undefined" && analyticsTrack.questionView) {
+    analyticsTrack.questionView(state.currentIndex, q.id)
+  }
+
   // タイプライター効果（ナラティブ）
   var descEl = document.querySelector(".question-desc")
   if (descEl) {
@@ -1339,6 +1362,21 @@ function render() {
 function renderEnd() {
   if (isTransitioning) return
 
+  var axisScores = calcAxisScores(state.answers)
+  var partyResults = calcPartyDistances(axisScores)
+  var character = buildCharacter(axisScores)
+  var topParty = partyResults[0]
+  var answeredCount = Object.keys(state.answers).length
+
+  if (typeof analyticsTrack !== "undefined" && analyticsTrack.quizComplete) {
+    analyticsTrack.quizComplete({
+      character: character.fullName,
+      topParty: topParty ? topParty.name : "",
+      matchRate: topParty ? topParty.match : 0,
+      answeredCount: answeredCount
+    })
+  }
+
   els.app.innerHTML = createResultScreen(state.answers)
 
   // ページトップへスクロール
@@ -1349,8 +1387,7 @@ function renderEnd() {
     starFieldAnimation = null
   }
 
-  // レーダーチャート描画
-  var axisScores = calcAxisScores(state.answers)
+  // レーダーチャート描画（axisScores は上で算出済み）
   drawRadarChart("radarChart", axisScores)
 
   // EXPバーのカウントアップアニメーション
@@ -1486,6 +1523,13 @@ function bindQuestionEvents() {
 function handleKeyNav(e) {
   var slider = document.getElementById("slider")
   if (!slider) return
+
+  // フィードバック入力欄にフォーカスがある場合、またはフィードバックオーバーレイが開いている場合はキーボードナビゲーションを無効化
+  if ((els.fbText && document.activeElement === els.fbText) ||
+    (els.fbOverlay && els.fbOverlay.classList.contains("open"))) {
+    return
+  }
+
   if (e.key === "ArrowLeft") {
     slider.value = Math.max(-2, parseInt(slider.value) - 1)
     updateSliderUI(clampValue(slider.value))
@@ -1725,6 +1769,10 @@ function confirmAnswer() {
   state.tax += getTaxDelta(q, value)
   saveState(state)
 
+  if (typeof analyticsTrack !== "undefined" && analyticsTrack.questionAnswer) {
+    analyticsTrack.questionAnswer(state.currentIndex, q.id, value)
+  }
+
   // 次の質問へ
   isTransitioning = true
   setTimeout(function () {
@@ -1791,7 +1839,11 @@ function bindFeedbackEvents() {
   if (els.fbCancel) els.fbCancel.addEventListener("click", closeFeedback)
   if (els.fbSend) els.fbSend.addEventListener("click", sendFeedback)
   if (els.fbOverlay) els.fbOverlay.addEventListener("click", function (e) {
-    if (e.target === els.fbOverlay) closeFeedback()
+    if (e.target === els.fbOverlay && !isFeedbackSending) closeFeedback()
+  })
+  var fbModal = els.fbOverlay ? els.fbOverlay.querySelector(".fbModal") : null
+  if (fbModal) fbModal.addEventListener("click", function (e) {
+    e.stopPropagation()
   })
 
   // ESCキーで閉じる
@@ -1803,6 +1855,7 @@ function bindFeedbackEvents() {
 }
 
 function openFeedback() {
+  if (isFeedbackSending) return
   if (els.fbOverlay) els.fbOverlay.classList.add("open")
   if (els.fbText) els.fbText.focus()
 }
@@ -1865,6 +1918,7 @@ function showNpcInfoPopup(info, side) {
 }
 
 function closeFeedback() {
+  if (isFeedbackSending) return
   if (els.fbOverlay) els.fbOverlay.classList.remove("open")
   if (els.fbText) els.fbText.value = ""
   if (els.fbStatus) els.fbStatus.textContent = ""
@@ -1873,45 +1927,73 @@ function closeFeedback() {
 function sendFeedback() {
   var text = els.fbText ? els.fbText.value.trim() : ""
   if (!text) return
+  if (isFeedbackSending) return
 
+  isFeedbackSending = true
   if (els.fbSend) {
     els.fbSend.disabled = true
     els.fbSend.textContent = "送信中..."
   }
   if (els.fbStatus) els.fbStatus.textContent = "送信中..."
 
-  // Googleフォームに送信（iframe + form でCORS回避）
-  var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScZYnTp5GIe4Ee0nRe-V9Mo38xE08qNw6whxAXuHNW789-jTg/formResponse"
-
-  var iframeName = "fb_iframe_" + Date.now()
-  var iframe = document.createElement("iframe")
-  iframe.name = iframeName
-  iframe.style.display = "none"
-  document.body.appendChild(iframe)
-
-  var form = document.createElement("form")
-  form.method = "POST"
-  form.action = FORM_URL
-  form.target = iframeName
-  form.style.display = "none"
-
-  var input = document.createElement("input")
-  input.type = "hidden"
-  input.name = "entry.37763675"
-  input.value = text + "\n---\n" + new Date().toISOString() + " | " + window.location.href
-  form.appendChild(input)
-
-  document.body.appendChild(form)
-  form.submit()
-
-  setTimeout(function () {
-    if (els.fbStatus) els.fbStatus.textContent = "✅ 送信完了！ありがとうございます"
+  function finishFeedback(success) {
+    isFeedbackSending = false
+    if (els.fbStatus) els.fbStatus.textContent = success ? "✅ 送信完了！ありがとうございます" : "⚠️ 送信に失敗しました。しばらくして再度お試しください"
     if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
-    if (els.fbText) els.fbText.value = ""
-    setTimeout(closeFeedback, 2000)
-    try { document.body.removeChild(iframe) } catch (e) { }
-    try { document.body.removeChild(form) } catch (e) { }
-  }, 3000)
+    if (success && els.fbText) els.fbText.value = ""
+    if (success) setTimeout(function () {
+      if (els.fbOverlay) els.fbOverlay.classList.remove("open")
+      if (els.fbText) els.fbText.value = ""
+      if (els.fbStatus) els.fbStatus.textContent = ""
+    }, 2000)
+  }
+
+  function cleanup() {
+    try { if (iframe && iframe.parentNode) document.body.removeChild(iframe) } catch (e) { }
+    try { if (form && form.parentNode) document.body.removeChild(form) } catch (e) { }
+  }
+
+  try {
+    var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScZYnTp5GIe4Ee0nRe-V9Mo38xE08qNw6whxAXuHNW789-jTg/formResponse"
+    var iframeName = "fb_iframe_" + Date.now()
+    var iframe = document.createElement("iframe")
+    iframe.name = iframeName
+    iframe.style.display = "none"
+    var form = document.createElement("form")
+    form.method = "POST"
+    form.action = FORM_URL
+    form.target = iframeName
+    form.style.display = "none"
+    var input = document.createElement("input")
+    input.type = "hidden"
+    input.name = "entry.37763675"
+    input.value = text + "\n---\n" + new Date().toISOString() + " | " + (window.location ? window.location.href : "")
+    form.appendChild(input)
+    document.body.appendChild(iframe)
+    document.body.appendChild(form)
+
+    var fallbackTimer = setTimeout(function () {
+      fallbackTimer = null
+      finishFeedback(true)
+      cleanup()
+    }, 8000)
+    var formSubmitted = false
+
+    iframe.onload = function () {
+      if (formSubmitted && fallbackTimer) {
+        clearTimeout(fallbackTimer)
+        fallbackTimer = null
+        finishFeedback(true)
+        cleanup()
+      }
+    }
+    form.submit()
+    formSubmitted = true
+  } catch (e) {
+    isFeedbackSending = false
+    if (els.fbStatus) els.fbStatus.textContent = "⚠️ 送信エラーが発生しました"
+    if (els.fbSend) { els.fbSend.disabled = false; els.fbSend.textContent = "送信" }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1983,6 +2065,9 @@ function initSplash() {
 }
 
 function dismissSplash() {
+  if (typeof analyticsTrack !== "undefined" && analyticsTrack.sessionStart) {
+    analyticsTrack.sessionStart()
+  }
   if (els.splash) {
     els.splash.classList.add("hide")
     setTimeout(function () {
