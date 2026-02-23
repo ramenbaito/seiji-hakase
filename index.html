@@ -686,6 +686,140 @@
       .progress-dots {
         display: none
       }
+
+      /* モバイル向けバロメーター改善 */
+      .tax-bar-wrap {
+        margin: 12px 0;
+      }
+
+      .tax-bar-label {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+
+      .tax-bar-track {
+        height: 12px;
+        border: 2px solid var(--border-color);
+      }
+
+      .tax-bar-center {
+        height: 16px;
+        width: 2px;
+        top: -2px;
+        background: rgba(255, 255, 240, 0.3);
+      }
+
+      .tax-bar-fill {
+        height: 100%;
+      }
+
+      .tax-bar-indicator {
+        width: 16px;
+        height: 20px;
+        margin-left: -8px;
+        top: -4px;
+        border-radius: 8px;
+        border: 2px solid rgba(255, 230, 109, 0.6);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+
+      /* スライダーのモバイル改善 */
+      .rpg-slider {
+        height: 8px;
+      }
+
+      .rpg-slider::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #0F1923;
+      }
+
+      .rpg-slider::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #0F1923;
+      }
+
+      .slider-row {
+        padding: 16px 0;
+      }
+
+      .slider-end {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .slider-steps {
+        margin: 12px 0;
+      }
+
+      .step {
+        width: 8px;
+        height: 8px;
+      }
+
+      .step.active {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* 進捗バーのモバイル改善 */
+      .quiz-progress-bar {
+        height: 6px;
+        margin: 12px 0;
+      }
+
+      .quiz-progress-fill {
+        box-shadow: 0 0 12px rgba(78, 205, 196, 0.6);
+      }
+
+      /* コントロールボタンのモバイル改善 */
+      .control-btn {
+        padding: 14px 18px;
+        font-size: 15px;
+        min-height: 48px;
+      }
+
+      .control-btn.primary {
+        padding: 14px 20px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+    }
+
+    /* タブレット向けバロメーター改善 */
+    @media (max-width: 768px) and (min-width: 481px) {
+      .tax-bar-track {
+        height: 8px;
+      }
+
+      .tax-bar-center {
+        height: 12px;
+        width: 1.5px;
+      }
+
+      .tax-bar-indicator {
+        width: 12px;
+        height: 16px;
+        margin-left: -6px;
+        top: -3px;
+        border-radius: 6px;
+      }
+
+      .rpg-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+      }
+
+      .rpg-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+      }
+
+      .control-btn {
+        padding: 12px 16px;
+        min-height: 44px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -2358,6 +2492,91 @@
       transform: translateY(1px)
     }
 
+    /* 進捗バーのアニメーション */
+    .quiz-progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4ECDC4, #FFE66D);
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 8px rgba(78, 205, 196, 0.4);
+    }
+
+    /* スライダーの改善 */
+    .rpg-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #FFE66D;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0F1923;
+      box-shadow: 0 2px 8px rgba(255, 230, 109, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .rpg-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(255, 230, 109, 0.6);
+    }
+
+    .rpg-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #FFE66D;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #0F1923;
+      box-shadow: 0 2px 8px rgba(255, 230, 109, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .rpg-slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(255, 230, 109, 0.6);
+    }
+
+    /* ボタンの改善 */
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .control-btn.primary {
+      background: linear-gradient(135deg, #4ECDC4, #34D399);
+      border-color: transparent;
+      color: #0F1923;
+      font-weight: 700;
+    }
+
+    .control-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+    }
+
     .fbBtn:active {
       transform: translateY(0) scale(0.96)
     }
@@ -2454,6 +2673,112 @@
       transform: none;
       box-shadow: none
     }
+
+    /* クイズ進捗フィルバー */
+    .quiz-progress-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-yellow));
+      border-radius: 99px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* スプラッシュ機能チップ */
+    .splash-features {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 2px 0 4px;
+    }
+
+    .splash-feature {
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 240, 0.5);
+      border: 1px solid rgba(255, 255, 240, 0.12);
+      background: rgba(255, 255, 240, 0.04);
+    }
+
+    /* 結果の軸スコアバー（カラーフィル付き） */
+    .axis-score-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-tertiary);
+      border-radius: 99px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .axis-score-fill-left {
+      position: absolute;
+      right: 50%;
+      top: 0;
+      height: 100%;
+      background: var(--accent-cyan);
+      opacity: 0.75;
+      border-radius: 99px 0 0 99px;
+    }
+
+    .axis-score-fill-right {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      height: 100%;
+      background: var(--accent-orange);
+      opacity: 0.75;
+      border-radius: 0 99px 99px 0;
+    }
+
+    .axis-score-center-mark {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* 結果コンプリートヘッダー */
+    .result-complete-header {
+      text-align: center;
+      padding: 12px 0 4px;
+      animation: fadeScale 0.5s ease-out;
+    }
+
+    .result-complete-emoji {
+      font-size: 52px;
+      margin-bottom: 8px;
+      animation: idleBounce 2.5s ease-in-out infinite;
+      display: block;
+    }
+
+    .result-complete-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--accent-yellow);
+    }
+
+    .result-complete-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
   </style>
 </head>
 
@@ -2499,17 +2824,19 @@
         </svg>
       </div>
       <h1 class="splashTitle">政治博士</h1>
-      <p class="splashSub">すべての人にわかりやすい政治を。</p>
+      <p class="splashSub">15問で分かる、あなたの政治スタンス。</p>
       <div class="splashLine"></div>
+      <div class="splash-features">
+        <div class="splash-feature">📝 15問</div>
+        <div class="splash-feature">⚡ 即座に結果</div>
+        <div class="splash-feature">🆓 無料</div>
+      </div>
       <button class="splash-start" id="splashStart" type="button">
-        政党診断MBTI
+        診断スタート
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
           stroke-linejoin="round">
           <path d="m9 18 6-6-6-6" />
         </svg>
-      </button>
-      <button class="splash-coming-soon" type="button" disabled title="新機能を準備中です。お楽しみに！">
-        Coming Soon
       </button>
       <div class="splashCredit">powered by <span style="cursor:pointer;border-bottom:1px solid rgba(255,255,240,0.2)"
           onclick="window.open('https://github.com/ramenbaito','_blank')">喜作葉月</span></div>

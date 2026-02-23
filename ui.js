@@ -19,6 +19,45 @@ if (!storageAvailable) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// URLパラメータ機能
+// ═══════════════════════════════════════════════════════════
+function encodeAnswers(answers) {
+  try {
+    var data = JSON.stringify(answers)
+    return btoa(encodeURIComponent(data))
+  } catch (e) {
+    return ""
+  }
+}
+
+function decodeAnswers(encoded) {
+  try {
+    var data = decodeURIComponent(atob(encoded))
+    return JSON.parse(data)
+  } catch (e) {
+    return null
+  }
+}
+
+function getSharedResult() {
+  var params = new URLSearchParams(window.location.search)
+  var encoded = params.get('r')
+  if (encoded) {
+    var answers = decodeAnswers(encoded)
+    if (answers && Object.keys(answers).length === 15) {
+      return answers
+    }
+  }
+  return null
+}
+
+function generateShareUrl(answers) {
+  var encoded = encodeAnswers(answers)
+  var baseUrl = window.location.origin + window.location.pathname
+  return baseUrl + '?r=' + encoded
+}
+
+// ═══════════════════════════════════════════════════════════
 // Global State & Elements
 // ═══════════════════════════════════════════════════════════
 var els = {
@@ -873,8 +912,8 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
   return `
     <div class="quiz-card" style="display:flex;flex-direction:column;gap:16px;width:100%;max-width:680px;animation:slideInRight 0.4s ease-out">
       <!-- ヘッダー -->
-      <div class="rpg-header" style="flex-direction:column;align-items:center;gap:4px">
-        <div class="rpg-title" style="font-size:21px">
+      <div class="rpg-header">
+        <div class="rpg-title" style="font-size:18px">
           <span>政治博士</span>
         </div>
         <div class="rpg-stage">
@@ -882,11 +921,15 @@ function createQuizCard(question, idx, total, initialValue, level, taxGauge) {
     var cls = i < idx ? 'done' : i === idx ? 'current' : ''
     return '<span class="pdot ' + cls + '"></span>'
   }).join('')}</div>
-          <span>${idx + 1} / ${total}</span>
+          <span style="font-size:12px">${idx + 1} / ${total}</span>
         </div>
       </div>
-      
-      <!-- 税金バー（中央基準） -->
+      <!-- 進捗フィルバー -->
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" style="width:${progressPct}%"></div>
+      </div>
+
+      <!-- 税負担バー（中央基準） -->
       <div class="tax-bar-wrap">
         <span class="tax-bar-label">税負担</span>
         <div class="tax-bar-track">
@@ -1125,9 +1168,11 @@ function createResultScreen(answers) {
 
   return `
     <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px">
-      <div class="result-header" style="animation:fadeScale 0.5s ease-out">
-        <div class="result-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- コンプリートヘッダー -->
+      <div class="result-complete-header">
+        <span class="result-complete-emoji">🎊</span>
+        <div class="result-complete-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFE66D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
             <path d="M4 22h16"/>
@@ -1135,17 +1180,17 @@ function createResultScreen(answers) {
             <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
             <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
           </svg>
-          <span>QUEST COMPLETE</span>
+          QUEST COMPLETE
         </div>
-        <div class="result-stage">結果</div>
+        <div class="result-complete-sub">全${entries.length}問に答えました！診断結果をチェックしよう。</div>
       </div>
-      
+
       <div class="result-card" style="animation:slideInRight 0.5s ease-out 0.2s both">
         <div class="result-corner tl"></div>
         <div class="result-corner tr"></div>
         <div class="result-corner bl"></div>
         <div class="result-corner br"></div>
-        
+
         <!-- キャラカード -->
         <div class="chara-card" style="border-color:${character.animal.color}40">
           <div class="chara-emoji">${character.animal.emoji}</div>
@@ -1156,19 +1201,23 @@ function createResultScreen(answers) {
     return '<span class="chara-item" title="' + it.item.label + '">' + it.item.emoji + '</span>'
   }).join('')}
           </div>
-          <p class="chara-desc">${character.description}</p>
         </div>
         
         <!-- 政党マッチ -->
         <div class="party-match" style="border:2px solid ${topParty.color}40;background:${topParty.color}08">
           <div class="party-match-label">あなたに最も近い政党</div>
           <a href="${topParty.url}" target="_blank" rel="noopener" class="party-name" style="color:${topParty.color};text-shadow:0 0 15px ${topParty.color}40">${topParty.name}</a>
-          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px">
-            <svg width="36" height="36" viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="${topParty.color}" stroke-width="3" stroke-dasharray="${topParty.match * 0.974} ${97.4 - topParty.match * 0.974}" stroke-dashoffset="24.35" stroke-linecap="round" style="transition:stroke-dasharray 1s ease-out"/>
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+              <circle cx="32" cy="32" r="27" fill="none" stroke="${topParty.color}" stroke-width="5" stroke-dasharray="${topParty.match * 1.696} ${169.6 - topParty.match * 1.696}" stroke-dashoffset="42.4" stroke-linecap="round" style="transition:stroke-dasharray 1.2s ease-out"/>
+              <text x="32" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="${topParty.color}">${topParty.match}%</text>
             </svg>
-            <span class="party-desc">マッチ度 ${topParty.match}%</span>
+            <div style="text-align:left">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">マッチ度</div>
+              <div style="font-size:28px;font-weight:800;color:${topParty.color};line-height:1">${topParty.match}%</div>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">政策の一致度スコア</div>
+            </div>
           </div>
         </div>
         
@@ -1197,11 +1246,14 @@ function createResultScreen(answers) {
       now_future: { left: "今を重視", right: "未来を重視" }
     }
     var desc = axisDesc[ax] || { left: "", right: "" }
+    var leftFillWidth = score < 50 ? (50 - score) : 0
+    var rightFillWidth = score > 50 ? (score - 50) : 0
     return '<div class="answer-row">' +
       '<span class="answer-id" style="min-width:72px">' + AXIS_NAMES[ax] + '</span>' +
-      '<div class="answer-bar">' +
-      '<div class="answer-center"></div>' +
-      '<div class="answer-dot ' + posClass + '" style="left:' + score + '%"></div>' +
+      '<div class="axis-score-bar">' +
+      '<div class="axis-score-center-mark"></div>' +
+      '<div class="axis-score-fill-left" style="width:' + leftFillWidth + '%"></div>' +
+      '<div class="axis-score-fill-right" style="width:' + rightFillWidth + '%"></div>' +
       '</div>' +
       '<span class="answer-value ' + posClass + '">' + score + '</span>' +
       '</div>' +
@@ -1587,32 +1639,218 @@ function bindResultEvents() {
   }
 }
 
+// 5軸のMBTIスタイルタイプコードを生成
+// merit_equity: M(erit)↔E(quity), small_big: S(mall)↔L(arge), free_norm: F(ree)↔R(ule),
+// open_protect: O(pen)↔P(rotect), now_future: N(ow)↔T(omorrow)
+function buildTypeCode(axisScores) {
+  var defs = [
+    { ax: "merit_equity", low: "M", high: "E" },
+    { ax: "small_big", low: "S", high: "L" },
+    { ax: "free_norm", low: "F", high: "R" },
+    { ax: "open_protect", low: "O", high: "P" },
+    { ax: "now_future", low: "N", high: "T" },
+  ]
+  return defs.map(function (d) {
+    var s = axisScores[d.ax] || 50
+    if (s <= 39) return d.low
+    if (s >= 61) return d.high
+    return "-"
+  }).join("")
+}
+
+function getShareText(character, topParty, axisScores) {
+  var typeCode = buildTypeCode(axisScores)
+  var itemEmojis = character.items.map(function (it) { return it.item.emoji }).join("")
+  return "【政治博士 MBTI診断】\n\n" +
+    character.animal.emoji + " タイプ: " + character.fullName + "\n" +
+    "🔑 タイプコード: [" + typeCode + "]\n" +
+    "🏛️ 近い政党: " + topParty.name + "（" + topParty.match + "%）\n" +
+    "🎒 " + itemEmojis + "\n\n" +
+    "15問でわかる政治タイプ診断 👇\n" + window.location.href + "\n\n#政治博士 #政党診断MBTI"
+}
+
+function closeShareModal() {
+  var overlay = document.getElementById("shareMbtiOverlay")
+  if (overlay) {
+    if (overlay._onKeydown) {
+      document.removeEventListener("keydown", overlay._onKeydown)
+    }
+    overlay.style.opacity = "0"
+    overlay.style.transition = "opacity 0.2s"
+    setTimeout(function () { overlay.remove() }, 200)
+  }
+}
+
+function showShareModal(character, topParty, axisScores) {
+  var existing = document.getElementById("shareMbtiOverlay")
+  if (existing) existing.remove()
+
+  var typeCode = buildTypeCode(axisScores)
+  var shareText = getShareText(character, topParty, axisScores)
+  var shareUrl = generateShareUrl(state.answers)
+  var tweetUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText)
+
+  var axisInfo = [
+    { name: "分配", score: axisScores.merit_equity, low: "実力主義", high: "平等重視" },
+    { name: "政府", score: axisScores.small_big, low: "小さな政府", high: "大きな政府" },
+    { name: "自由", score: axisScores.free_norm, low: "自由優先", high: "ルール重視" },
+    { name: "開放", score: axisScores.open_protect, low: "開放的", high: "保護的" },
+    { name: "時間", score: axisScores.now_future, low: "今を重視", high: "未来重視" },
+  ]
+  var axisColors = ["#4ECDC4", "#FF6B6B", "#A78BFA", "#34D399", "#F59E0B"]
+
+  var axisHtml = axisInfo.map(function (a, i) {
+    var posClass = a.score < 40 ? "low" : a.score > 60 ? "high" : "mid"
+    var label = posClass === "low" ? a.low : posClass === "high" ? a.high : "中間"
+    var color = posClass === "low" ? "#4ECDC4" : posClass === "high" ? "#FF6B6B" : "#FFE66D"
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">' +
+      '<span style="color:#8c8c8c;font-size:11px;width:28px;flex-shrink:0">' + a.name + '</span>' +
+      '<div style="flex:1;height:4px;background:#1a1a1a;border-radius:99px;position:relative">' +
+      '<div style="position:absolute;left:0;top:0;height:100%;width:' + a.score + '%;background:' + color + ';border-radius:99px"></div>' +
+      '</div>' +
+      '<span style="color:' + color + ';font-size:11px;text-align:right;min-width:60px">' + label + '</span>' +
+      '</div>'
+  }).join("")
+
+  var typeBadges = typeCode.split("").map(function (c, i) {
+    var isDash = c === "-"
+    var bg = isDash ? "rgba(255,255,255,0.04)" : axisColors[i] + "22"
+    var col = isDash ? "#4A5568" : axisColors[i]
+    var bdr = isDash ? "rgba(255,255,255,0.08)" : axisColors[i] + "55"
+    return '<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:17px;font-weight:800;background:' + bg + ';color:' + col + ';border:1.5px solid ' + bdr + '">' + (isDash ? "·" : c) + '</div>'
+  }).join("")
+
+  var overlay = document.createElement("div")
+  overlay.id = "shareMbtiOverlay"
+  overlay.setAttribute("role", "dialog")
+  overlay.setAttribute("aria-modal", "true")
+  overlay.setAttribute("aria-label", "診断結果をシェア")
+  overlay.style.cssText = "position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)"
+
+  overlay.innerHTML =
+    '<div style="background:#0d1117;border:1.5px solid rgba(255,230,109,0.3);border-radius:16px;max-width:380px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideIn 0.3s ease-out">' +
+    '<div style="text-align:center;margin-bottom:16px">' +
+    '<div style="font-size:9px;color:#4A5568;font-weight:700;letter-spacing:0.14em;margin-bottom:6px">🏛️ MBTI 政治タイプ診断</div>' +
+    '<div style="font-size:52px;line-height:1;margin-bottom:8px">' + character.animal.emoji + '</div>' +
+    '<div style="font-size:18px;font-weight:800;color:' + character.animal.color + '">' + escapeHtml(character.fullName) + '</div>' +
+    '<div style="font-size:12px;color:#8c8c8c;margin-top:3px">' + escapeHtml(character.tagline) + '</div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px">' + typeBadges + '</div>' +
+    '<div style="font-size:9px;color:#4A5568;text-align:center;margin-top:-10px;margin-bottom:14px;letter-spacing:0.08em">M/E&nbsp;·&nbsp;S/L&nbsp;·&nbsp;F/R&nbsp;·&nbsp;O/P&nbsp;·&nbsp;N/T</div>' +
+    '<div style="margin-bottom:16px">' + axisHtml + '</div>' +
+    '<div style="text-align:center;padding:10px;border-radius:10px;border:1px solid ' + topParty.color + '30;background:' + topParty.color + '0A;margin-bottom:16px">' +
+    '<div style="font-size:10px;color:#8c8c8c;margin-bottom:2px">最も近い政党</div>' +
+    '<div style="font-size:16px;font-weight:800;color:' + topParty.color + '">' + escapeHtml(topParty.name) + '</div>' +
+    '<div style="font-size:12px;color:#8c8c8c">マッチ度 ' + topParty.match + '%</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' +
+    '<a href="' + tweetUrl + '" target="_blank" rel="noopener" id="shareTweetBtn" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;background:#000;color:#fff;font-size:14px;font-weight:700;text-decoration:none;transition:opacity 0.2s">' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' +
+    'Xでシェア' +
+    '</a>' +
+    '<button type="button" id="shareCopyBtn" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;background:rgba(255,230,109,0.1);color:#FFE66D;border:1.5px solid rgba(255,230,109,0.3);font-size:14px;font-weight:700;cursor:pointer;width:100%">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>' +
+    'テキストをコピー' +
+    '</button>' +
+    '<button type="button" id="shareUrlBtn" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;background:rgba(78,205,196,0.1);color:#4ECDC4;border:1.5px solid rgba(78,205,196,0.3);font-size:14px;font-weight:700;cursor:pointer;width:100%">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>' +
+    'URLをコピー' +
+    '</button>' +
+    '<button type="button" id="shareMbtiClose" style="width:100%;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:#8c8c8c;font-size:12px;cursor:pointer">閉じる</button>' +
+    '</div>' +
+    '</div>'
+
+  document.body.appendChild(overlay)
+
+  overlay.addEventListener("click", function (e) {
+    if (e.target === overlay) closeShareModal()
+  })
+
+  document.getElementById("shareMbtiClose").addEventListener("click", function () {
+    closeShareModal()
+  })
+
+  var tweetBtn = document.getElementById("shareTweetBtn")
+  if (tweetBtn) {
+    tweetBtn.addEventListener("mouseover", function () { this.style.opacity = "0.85" })
+    tweetBtn.addEventListener("mouseout", function () { this.style.opacity = "1" })
+  }
+
+  var copyBtn = document.getElementById("shareCopyBtn")
+  if (copyBtn) {
+    copyBtn.addEventListener("mouseover", function () { this.style.background = "rgba(255,230,109,0.18)" })
+    copyBtn.addEventListener("mouseout", function () { this.style.background = "rgba(255,230,109,0.1)" })
+    copyBtn.addEventListener("click", function () {
+      var copyIconHtml = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> テキストをコピー'
+      function execFallback() {
+        var ta = document.createElement("textarea")
+        ta.value = shareText
+        ta.style.cssText = "position:fixed;opacity:0"
+        document.body.appendChild(ta)
+        ta.select()
+        document.execCommand("copy")
+        ta.remove()
+        copyBtn.innerHTML = "✅ コピーしました！"
+        setTimeout(function () { copyBtn.innerHTML = copyIconHtml }, 2000)
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareText).then(function () {
+          copyBtn.innerHTML = "✅ コピーしました！"
+          setTimeout(function () { copyBtn.innerHTML = copyIconHtml }, 2000)
+        }).catch(function () {
+          execFallback()
+        })
+      } else {
+        execFallback()
+      }
+    })
+  }
+
+  var urlBtn = document.getElementById("shareUrlBtn")
+  if (urlBtn) {
+    urlBtn.addEventListener("mouseover", function () { this.style.background = "rgba(78,205,196,0.18)" })
+    urlBtn.addEventListener("mouseout", function () { this.style.background = "rgba(78,205,196,0.1)" })
+    urlBtn.addEventListener("click", function () {
+      var urlIconHtml = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> URLをコピー'
+      function execFallback() {
+        var ta = document.createElement("textarea")
+        ta.value = shareUrl
+        ta.style.cssText = "position:fixed;opacity:0"
+        document.body.appendChild(ta)
+        ta.select()
+        document.execCommand("copy")
+        ta.remove()
+        urlBtn.innerHTML = "✅ コピーしました！"
+        setTimeout(function () { urlBtn.innerHTML = urlIconHtml }, 2000)
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl).then(function () {
+          urlBtn.innerHTML = "✅ コピーしました！"
+          setTimeout(function () { urlBtn.innerHTML = urlIconHtml }, 2000)
+        }).catch(function () {
+          execFallback()
+        })
+      } else {
+        execFallback()
+      }
+    })
+  }
+
+  function onKeydown(e) {
+    if (e.key === "Escape") {
+      closeShareModal()
+    }
+  }
+  document.addEventListener("keydown", onKeydown)
+  overlay._onKeydown = onKeydown
+}
+
 function shareResult() {
   var axisScores = calcAxisScores(state.answers)
   var partyResults = calcPartyDistances(axisScores)
   var topParty = partyResults[0]
   var character = buildCharacter(axisScores)
-  var itemEmojis = character.items.map(function (it) { return it.item.emoji }).join("")
-  var text = "【政治博士】政党診断の結果\n\n" +
-    character.animal.emoji + " あなたは「" + character.fullName + "」\n" +
-    "🏛️ 最も近い政党: " + topParty.name + "（" + topParty.match + "%）\n" +
-    "🎒 装備: " + itemEmojis + "\n\n" +
-    "15問で分かる、あなたの政治傾向 👉\n" + window.location.href + "\n\n#政治博士 #政党診断"
-
-  if (navigator.share) {
-    navigator.share({ title: "政治博士", text: text }).catch(function () { })
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function () {
-      var btn = document.getElementById("shareBtn")
-      if (btn) {
-        var original = btn.innerHTML
-        btn.innerHTML = "✅ コピーしました！"
-        btn.style.transform = "scale(1.05)"
-        setTimeout(function () { btn.style.transform = "" }, 200)
-        setTimeout(function () { btn.innerHTML = original }, 2000)
-      }
-    })
-  }
+  showShareModal(character, topParty, axisScores)
 }
 
 function updateSliderUI(value) {
@@ -2082,6 +2320,13 @@ function dismissSplash() {
 // 初期化
 // ═══════════════════════════════════════════════════════════
 function init() {
+  // URLパラメータで共有結果をチェック
+  var sharedAnswers = getSharedResult()
+  if (sharedAnswers) {
+    state.answers = sharedAnswers
+    state.currentIndex = TOTAL_QUESTIONS
+  }
+
   // v0風スプラッシュ初期化
   initSplash()
 
